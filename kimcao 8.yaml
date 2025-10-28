@@ -1,45 +1,6 @@
 ---
 proxy-providers:
-  微斯人:
-    url: https://junnanliangnv.egfu.cn/tlralg/oahrettss/ecywtwcaaasr?token=e2e4c0ba14bda4cf09249e968b906ba2
-    type: http
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-    proxy: 直连
-    path: "./proxy_provider/微斯人"
-  萌新云:
-    url: https://a.mxdingyue.top/link/27pBdMiyzCdQudCU?sub=3
-    type: http
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-    proxy: 直连
-    path: "./proxy_provider/萌新云"
-  良心云:
-    url: https://liangxin.xyz/api/v1/liangxin?OwO=597b9510c949a36b6f7ada45bf258447
-    type: http
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-    proxy: "♻️ 香港自动"
-    path: "./proxy_provider/良心云"
-  Kit:
-    url: https://1.suika.ru/oosaka/894211db8c1d10bdb61761ff92cd6f1a
-    type: http
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-    proxy: 直连
-    path: "./proxy_provider/Kit"
+  
 proxies:
 - name: 直连
   type: direct
