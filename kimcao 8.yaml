@@ -10,6 +10,16 @@ proxy-providers:
       interval: 300
     proxy: 直连
     path: "./proxy_provider/微斯人"
+  萌新云:
+    url: https://a.mxdingyue.top/link/27pBdMiyzCdQudCU?sub=3
+    type: http
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+    path: "./proxy_provider/萌新云"
   良心云:
     url: https://liangxin.xyz/api/v1/liangxin?OwO=597b9510c949a36b6f7ada45bf258447
     type: http
@@ -80,17 +90,6 @@ sniffer:
   - "+.sunlogin.net"
   - "+.push.apple.com"
   parse-pure-ip: true
-tun:
-  enable: true
-  stack: system
-  device: utun
-  dns-hijack:
-  - 127.0.0.1:53
-  endpoint-independent-nat: true
-  auto-route: false
-  auto-detect-interface: false
-  auto-redirect: false
-  strict-route: false
 dns:
   enable: true
   listen: 0.0.0.0:7874
@@ -407,7 +406,33 @@ rules:
 - "DOMAIN-KEYWORD,fc2,\U0001F1EF\U0001F1F5 日本节点"
 - "DOMAIN-KEYWORD,caribbeancom,\U0001F1EF\U0001F1F5 日本节点"
 - RULE-SET,speedtest_domain,✈️ Speedtest
+- "RULE-SET,github_domain,\U0001F468\U0001F3FF‍\U0001F4BB GitHub"
+- "RULE-SET,youtube_domain,\U0001F4F9 YouTube"
+- "RULE-SET,google_domain,\U0001F340 Google"
+- "RULE-SET,onedrive_domain,\U0001F42C OneDrive"
+- "RULE-SET,microsoft_domain,\U0001FA9F Microsoft"
+- RULE-SET,apple_domain,直连
+- "RULE-SET,tiktok_domain,\U0001F3B5 TikTok"
+- "RULE-SET,telegram_domain,\U0001F4F2 Telegram"
+- RULE-SET,apple_ip,直连,no-resolve
+- "RULE-SET,google_ip,\U0001F340 Google,no-resolve"
+- "RULE-SET,telegram_ip,\U0001F4F2 Telegram,no-resolve"
+- "RULE-SET,geolocation-!cn,\U0001F680 默认代理"
+- RULE-SET,bank_domain,直连
+- RULE-SET,WeChat_Blackmatrix7,直连
+- RULE-SET,douyin_domain_Blackmatrix7,直连
+- RULE-SET,XiaoMi_Blackmatrix7,直连
+- RULE-SET,Tencent_Blackmatrix7,直连
+- RULE-SET,bilibili_domain,直连
+- RULE-SET,bilibili_Blackmatrix7,直连
+- RULE-SET,iqiyi_domain,直连
+- RULE-SET,iqiyi_Blackmatrix7,直连
+- RULE-SET,private_domain, 直连
+- RULE-SET,PrivateTracker_Blackmatrix7,直连
+- RULE-SET,cn_domain,直连
 - "RULE-SET,proxylite,\U0001F680 默认代理"
+- RULE-SET,ChinaMax_domain_Blackmatrix7,直连
+- RULE-SET,ChinaIPs_Blackmatrix7,直连,no-resolve
 - RULE-SET,cn_ip,直连
 - "MATCH,\U0001F41F 漏网之鱼"
 rule-anchor:
