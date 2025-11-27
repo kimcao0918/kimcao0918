@@ -1,0 +1,381 @@
+#基础配置
+tcp-concurrent: true        # TCP并发：允许并发连接TCP,提高并发性能
+unified-delay: true         # 统一延迟：统一显示节点延迟
+#性能调优
+tcp-concurrent-users: 64      # TCP并发连接数,根据服务器性能调整,建议值:16-128
+keep-alive-interval: 15       # 保活心跳间隔(秒),建议值:15-30
+inbound-tfo: true            # 入站TCP Fast Open
+outbound-tfo: true           # 出站TCP Fast Open
+connection-pool-size: 256     # 连接池大小,建议值:128-512
+idle-timeout: 60             # 空闲超时时间(秒)
+
+## 常用变量
+# 负载均衡 load-balance：
+  # round-robin 将会把所有的请求分配给策略组内不同的代理节点
+  # consistent-hashing 将相同的 目标地址 的请求分配给策略组内的同一个代理节点
+  # sticky-sessions: 将相同的 来源地址 和 目标地址 的请求分配给策略组内的同一个代理节点，缓存 10 分钟过期
+# 自动回退 fallback
+# 常用字段：filter: "(?i)港|hk|hongkong|hong kong"   exclude-filter: "美|日" 
+# 更多内容请参考：https://wiki.metacubex.one/config/proxy-groups/
+
+
+# 机场
+proxy-providers:
+  机场:
+    type: http
+    path: ./profiles/proxy1.yaml
+# 机场订阅链接 替换下面url的网址，中间要有空格，要clash可用的
+    url: https://config.moe/config/123456789
+    interval: 86400
+    override:
+      skip-cert-verify: true
+      udp: true
+
+# 规则组
+# 规则匹配
+  # - DOMAIN-SUFFIX,google.com - DOMAIN-KEYWORD,google - DOMAIN,ad.com - GEOIP,CN
+  # - SRC-IP-CIDR,192.168.1.201/32 - IP-CIDR,127.0.0.0/8 - DST-PORT,80 - SRC-PORT,7777
+rules:
+# 自定义
+- RULE-SET,BiliBili,DIRECT
+- DST-PORT,6881-6889,DIRECT
+- DOMAIN-KEYWORD,fn,DIRECT
+- DOMAIN-KEYWORD,1ms,DIRECT
+- DOMAIN-KEYWORD,115,DIRECT
+- DOMAIN-KEYWORD,baidu,DIRECT
+- DOMAIN-KEYWORD,tracker,DIRECT
+- DOMAIN-KEYWORD,zhenyunpan,DIRECT
+- DOMAIN-KEYWORD,gemini,🤖 人工智能
+- DOMAIN-SUFFIX,grok.com,🤖 人工智能
+
+# 色花及图层代理
+- DOMAIN-KEYWORD,sehuatang,✨ 节点选择
+- DOMAIN-KEYWORD,7pzzv.us,✨ 节点选择
+- DOMAIN-KEYWORD,ttou,✨ 节点选择
+- DOMAIN-KEYWORD,tju,✨ 节点选择
+- DOMAIN-KEYWORD,ymawv,✨ 节点选择
+- DOMAIN-KEYWORD,mikan,✨ 节点选择
+
+# 影视&AV刮削（‘日本节点’和‘影视刮削’分组均为负载均衡，‘影视刮削不包含日本节点’）
+- DOMAIN-KEYWORD,dmhy,🇯🇵 日本
+- DOMAIN-KEYWORD,amazon,🇯🇵 日本
+- DOMAIN-KEYWORD,dmm,🇯🇵 日本
+- DOMAIN-KEYWORD,prestige-av,🇯🇵 日本
+- DOMAIN-SUFFIX,fc2.com,🇯🇵 日本
+- DOMAIN-SUFFIX,hbox.jp,🇯🇵 日本
+- DOMAIN-SUFFIX,dmm.co.jp,🇯🇵 日本
+- DOMAIN-SUFFIX,caribbeancom.com,🇯🇵 日本
+- DOMAIN-KEYWORD,javbus,🕹️ 影视刮削
+- DOMAIN-SUFFIX,jdbstatic.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,airav.io,🕹️ 影视刮削
+- DOMAIN-SUFFIX,tmdb.org,🕹️ 影视刮削
+- DOMAIN-SUFFIX,7mmtv.sx,🕹️ 影视刮削
+- DOMAIN-SUFFIX,fanart.tv,🕹️ 影视刮削
+- DOMAIN-SUFFIX,avbase.net,🕹️ 影视刮削
+- DOMAIN-SUFFIX,madou.club,🕹️ 影视刮削
+- DOMAIN-SUFFIX,fc2hub.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,javdb.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,jav321.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,javbus.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,madouqu.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,mgstage.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,thetvdb.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,themoviedb.org,🕹️ 影视刮削
+- DOMAIN-SUFFIX,theporndb.net,🕹️ 影视刮削
+- DOMAIN-SUFFIX,fc2ppvdb.com,🕹️ 影视刮削
+- DOMAIN-SUFFIX,freejavbt.com,🕹️ 影视刮削
+
+# 规则集
+- RULE-SET,AI,🤖 人工智能
+- RULE-SET,Apple,🍎 苹果服务
+- RULE-SET,Google,🐶 谷歌服务
+- RULE-SET,YouTube,📹 油管视频
+- RULE-SET,Onedrive,🌩️ 国外网盘
+- RULE-SET,Telegram,📲 电报服务
+- RULE-SET,GoogleFCM,🐶 谷歌服务
+- RULE-SET,Microsoft,Ⓜ️ 微软服务
+- RULE-SET,GitHub,✨ 节点选择
+# GEO
+- GEOIP,cn,DIRECT
+- GEOSITE,cn,DIRECT
+# Match
+- MATCH,🐋 漏网之鱼
+
+# 策略组
+proxy-groups:
+# 选择节点
+- name: ✨ 节点选择
+  type: select
+  proxies:
+    - ⚙️ 延迟选优
+    - ✈️ 自选节点
+    - 🇭🇰 香港
+    - 🇨🇳 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - DIRECT
+
+- name: ⚙️ 延迟选优
+  type: url-test
+  use:
+    - 机场
+  url: https://www.gstatic.com/generate_204
+  interval: 1800
+  tolerance: 50
+  lazy: false
+  filter: "香港"
+
+# 分流节点
+- name: 🤖 人工智能
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ⚙️ 延迟选优
+    - ✈️ 自选节点
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - 🇭🇰 香港
+
+- name: 📲 电报服务
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ⚙️ 延迟选优
+    - ✈️ 自选节点
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - 🇭🇰 香港
+
+- name: 🐶 谷歌服务
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ⚙️ 延迟选优
+    - ✈️ 自选节点
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - 🇭🇰 香港
+
+- name: Ⓜ️ 微软服务
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ✈️ 自选节点
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - 🇭🇰 香港
+    - DIRECT
+
+- name: 📹 油管视频
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ⚙️ 延迟选优
+    - ✈️ 自选节点
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - 🇭🇰 香港
+
+- name: 🌩️ 国外网盘
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ⚙️ 延迟选优
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - DIRECT
+
+- name: 🍎 苹果服务
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ✨ 节点选择
+    - ⚙️ 延迟选优
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - ✈️ 自选节点
+    - DIRECT
+
+- name: 🕹️ 影视刮削
+  type: load-balance
+  use:
+    - 机场
+  url: http://www.apple.com/library/test/success.html
+  interval: 300
+  strategy: round-robin
+  filter: "港|台|新|狮"
+
+- name: 🐋 漏网之鱼
+  type: select
+  proxies:
+    - ✨ 节点选择
+    - ⚙️ 延迟选优
+    - ✈️ 自选节点
+    - 🇭🇰 香港
+    - 🇹🇼 台湾
+    - 🇸🇬 新加坡
+    - 🇯🇵 日本
+    - 🇺🇸 美国
+    - DIRECT
+
+# 机场分组（配合‘节点选择’和‘漏网之鱼’使用）
+- name: ✈️ 自选节点
+  type: select
+  use:
+    - 机场
+  url: http://www.apple.com/library/test/success.html
+  interval: 1800
+  tolerance: 50
+  lazy: true
+
+# 地区分组
+- name: 🇭🇰 香港
+  type: url-test
+  use:
+    - 机场
+  url: http://www.apple.com/library/test/success.html
+  interval: 1800
+  tolerance: 50
+  filter: "港|Hongkong"
+
+- name: 🇹🇼 台湾
+  type: url-test
+  use:
+    - 机场
+  url: http://www.apple.com/library/test/success.html
+  interval: 1800
+  tolerance: 50
+  filter: "台湾|Taiwan"
+
+- name: 🇸🇬 新加坡
+  type: url-test
+  use:
+    - 机场
+  url: http://www.apple.com/library/test/success.html
+  interval: 1800
+  tolerance: 50
+  filter: "新加坡|狮|Singapore"
+
+# 负载均衡
+- name: 🇯🇵 日本 
+  type: load-balance
+  use:
+    - 机场
+  url: http://www.apple.com/library/test/success.html
+  interval: 300
+  strategy: round-robin
+  filter: "日|Japan"
+
+- name: 🇺🇸 美国
+  type: url-test
+  use:
+    - 机场
+  url: http://www.apple.com/library/test/success.html
+  interval: 1800
+  tolerance: 50
+  filter: "美|States"
+
+
+# 策略组（规则集）
+rule-providers:
+  BiliBili:
+    type: http
+    behavior: classical
+    path: ./ruleset/BiliBili.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.yaml
+    interval: 86400
+
+  YouTube:
+    type: http
+    behavior: classical
+    path: ./ruleset/YouTube.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube.yaml
+    interval: 86400
+  
+  AI:
+    type: http
+    behavior: classical
+    path: ./ruleset/AI.yaml
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml
+    interval: 86400
+
+  GitHub:
+    type: http
+    behavior: classical
+    path: ./ruleset/GitHub.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml
+    interval: 86400
+
+  Apple:
+    type: http
+    behavior: classical
+    path: ./ruleset/Apple.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple.yaml
+    interval: 86400
+
+  GoogleFCM:
+    type: http
+    behavior: classical
+    path: ./ruleset/GoogleFCM.yaml
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GoogleFCM/GoogleFCM.yaml
+    interval: 86400
+
+  Google:
+    type: http
+    behavior: classical
+    path: ./ruleset/Google.yaml
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.yaml
+    interval: 86400
+
+  Onedrive:
+    type: http
+    behavior: classical
+    path: ./ruleset/Onedrive.yaml
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OneDrive/OneDrive.yaml
+    interval: 86400
+
+  Microsoft:
+    type: http
+    behavior: classical
+    path: ./ruleset/Microsoft.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml
+    interval: 86400
+
+  DMM:
+    type: http
+    behavior: classical
+    path: ./ruleset/DMM.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/DMM/DMM.yaml
+    interval: 86400
+
+  Telegram:
+    type: http
+    behavior: classical
+    path: ./ruleset/Telegram.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml
+    interval: 86400
+
+
+
