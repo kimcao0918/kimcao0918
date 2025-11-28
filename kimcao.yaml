@@ -3,8 +3,8 @@
 # 跑裸核用户请自行去掉下方控制面板模块的注释。
 # 机场订阅
 proxy-providers:
-   微斯人:
-    url: "https://junnanliangnv.egfu.cn/tlralg/oahrettss/ecywtwcaaasr?token=e2e4c0ba14bda4cf09249e968b906ba2"
+   萌新云:
+    url: "https://a.mxdingyue.top/link/27pBdMiyzCdQudCU?sub=3"
     type: http
     interval: 86400
     health-check:
@@ -127,16 +127,16 @@ proxy-groups:
   - {name: 📺 影视刮削, type: select, proxies: [ 直连,🇰🇷 韩国节点,  ♻️ 香港自动]}
   - {name: 🔞 日亚刮削, type: select, include-all: true, filter: "(?i)日|jp|japan"}
   - {name: AVBase-自动优选, type: url-test, include-all: true, tolerance: 50, interval: 300, url: "https://www.avbase.net/", filter: "(?i)^(?!.*(失效|直连|家宽)).*(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
-  - {name: 📹 YouTube, type: select, proxies: [♻️ 美国自动, ♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
+  - {name: 📹 YouTube, type: load-balance, proxies: [♻️ 美国自动, ♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
   - {name: 🍀 Google, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
   - {name: 🤖 ChatGPT, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
   - {name: 👨🏿‍💻 GitHub, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
-  - {name: 🐬 OneDrive, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
-  - {name: 🪟 Microsoft, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
-  - {name: 🎵 TikTok, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
+#  - {name: 🐬 OneDrive, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
+#  - {name: 🪟 Microsoft, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
+#  - {name: 🎵 TikTok, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
   - {name: 📲 Telegram, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
   - {name: ✈️ Speedtest, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
-  - {name: 🍎 Apple, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
+#  - {name: 🍎 Apple, type: select, proxies: [♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
   - {name: 🐟 漏网之鱼, type: select, proxies: [🚀 默认代理, ♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🇰🇷 韩国节点, 🌐 全部节点, 直连]}
   - {name: 🇭🇰 香港节点, type: select, include-all: true, filter: "(?i)港|hk|hongkong|hong kong"}
   - {name: 🇰🇷 韩国节点, type: select, include-all: true, filter: "(?i)韩|Korea|kr"}
@@ -165,8 +165,6 @@ rules:
   - DOMAIN-KEYWORD,missav,🇭🇰 香港节点
   - DOMAIN-KEYWORD,sehuatang,🇭🇰 香港节点
   - DOMAIN-KEYWORD,sukebei,🇭🇰 香港节点
-  - DOMAIN-KEYWORD,amazon,🇯🇵 日本节点
-  - DOMAIN-KEYWORD,dmm,🇯🇵 日本节点
   - DOMAIN-KEYWORD,airav.io, 📺 影视刮削
   - DOMAIN-KEYWORD,jdbstatic, 📺 影视刮削
   - DOMAIN-KEYWORD,7mmtv, 📺 影视刮削
@@ -191,15 +189,44 @@ rules:
   - DOMAIN-KEYWORD,javlibrary, 📺 影视刮削
   - DOMAIN-KEYWORD,avbase, 📺 影视刮削
   - DOMAIN-KEYWORD,theporndb, 📺 影视刮削
-  - DOMAIN-KEYWORD,amazon,🇯🇵 日本节点
-  - DOMAIN-KEYWORD,hbox,🇯🇵 日本节点
-  - DOMAIN-KEYWORD,mgstage,🇯🇵 日本节点
-  - DOMAIN-KEYWORD,dmhy,🇯🇵 日本节点
-  - DOMAIN-KEYWORD,prestige-av,🇯🇵 日本节点
-  - DOMAIN-KEYWORD,fc2,🇯🇵 日本节点
-  - DOMAIN-KEYWORD,caribbeancom,🇯🇵 日本节点
+  - DOMAIN-KEYWORD,amazon,♻️ 日本自动
+  - DOMAIN-KEYWORD,hbox,♻️ 日本自动
+  - DOMAIN-KEYWORD,mgstage,♻️ 日本自动
+  - DOMAIN-KEYWORD,dmm,♻️ 日本自动
+  - DOMAIN-KEYWORD,prestige-av,♻️ 日本自动
+  - DOMAIN-KEYWORD,fc2,♻️ 日本自动
+  - DOMAIN-KEYWORD,caribbeancom,♻️ 日本自动
   - RULE-SET,speedtest_domain,✈️ Speedtest
+  - RULE-SET,github_domain,👨🏿‍💻 GitHub
+  - RULE-SET,youtube_domain,📹 YouTube
+  - RULE-SET,google_domain,🍀 Google
+  - RULE-SET,onedrive_domain,🐬 OneDrive
+  - RULE-SET,microsoft_domain,🪟 Microsoft
+  - RULE-SET,apple_domain,直连
+  - RULE-SET,tiktok_domain,🎵 TikTok
+  - RULE-SET,telegram_domain,📲 Telegram
+ # - RULE-SET,netflix_domain,🎥 NETFLIX
+ # - RULE-SET,paypal_domain,💶 PayPal
+  - RULE-SET,apple_ip,直连,no-resolve
+  - RULE-SET,google_ip,🍀 Google,no-resolve
+ # - RULE-SET,netflix_ip,🎥 NETFLIX,no-resolve
+  - RULE-SET,telegram_ip,📲 Telegram,no-resolve
+  - RULE-SET,geolocation-!cn,🚀 默认代理
+  - RULE-SET,bank_domain,直连
+  - RULE-SET,WeChat_Blackmatrix7,直连
+  - RULE-SET,douyin_domain_Blackmatrix7,直连
+  - RULE-SET,XiaoMi_Blackmatrix7,直连
+  - RULE-SET,Tencent_Blackmatrix7,直连
+  - RULE-SET,bilibili_domain,直连
+  - RULE-SET,bilibili_Blackmatrix7,直连
+  - RULE-SET,iqiyi_domain,直连
+  - RULE-SET,iqiyi_Blackmatrix7,直连
+  - RULE-SET,private_domain, 直连
+  - RULE-SET,PrivateTracker_Blackmatrix7,直连
+  - RULE-SET,cn_domain,直连
   - RULE-SET,proxylite,🚀 默认代理
+  - RULE-SET,ChinaMax_domain_Blackmatrix7,直连
+  - RULE-SET,ChinaIPs_Blackmatrix7,直连,no-resolve
   - RULE-SET,cn_ip,直连
   - MATCH,🐟 漏网之鱼
 
