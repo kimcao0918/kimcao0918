@@ -128,14 +128,14 @@ proxy-groups:
 - name:  节点选择
   type: select
   proxies:
-    -  延迟选优
-    -  负载均衡
-    -  香港
+    - 延迟选优
+    - 负载均衡
+    - 香港
     - 台湾
     - 新加坡
     - 日本
-    -  美国
-    -  韩国   
+    - 美国
+    - 韩国   
     - DIRECT  
   icon: https://raw.githubusercontent.com/kimcao0918/Qureicon/refs/heads/master/IconSet/Color/Rocket.png
  
@@ -169,9 +169,9 @@ proxy-groups:
 - name:  AVBase
   type: load-balance
   proxies:
-    -  香港
-    -  台湾
-    -  新加坡
+    - 香港
+    - 台湾
+    - 新加坡
     - 日本
     - 美国
   url: https://www.avbase.net
@@ -187,12 +187,12 @@ proxy-groups:
 - name:  人工智能
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
     - 日本
     - 美国
     - 香港
@@ -201,93 +201,93 @@ proxy-groups:
 - name:  电报服务
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
-    -  日本
-    -  美国
-    -  香港
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
+    - 日本
+    - 美国
+    - 香港
   icon: https://raw.githubusercontent.com/kimcao0918/Qureicon/refs/heads/master/IconSet/Color/Telegram.png
  
 - name:  谷歌服务
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
-    -  日本
-    -  美国
-    -  香港
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
+    - 日本
+    - 美国
+    - 香港
   icon: https://raw.githubusercontent.com/kimcao0918/Qureicon/refs/heads/master/IconSet/Color/Google_Search.png
  
 - name:  微软服务
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
-    -  日本
-    -  美国
-    -  香港
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
+    - 日本
+    - 美国
+    - 香港
     - DIRECT
   icon: https://raw.githubusercontent.com/kimcao0918/icon/refs/heads/main/svg/Microsoft.svg
  
 - name:  油管视频
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
-    -  日本
-    -  美国
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
+    - 日本
+    - 美国
   icon: https://raw.githubusercontent.com/kimcao0918/Qureicon/refs/heads/master/IconSet/Color/YouTube.png
  
 - name:  国外网盘
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
-    -  日本
-    -  美国
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
+    - 日本
+    - 美国
     - DIRECT
   icon: https://raw.githubusercontent.com/kimcao0918/Qureicon/refs/heads/master/IconSet/Color/OneDrive.png
  
 - name:  苹果服务
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
-    -  日本
-    -  美国
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
+    - 日本
+    - 美国
     - DIRECT
   icon: https://raw.githubusercontent.com/kimcao0918/Qureicon/refs/heads/master/IconSet/Color/Apple_1.png
  
 - name:  影视刮削
   type: load-balance
   proxies:
-    -  香港
-    -  台湾
-    -  新加坡
+    - 香港
+    - 台湾
+    - 新加坡
     - DIRECT
   url: https://www.apple.com/library/test/success.html
   interval: 300
@@ -298,14 +298,14 @@ proxy-groups:
 - name:  漏网之鱼
   type: select
   proxies:
-    -  节点选择
-    -  延迟选优
-    -  负载均衡
-    -  香港
-    -  台湾
-    -  新加坡
-    -  日本
-    -  美国
+    - 节点选择
+    - 延迟选优
+    - 负载均衡
+    - 香港
+    - 台湾
+    - 新加坡
+    - 日本
+    - 美国
     - DIRECT
   icon: https://raw.githubusercontent.com/kimcao0918/Qureicon/refs/heads/master/IconSet/Final.png
  
