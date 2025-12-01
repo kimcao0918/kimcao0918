@@ -4,7 +4,7 @@
 # 机场订阅
 proxy-providers:
    萌新云:
-    url: "https://a.mxdingyue.top/link/27pBdMiyzCdQudCU?sub=3"
+    url: "订阅节点1"
     type: http
     interval: 3600
     health-check:
@@ -14,7 +14,7 @@ proxy-providers:
     proxy: 直连
 
    良心云:
-    url: "https://liangxin.xyz/api/v1/liangxin?OwO=597b9510c949a36b6f7ada45bf258447"
+    url: "订阅节点2"
     type: http
     interval: 3600
     health-check:
@@ -24,7 +24,7 @@ proxy-providers:
     proxy:  延迟选优
 
    Kit:
-    url: "https://1.suika.ru/oosaka/894211db8c1d10bdb61761ff92cd6f1a"
+    url: "订阅节点3"
     type: http
     interval: 3600
     health-check:
