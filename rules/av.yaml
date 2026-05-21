@@ -1,0 +1,34 @@
+payload:
+  # 日本资源站
+  - DOMAIN-SUFFIX,amazon.co.jp
+  - DOMAIN-SUFFIX,dmm.co.jp
+  - DOMAIN-SUFFIX,fc2.com
+  - DOMAIN-SUFFIX,hbox.jp
+  - DOMAIN-SUFFIX,caribbeancom.com
+  - DOMAIN-SUFFIX,airav.io
+  - DOMAIN-SUFFIX,mgstage.com
+
+  # AV / 元数据
+  - DOMAIN-SUFFIX,avbase.net
+  - DOMAIN-SUFFIX,javdb.com
+  - DOMAIN-SUFFIX,freejavbt.com
+  - DOMAIN-SUFFIX,jdbstatic.com
+  - DOMAIN-SUFFIX,tmdb.org
+  - DOMAIN-SUFFIX,thetvdb.com
+  - DOMAIN-SUFFIX,themoviedb.org
+  - DOMAIN-SUFFIX,theporndb.net
+  - DOMAIN-SUFFIX,fanart.tv
+  - DOMAIN-SUFFIX,7mmtv.sx
+  - DOMAIN-SUFFIX,madou.club
+  - DOMAIN-SUFFIX,madouqu.com
+  - DOMAIN-SUFFIX,fc2hub.com
+  - DOMAIN-SUFFIX,fc2ppvdb.com
+  - DOMAIN-SUFFIX,jav321.com
+  - DOMAIN-SUFFIX,javbus.com
+
+  # keyword
+  - DOMAIN-KEYWORD,javbus
+  - DOMAIN-KEYWORD,missav
+  - DOMAIN-KEYWORD,olemovienews
+  - DOMAIN-KEYWORD,tenhow
+  - DOMAIN-KEYWORD,dmhy
