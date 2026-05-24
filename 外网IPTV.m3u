@@ -2,7 +2,7 @@
 #EXT-X-APP APTV
 #EXT-X-APTV-TYPE local
 
-#EXTINF:-1 tvg-id="1" tvg-name="CCTV-1" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV1.png" group-title="央视",CCTV-1 综合
+#EXTINF:-1 tvg-id="1" tvg-name="CCTV-1" tvg-logo="https://raw.githubusercontent.com/CCSH/IPTV/refs/heads/main/logo/CCTV1.png" group-title="央视",CCTV-1 综合
 http://192.168.2.8:5588/rtp/239.255.30.101:8231
 #EXTINF:-1 tvg-id="2" tvg-name="CCTV-2" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV2.png" group-title="央视",CCTV-2 财经
 http://192.168.2.8:5588/rtp/239.255.30.179:8231
@@ -116,8 +116,22 @@ http://192.168.2.8:5588/rtp/239.255.29.2:8231
 http://192.168.2.8:5588/rtp/239.255.29.75:8231
 #EXTINF:-1 tvg-id="42" tvg-name="甘肃卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/gansu.png" group-title="卫视",甘肃卫视
 http://192.168.2.8:5588/rtp/239.255.30.249:8231
-#EXTINF:-1 tvg-id="42" tvg-name="青海卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/qinhai.png" group-title="卫视",青海卫视
+#EXTINF:-1 tvg-id="59" tvg-name="青海卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/qinhai.png" group-title="卫视",青海卫视
 http://192.168.2.8:5588/rtp/239.255.29.73:8231
+#EXTINF:-1 tvg-name="甘肃卫视高清" tvg-logo="https://live.fanmingming.com/tv/.png" group-title="卫视",甘肃卫视高清
+rtp://239.255.30.249:8231
+#EXTINF:-1 tvg-name="文化影视高清" tvg-logo="https://live.fanmingming.com/tv/.png" group-title="卫视",文化影视高清
+rtp://239.255.30.250:8231
+#EXTINF:-1 tvg-name="公共应急高清" tvg-logo="https://live.fanmingming.com/tv/.png" group-title="卫视",公共应急高清
+rtp://239.255.30.251:8231
+#EXTINF:-1 tvg-name="甘肃科教高清" tvg-logo="https://live.fanmingming.com/tv/.png" group-title="卫视",甘肃科教高清
+rtp://239.255.30.252:8231
+#EXTINF:-1 tvg-name="甘肃少儿高清" tvg-logo="https://live.fanmingming.com/tv/.png" group-title="卫视",甘肃少儿高清
+rtp://239.255.30.254:8231
+#EXTINF:-1 tvg-name="兰州文旅频道" tvg-logo="https://live.fanmingming.com/tv/.png" group-title="卫视",兰州文旅频道
+rtp://239.255.30.108:8231
+#EXTINF:-1 tvg-name="兰州新闻频道" tvg-logo="https://live.fanmingming.com/tv/.png" group-title="卫视",兰州新闻频道
+rtp://239.255.30.107:8231
 #EXTINF:-1 group-title="未分类",欢笑剧场4K
 http://192.168.2.8:5588/rtp/239.255.29.7:8231
 #EXTINF:-1 group-title="未分类",测试4K
