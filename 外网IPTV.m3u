@@ -107,7 +107,7 @@ http://192.168.2.8:5588/rtp/239.255.29.4:8231
 #EXTINF:-1 tvg-id="51" tvg-name="吉林卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/jilin.png" group-title="卫视",吉林卫视
 http://192.168.2.8:5588/rtp/239.255.29.5:8231
 #EXTINF:-1 tvg-id="53" tvg-name="宁夏卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/ningxia.png" group-title="卫视",宁夏卫视
-http://192.168.2.8:5588/rtp/239.255.30.48:8231
+http://192.168.2.8:5588/rtp/239.255.29.69:8231
 #EXTINF:-1 tvg-id="54" tvg-name="山西卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/shanxi_.png" group-title="卫视",山西卫视
 http://192.168.2.8:5588/rtp/239.255.30.19:8231
 #EXTINF:-1 tvg-id="58" tvg-name="云南卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/yunnan.png" group-title="卫视",云南卫视
