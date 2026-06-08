@@ -1,6 +1,4 @@
 payload:
-  # 内容：Olevod
-  # 数量：10条
   - DOMAIN-KEYWORD,olevod
   - DOMAIN-SUFFIX,haiwaikan.com
   - DOMAIN-SUFFIX,iole.tv
