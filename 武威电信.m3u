@@ -15,6 +15,9 @@ http://192.168.2.8:5588/rtp/239.255.30.83:8231
 
 #EXTINF:-1 tvg-name="CCTV5" tvg-logo="https://raw.githubusercontent.com/CCSH/IPTV/main/logo/CCTV5.png" group-title="央视",CCTV5
 http://192.168.2.8:5588/rtp/239.255.29.13:8231
+#EXTINF:-1 tvg-name="CCTV5" tvg-logo="https://raw.githubusercontent.com/CCSH/IPTV/main/logo/CCTV5.png" group-title="央视",CCTV5
+http://192.168.2.216:38766/cctv5.m3u8
+
 
 #EXTINF:-1 tvg-name="CCTV5+" tvg-logo="https://raw.githubusercontent.com/CCSH/IPTV/main/logo/CCTV5+.png" group-title="央视",CCTV5+
 http://192.168.2.8:5588/rtp/239.255.30.184:8231
