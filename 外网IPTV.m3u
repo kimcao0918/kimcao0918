@@ -38,7 +38,7 @@ http://192.168.2.8:5588/rtp/239.255.30.96:8231
 http://192.168.2.8:5588/rtp/239.255.30.184:8231
 #EXTINF:-1 tvg-id="7249" tvg-name="CCTV16" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV16.png" group-title="央视",CCTV-16 奥林匹克 4K
 http://192.168.2.8:5588/rtp/239.255.30.80:8231
-#EXTINF:-1 tvg-id="17" tvg-name="CCTV4K" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV4k.png" group-title="央视",CCTV-4K 超高清
+#EXTINF:-1 tvg-id="106" tvg-name="CCTV4K" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV4k.png" group-title="央视",CCTV-4K 超高清
 http://192.168.2.8:5588/rtp/239.255.29.54:8231
 #EXTINF:-1 tvg-id="19" tvg-name="CCTV8K" group-title="live",CCTV8K超高清
 https://tv.iill.top/4k/cctv8k
