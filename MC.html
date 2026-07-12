@@ -1,23 +1,9 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-
-    <!-- 手机自适应 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-    <!-- iPhone 添加到主屏幕后全屏运行 -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="门窗计算">
-
-    <!-- Android / PWA -->
-    <meta name="theme-color" content="#4CAF50">
-
-    <!-- 图标 -->
-    <link rel="apple-touch-icon" href="icon-180.png">
-    <link rel="icon" type="image/png" href="icon-180.png">
-
     <title>门窗玻璃计算器</title>
-
     <style>
         :root { --bg-color: #f0f2f5; --card-bg: #ffffff; --text-main: #333; --accent: #4CAF50; --input-bg: #f8f8f8; }
         @media (prefers-color-scheme: dark) {
@@ -40,3 +26,92 @@
         .hidden { display: none; }
     </style>
 </head>
+<body>
+
+<div class="container">
+    <h1>门窗下料算料助手</h1>
+    <div class="mode-select">
+        <button id="btn4" class="active" onclick="switchMode(4)">4 块模式</button>
+        <button id="btn3" onclick="switchMode(3)">3 块模式</button>
+    </div>
+    <div class="input-group">
+        <div class="input-box"><label>窗总宽</label><input type="number" id="winW" onclick="this.value=''" oninput="calc()"></div>
+        <div class="input-box"><label>窗总高</label><input type="number" id="winH" onclick="this.value=''" oninput="calc()"></div>
+        <div class="input-box"><label>扇子宽</label><input type="number" id="fanW" onclick="this.value=''" oninput="calc()"></div>
+        <div class="input-box"><label>扇子高</label><input type="number" id="fanH" onclick="this.value=''" oninput="calc()"></div>
+    </div>
+    <table>
+        <tbody id="resultTable">
+            <tr><td>下固定玻璃</td><td id="g1">-</td></tr>
+            <tr id="rowBright"><td id="label2">上亮固定玻璃</td><td id="g2">-</td></tr>
+            <tr id="rowBrightFan"><td>上亮扇固定玻璃</td><td id="g3">-</td></tr>
+            <tr><td>扇子玻璃</td><td id="g4">-</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 数据存储：两个模式的数据分开存储
+    let data = {
+        4: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 },
+        3: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 }
+    };
+    let currentMode = 4;
+
+    function switchMode(m) {
+        // 保存当前输入数据到内存
+        saveCurrentData();
+        currentMode = m;
+        // 界面切换
+        document.getElementById('btn4').className = (m === 4 ? 'active' : '');
+        document.getElementById('btn3').className = (m === 3 ? 'active' : '');
+        document.getElementById('rowBright').className = (m === 3 ? '' : '');
+        document.getElementById('rowBrightFan').className = (m === 3 ? 'hidden' : '');
+        document.getElementById('label2').innerText = (m === 3 ? "上亮玻璃" : "上亮固定玻璃");
+        // 加载新模式的数据并重算
+        loadDataToInputs();
+        calc();
+    }
+
+    function saveCurrentData() {
+        data[currentMode] = {
+            winW: document.getElementById('winW').value,
+            winH: document.getElementById('winH').value,
+            fanW: document.getElementById('fanW').value,
+            fanH: document.getElementById('fanH').value
+        };
+    }
+
+    function loadDataToInputs() {
+        document.getElementById('winW').value = data[currentMode].winW;
+        document.getElementById('winH').value = data[currentMode].winH;
+        document.getElementById('fanW').value = data[currentMode].fanW;
+        document.getElementById('fanH').value = data[currentMode].fanH;
+    }
+
+    function calc() {
+        saveCurrentData();
+        const W = parseFloat(data[currentMode].winW) || 0;
+        const H = parseFloat(data[currentMode].winH) || 0;
+        const FW = parseFloat(data[currentMode].fanW) || 0;
+        const FH = parseFloat(data[currentMode].fanH) || 0;
+
+        const gW = W - 100 - FW - 29 - 10;
+        const gH = H - 100 - FH - 29 - 10;
+
+        document.getElementById('g1').innerText = Math.round(gW) + " × " + Math.round(FH - 10);
+        document.getElementById('g4').innerText = Math.round(FW - 93) + " × " + Math.round(FH - 92);
+
+        if (currentMode === 4) {
+            document.getElementById('g2').innerText = Math.round(gW) + " × " + Math.round(gH);
+            document.getElementById('g3').innerText = Math.round(FW - 10) + " × " + Math.round(gH);
+        } else {
+            document.getElementById('g2').innerText = Math.round(W - 100 - 10) + " × " + Math.round(gH);
+        }
+    }
+    loadDataToInputs();
+    calc();
+</script>
+</body>
+</html>
+
