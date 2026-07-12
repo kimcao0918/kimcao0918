@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>门窗玻璃计算器</title>
+    
+    <!-- 全屏应用模式控制：添加至主屏幕后隐藏地址栏与导航栏 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="门窗助手">
+    
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="icon-180.png">
     <style>
@@ -113,7 +120,7 @@
         document.getElementById('g1').innerText = Math.round(gW) + " × " + Math.round(FH - 10);
         document.getElementById('g4').innerText = Math.round(FW - 93) + " × " + Math.round(FH - 92);
         
-        // 已修改：将纱窗的高度计算放在了前面 (FH - 45)，宽度放在了后面 (FW - 45)
+        // 纱窗计算：高度在前方
         document.getElementById('gScreen').innerText = Math.round(FH - 45) + " × " + Math.round(FW - 45);
 
         if (currentMode === 4) {
