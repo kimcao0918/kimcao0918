@@ -21,11 +21,23 @@
         .input-box { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
         .input-box label { display: block; font-size: 0.9rem; color: #888; margin-bottom: 8px; font-weight: bold; }
         .input-box input { width: 90%; padding: 12px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 1.4rem; font-weight: 800; border-radius: 8px; text-align: center; }
+        
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
         td { background: var(--card-bg); padding: 20px; text-align: center; font-size: 1.3rem; font-weight: 800; border: 1px solid rgba(0,0,0,0.1); }
         td:first-child { border-radius: 12px 0 0 12px; color: var(--accent); width: 45%; font-size: 1rem; }
         td:last-child { border-radius: 0 12px 12px 0; }
         .hidden { display: none; }
+        
+        /* 纱窗行样式：字号稍小，斜体加粗 */
+        .screen-row td { 
+            padding: 15px; 
+            font-size: 1.1rem; 
+            font-weight: 800; 
+            font-style: italic;
+        }
+        .screen-row td:first-child { 
+            color: #ff9800; 
+        } 
     </style>
 </head>
 <body>
@@ -37,8 +49,8 @@
         <button id="btn3" onclick="switchMode(3)">3 块模式</button>
     </div>
     <div class="input-group">
-        <div class="input-box"><label>窗总宽</label><input type="number" id="winW" onclick="this.value=''" oninput="calc()"></div>
         <div class="input-box"><label>窗总高</label><input type="number" id="winH" onclick="this.value=''" oninput="calc()"></div>
+        <div class="input-box"><label>窗总宽</label><input type="number" id="winW" onclick="this.value=''" oninput="calc()"></div>
         <div class="input-box"><label>扇子宽</label><input type="number" id="fanW" onclick="this.value=''" oninput="calc()"></div>
         <div class="input-box"><label>扇子高</label><input type="number" id="fanH" onclick="this.value=''" oninput="calc()"></div>
     </div>
@@ -48,12 +60,12 @@
             <tr id="rowBright"><td id="label2">上亮固定玻璃</td><td id="g2">-</td></tr>
             <tr id="rowBrightFan"><td>上亮扇固定玻璃</td><td id="g3">-</td></tr>
             <tr><td>扇子玻璃</td><td id="g4">-</td></tr>
+            <tr class="screen-row"><td>纱窗尺寸</td><td id="gScreen">-</td></tr>
         </tbody>
     </table>
 </div>
 
 <script>
-    // 数据存储：两个模式的数据分开存储
     let data = {
         4: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 },
         3: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 }
@@ -61,16 +73,13 @@
     let currentMode = 4;
 
     function switchMode(m) {
-        // 保存当前输入数据到内存
         saveCurrentData();
         currentMode = m;
-        // 界面切换
         document.getElementById('btn4').className = (m === 4 ? 'active' : '');
         document.getElementById('btn3').className = (m === 3 ? 'active' : '');
         document.getElementById('rowBright').className = (m === 3 ? '' : '');
         document.getElementById('rowBrightFan').className = (m === 3 ? 'hidden' : '');
         document.getElementById('label2').innerText = (m === 3 ? "上亮玻璃" : "上亮固定玻璃");
-        // 加载新模式的数据并重算
         loadDataToInputs();
         calc();
     }
@@ -103,6 +112,9 @@
 
         document.getElementById('g1').innerText = Math.round(gW) + " × " + Math.round(FH - 10);
         document.getElementById('g4').innerText = Math.round(FW - 93) + " × " + Math.round(FH - 92);
+        
+        // 已修改：将纱窗的高度计算放在了前面 (FH - 45)，宽度放在了后面 (FW - 45)
+        document.getElementById('gScreen').innerText = Math.round(FH - 45) + " × " + Math.round(FW - 45);
 
         if (currentMode === 4) {
             document.getElementById('g2').innerText = Math.round(gW) + " × " + Math.round(gH);
@@ -116,4 +128,3 @@
 </script>
 </body>
 </html>
-
