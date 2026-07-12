@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>门窗玻璃计算器</title>
     
-    <!-- 全屏应用模式控制：添加至主屏幕后隐藏地址栏与导航栏 -->
+    <!-- 1. 传统全屏控制标签 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="门窗助手">
     
+    <!-- 2. 最新标准：直接内置 Web App 清单，强制以完全独立的无边框应用（standalone）模式运行 -->
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22short_name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f0f2f5%22}">
+
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="icon-180.png">
     <style>
@@ -78,6 +81,9 @@
         3: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 }
     };
     let currentMode = 4;
+
+    // 自动清除由于全屏切换或历史残留导致的滚动条现象
+    window.addEventListener('load', () => { window.scrollTo(0, 0); });
 
     function switchMode(m) {
         saveCurrentData();
