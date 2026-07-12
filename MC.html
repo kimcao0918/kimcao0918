@@ -2,17 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>门窗玻璃计算器</title>
     
-    <!-- 1. 苹果老款全屏标签 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="门窗助手">
     
-    <!-- 2. 精准匹配你 GitHub 路径的 Web App 清单 -->
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22short_name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22start_url%22:%22https://kimcao0918.github.io/kimcao0918/MC.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f0f2f5%22}">
 
     <link rel="icon" href="favicon.ico" sizes="any">
@@ -22,7 +20,15 @@
         @media (prefers-color-scheme: dark) {
             :root { --bg-color: #121212; --card-bg: #1e1e1e; --text-main: #fff; --accent: #66bb6a; --input-bg: #2d2d2d; }
         }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; user-select: none; }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            margin: 0; 
+            /* 核心修改：动态避开刘海/灵动岛，并额外向下垫高 15px 确保居中好看 */
+            padding: calc(15px + env(safe-area-inset-top)) 20px 20px 20px; 
+            user-select: none; 
+        }
         .container { max-width: 100%; margin: auto; }
         h1 { text-align: center; font-size: 1.5rem; color: var(--accent); margin-bottom: 20px; }
         .mode-select { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -83,7 +89,12 @@
     };
     let currentMode = 4;
 
-    // 【核心修复】强制阻止独立运行模式下，任何点击导致 Safari 重新调出系统状态栏和地址栏的行为
+    document.addEventListener('touchstart', function() {
+        if (!window.navigator.standalone) {
+            window.scrollTo(0, 1);
+        }
+    }, {passive: true});
+
     if (("standalone" in window.navigator) && window.navigator.standalone) {
         document.addEventListener('click', function(e) {
             let element = e.target;
@@ -97,7 +108,7 @@
         }, false);
     }
 
-    window.addEventListener('load', () => { window.scrollTo(0, 0); });
+    window.addEventListener('load', () => { setTimeout(() => window.scrollTo(0, 1), 100); });
 
     function switchMode(m) {
         saveCurrentData();
@@ -140,7 +151,6 @@
         document.getElementById('g1').innerText = Math.round(gW) + " × " + Math.round(FH - 10);
         document.getElementById('g4').innerText = Math.round(FW - 93) + " × " + Math.round(FH - 92);
         
-        // 纱窗计算：高度在前方
         document.getElementById('gScreen').innerText = Math.round(FH - 45) + " × " + Math.round(FW - 45);
 
         if (currentMode === 4) {
