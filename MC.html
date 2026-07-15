@@ -21,7 +21,7 @@
             :root { --bg-color: #121212; --card-bg: #1e1e1e; --text-main: #fff; --accent: #66bb6a; --input-bg: #2d2d2d; }
         }
         body { 
-            font-family: -apple-system, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-main); 
             margin: 0; 
@@ -29,23 +29,95 @@
             user-select: none; 
         }
         .container { max-width: 100%; margin: auto; }
-        h1 { text-align: center; font-size: 1.5rem; color: var(--accent); margin-bottom: 20px; }
-        .mode-select { display: flex; gap: 8px; margin-bottom: 20px; }
-        .mode-select button { flex: 1; padding: 12px 5px; border: none; border-radius: 8px; font-weight: bold; background: #ddd; color: #333; font-size: 0.9rem; }
-        .mode-select button.active { background: var(--accent); color: white; }
         
+        /* 标题样式回归 */
+        h1 { text-align: center; font-size: 1.5rem; color: var(--accent); margin: 0 0 20px 0; font-weight: 800; }
+        
+        /* 第一行并排结构 */
+        .top-row {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; 
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .select-box {
+            background: var(--card-bg);
+            padding: 10px 12px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .select-box label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .select-box select {
+            width: 100%;
+            padding: 10px 25px 10px 10px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            background-color: var(--input-bg);
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            text-align: center;
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+        }
+
+        .num-box {
+            background: #eef9ee; 
+            border: 1px dashed var(--accent);
+            padding: 10px 12px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .num-box label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .num-box input {
+            width: 100%;
+            padding: 8px 0;
+            border: none;
+            background: transparent;
+            color: var(--text-main);
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* 基础尺寸输入网格 */
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .input-box { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
-        .input-box.full-width { grid-column: span 2; } 
+        .input-box { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .input-box label { display: block; font-size: 0.9rem; color: #888; margin-bottom: 8px; font-weight: bold; }
         .input-box input { width: 90%; padding: 12px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 1.4rem; font-weight: 800; border-radius: 8px; text-align: center; }
         
+        /* 结果展示表格 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; table-layout: fixed; }
-        td { background: var(--card-bg); padding: 15px 10px; border: 1px solid rgba(0,0,0,0.1); vertical-align: middle; }
+        td { background: var(--card-bg); padding: 15px 10px; border: 1px solid rgba(0,0,0,0.1); vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
         td:first-child { 
             border-radius: 12px 0 0 12px; 
             color: var(--accent); 
-            width: 33%; /* 稍微缩小左侧，给右侧腾出空间 */
+            width: 33%; 
             font-size: 0.95rem; 
             font-weight: 800;
             text-align: center; 
@@ -56,70 +128,100 @@
             width: 67%;
         }
         
-        /* 核心修改：防折行、防溢出排版 */
+        /* 完全居中与强制极粗字体设置 */
         .result-cell {
+            position: relative;
+            width: 100%;
+            height: 24px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: center;
         }
         .size-val {
-            flex-grow: 1;
+            font-size: 1.35rem; 
+            white-space: nowrap;
             text-align: center;
-            font-weight: 800;
-            font-size: 1.2rem; /* 稍微调小字号，确保不溢出 */
-            white-space: nowrap; /* 强制单行显示，禁止换行 */
-            overflow: hidden;
-            text-overflow: ellipsis;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%); 
+        }
+        .size-val b {
+            font-weight: 900 !important; /* 双重强制极粗 */
         }
         .count-val {
             font-size: 0.95rem;
             font-weight: 800;
             color: #666;
-            min-width: 48px;
-            text-align: right;
-            white-space: nowrap; /* 数量也禁止换行 */
+            position: absolute;
+            right: 10px; 
+            white-space: nowrap;
         }
         @media (prefers-color-scheme: dark) {
             .count-val { color: #aaa; }
         }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         
-        /* 纱窗行样式 */
+        /* 纱窗专属颜色 */
         .screen-row td:first-child { 
             color: #ff9800; 
         } 
-        .screen-row .result-cell {
+        .screen-row .size-val b {
             font-style: italic;
-        }
-        .screen-row .count-val {
-            font-style: normal;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    
+    <!-- 加回的大标题 -->
     <h1>门窗下料算料助手</h1>
-    <div class="mode-select">
-        <button id="btn4" class="active" onclick="switchMode(4)">4 块模式</button>
-        <button id="btn3" onclick="switchMode(3)">3 块模式</button>
-        <button id="btnDouble" onclick="switchMode('double')">双扇模式</button>
+    
+    <!-- 第一行：左边选择模式，右边输入数量 -->
+    <div class="top-row">
+        <div class="select-box">
+            <label for="modeDropdown">计算模式</label>
+            <select id="modeDropdown" onchange="switchMode(this.value)">
+                <option value="4" selected>4 块模式</option>
+                <option value="3">3 块模式</option>
+                <option value="double">双扇模式</option>
+            </select>
+        </div>
+        <div class="num-box">
+            <label>数量 (套)</label>
+            <input type="number" id="winNum" value="1" onclick="this.value=''" oninput="calc()">
+        </div>
     </div>
+    
+    <!-- 第二行及以下：基础尺寸输入框 -->
     <div class="input-group">
-        <div class="input-box full-width" style="background: #eef9ee; border: 1px dashed var(--accent);"><label style="color: var(--accent);">窗户数量 (套)</label><input type="number" id="winNum" value="1" onclick="this.value=''" oninput="calc()"></div>
-        <div class="input-box"><label>窗总高</label><input type="number" id="winH" onclick="this.value=''" oninput="calc()"></div>
-        <div class="input-box"><label>窗总宽</label><input type="number" id="winW" onclick="this.value=''" oninput="calc()"></div>
-        <div class="input-box"><label>扇子宽</label><input type="number" id="fanW" onclick="this.value=''" oninput="calc()"></div>
-        <div class="input-box"><label>扇子高</label><input type="number" id="fanH" onclick="this.value=''" oninput="calc()"></div>
+        <div class="input-box">
+            <label>窗总高</label>
+            <input type="number" id="winH" onclick="this.value=''" oninput="calc()">
+        </div>
+        <div class="input-box">
+            <label>窗总宽</label>
+            <input type="number" id="winW" onclick="this.value=''" oninput="calc()">
+        </div>
+        <div class="input-box">
+            <label>扇子宽</label>
+            <input type="number" id="fanW" onclick="this.value=''" oninput="calc()">
+        </div>
+        <div class="input-box">
+            <label>扇子高</label>
+            <input type="number" id="fanH" onclick="this.value=''" oninput="calc()">
+        </div>
     </div>
+    
+    <!-- 计算结果表格 -->
     <table>
         <tbody id="resultTable">
-            <tr><td id="label1">下固定玻璃</td><td><div class="result-cell"><span id="g1_size">-</span><span id="g1_count" class="count-val"></span></div></td></tr>
+            <tr id="rowG1"><td id="label1">下固定玻璃</td><td><div class="result-cell"><span id="g1_size">-</span><span id="g1_count" class="count-val"></span></div></td></tr>
             <tr id="rowBright"><td id="label2">上亮固定玻璃</td><td><div class="result-cell"><span id="g2_size">-</span><span id="g2_count" class="count-val"></span></div></td></tr>
             <tr id="rowBrightFan"><td>上亮扇固定玻璃</td><td><div class="result-cell"><span id="g3_size">-</span><span id="g3_count" class="count-val"></span></div></td></tr>
-            <tr><td id="label4">扇子玻璃</td><td><div class="result-cell"><span id="g4_size">-</span><span id="g4_count" class="count-val"></span></div></td></tr>
-            <tr class="screen-row"><td id="labelScreen">纱窗尺寸</td><td><div class="result-cell"><span id="gScreen_size">-</span><span id="gScreen_count" class="count-val"></span></div></td></tr>
+            <tr id="rowG4"><td id="label4">扇子玻璃</td><td><div class="result-cell"><span id="g4_size">-</span><span id="g4_count" class="count-val"></span></div></td></tr>
+            <tr id="rowScreen" class="screen-row"><td id="labelScreen">纱窗尺寸</td><td><div class="result-cell"><span id="gScreen_size">-</span><span id="gScreen_count" class="count-val"></span></div></td></tr>
         </tbody>
     </table>
 </div>
@@ -138,50 +240,28 @@
         }
     }, {passive: true});
 
-    if (("standalone" in window.navigator) && window.navigator.standalone) {
-        document.addEventListener('click', function(e) {
-            let element = e.target;
-            while (element && element.tagName !== 'A') {
-                element = element.parentNode;
-            }
-            if (element && element.tagName === 'A' && element.hasAttribute('href')) {
-                e.preventDefault();
-                window.location.href = element.getAttribute('href');
-            }
-        }, false);
-    }
-
-    window.addEventListener('load', () => { setTimeout(() => window.scrollTo(0, 1), 100); });
-
-    function switchMode(m) {
+    function switchMode(val) {
         saveCurrentData();
-        currentMode = m;
+        currentMode = (val === '3' || val === '4') ? parseInt(val) : val;
         
-        document.getElementById('btn4').className = (m === 4 ? 'active' : '');
-        document.getElementById('btn3').className = (m === 3 ? 'active' : '');
-        document.getElementById('btnDouble').className = (m === 'double' ? 'active' : '');
-        
-        if (m === 'double') {
+        if (currentMode === 'double') {
             document.getElementById('rowBright').className = '';
             document.getElementById('rowBrightFan').className = 'hidden'; 
             document.getElementById('label1').innerText = "下中间玻璃";
             document.getElementById('label2').innerText = "上亮玻璃";
             document.getElementById('label4').innerText = "扇子玻璃";
-            document.getElementById('labelScreen').innerText = "纱窗尺寸";
-        } else if (m === 3) {
+        } else if (currentMode === 3) {
             document.getElementById('rowBright').className = '';
             document.getElementById('rowBrightFan').className = 'hidden';
             document.getElementById('label1').innerText = "下固定玻璃";
             document.getElementById('label2').innerText = "上亮玻璃";
             document.getElementById('label4').innerText = "扇子玻璃";
-            document.getElementById('labelScreen').innerText = "纱窗尺寸";
         } else {
             document.getElementById('rowBright').className = '';
             document.getElementById('rowBrightFan').className = '';
             document.getElementById('label1').innerText = "下固定玻璃";
             document.getElementById('label2').innerText = "上亮固定玻璃";
             document.getElementById('label4').innerText = "扇子玻璃";
-            document.getElementById('labelScreen').innerText = "纱窗尺寸";
         }
         
         loadDataToInputs();
@@ -209,14 +289,8 @@
     function showResult(id, sizeStr, countVal, unit) {
         const sizeEl = document.getElementById(id + '_size');
         const countEl = document.getElementById(id + '_count');
-        
-        if (sizeEl) {
-            sizeEl.className = 'size-val';
-            sizeEl.innerText = sizeStr;
-        }
-        if (countEl) {
-            countEl.innerText = "*" + countVal + unit;
-        }
+        if (sizeEl) sizeEl.innerHTML = "<b>" + sizeStr + "</b>"; // 强行包裹 <b> 标签
+        if (countEl) countEl.innerText = "*" + countVal + unit;
     }
 
     function calc() {
@@ -230,7 +304,6 @@
         const gW = W - 100 - FW - 29 - 10;
         const gH = H - 100 - FH - 29 - 10;
 
-        // 去掉了乘号两边的空格，让其更紧凑，避免折行
         if (currentMode === 'double') {
             const doubleUpW = ((W - 100 - 29) / 2) - 10;
             showResult('g2', Math.round(doubleUpW) + "×" + Math.round(gH), num * 2, '块');
@@ -240,7 +313,6 @@
             
             showResult('g4', Math.round(FW - 93) + "×" + Math.round(FH - 92), num * 2, '块');
             showResult('gScreen', Math.round(FH - 45) + "×" + Math.round(FW - 45), num * 2, '个');
-
         } else {
             showResult('g1', Math.round(gW) + "×" + Math.round(FH - 10), num * 1, '块');
             showResult('g4', Math.round(FW - 93) + "×" + Math.round(FH - 92), num * 1, '块');
@@ -254,8 +326,11 @@
             }
         }
     }
-    loadDataToInputs();
-    calc();
+    
+    window.onload = function() {
+        loadDataToInputs();
+        calc();
+    };
 </script>
 </body>
 </html>
