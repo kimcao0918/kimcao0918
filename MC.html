@@ -306,23 +306,59 @@
         'double': { winW: 2040, winH: 1800, fanW: 540, fanH: 1160, winNum: 1 }
     };
     let currentMode = 4;
+    let audioCtx = null;
 
     document.addEventListener('touchstart', function() {
         if (!window.navigator.standalone) {
             window.scrollTo(0, 1);
         }
+        // 初始化 iOS 辅助触感音频环境
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
     }, {passive: true});
 
-    // 触发轻微震动反馈
-    function triggerHaptic(ms) {
+    // 双保险震动反馈函数
+    function triggerHaptic(type) {
+        // 1. 标准震动（主要针对Android设备或已加主屏的iOS特定环境）
         if (navigator.vibrate) {
-            navigator.vibrate(ms);
+            if (type === 'light') navigator.vibrate(12);
+            else if (type === 'medium') navigator.vibrate(25);
+        }
+        
+        // 2. iOS 专属模拟触感（利用极致短促的超低频音频触发Taptic Engine物理共振）
+        if (audioCtx) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                
+                if (type === 'light') {
+                    osc.frequency.setValueAtTime(60, audioCtx.currentTime); // 低频
+                    gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.015);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.015);
+                } else {
+                    osc.frequency.setValueAtTime(80, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(1.0, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.025);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.025);
+                }
+            } catch(e) {}
         }
     }
 
-    // 输入框点击处理：清空+微震
     function handleInputClick(inputEl) {
-        triggerHaptic(10); // 10毫秒微震
+        triggerHaptic('light'); // 输入框微触感
         inputEl.value = '';
     }
 
@@ -381,7 +417,7 @@
     }
 
     function switchMode(val) {
-        triggerHaptic(15); // 切换模式时短震反馈
+        triggerHaptic('medium'); // 切换模式较明显的触感
         saveCurrentData();
         currentMode = (val === '3' || val === '4') ? parseInt(val) : val;
         
