@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="门窗助手">
     
@@ -30,14 +31,12 @@
         }
         .container { max-width: 100%; margin: auto; }
         
-        /* 标题样式回归 */
-        h1 { text-align: center; font-size: 1.5rem; color: var(--accent); margin: 0 0 20px 0; font-weight: 800; }
+        h1 { text-align: center; font-size: 1.5rem; color: var(--accent); margin: 0 0 15px 0; font-weight: 800; }
         
-        /* 第一行并排结构 */
         .top-row {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr; 
-            gap: 15px;
+            grid-template-columns: 1.3fr 0.7fr; 
+            gap: 12px;
             margin-bottom: 15px;
         }
         .select-box {
@@ -59,7 +58,7 @@
         .select-box select {
             width: 100%;
             padding: 10px 25px 10px 10px;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: var(--text-main);
             background-color: var(--input-bg);
@@ -105,19 +104,91 @@
             box-sizing: border-box;
         }
 
-        /* 基础尺寸输入网格 */
+        .diagram-container {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .diagram-wrapper {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .svg-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .svg-canvas rect {
+            fill: rgba(76, 175, 80, 0.02);
+            stroke: var(--text-main);
+            stroke-width: 2;
+        }
+        .svg-canvas line {
+            stroke: var(--text-main);
+            stroke-width: 2;
+        }
+        .svg-canvas polyline {
+            fill: none;
+            stroke: var(--text-main);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .area-display-box {
+            width: 100%;
+            border-top: 1px dashed rgba(0,0,0,0.08);
+            padding-top: 10px;
+            text-align: center;
+        }
+        @media (prefers-color-scheme: dark) {
+            .area-display-box { border-top-color: rgba(255,255,255,0.08); }
+        }
+        .area-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #2196F3;
+            margin-bottom: 3px;
+        }
+        .area-val-wrapper {
+            display: inline-flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+        .area-num {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+        .area-unit {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #666;
+            margin-left: 4px;
+        }
+
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .input-box { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .input-box label { display: block; font-size: 0.9rem; color: #888; margin-bottom: 8px; font-weight: bold; }
         .input-box input { width: 90%; padding: 12px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 1.4rem; font-weight: 800; border-radius: 8px; text-align: center; }
         
-        /* 结果展示表格 */
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; table-layout: fixed; }
         td { background: var(--card-bg); padding: 15px 10px; border: 1px solid rgba(0,0,0,0.1); vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
         td:first-child { 
             border-radius: 12px 0 0 12px; 
             color: var(--accent); 
-            width: 33%; 
+            width: 35%; 
             font-size: 0.95rem; 
             font-weight: 800;
             text-align: center; 
@@ -125,10 +196,9 @@
         }
         td:last-child { 
             border-radius: 0 12px 12px 0; 
-            width: 67%;
+            width: 65%;
         }
         
-        /* 完全居中与强制极粗字体设置 */
         .result-cell {
             position: relative;
             width: 100%;
@@ -146,7 +216,7 @@
             transform: translateX(-50%); 
         }
         .size-val b {
-            font-weight: 900 !important; /* 双重强制极粗 */
+            font-weight: 900 !important; 
         }
         .count-val {
             font-size: 0.95rem;
@@ -161,60 +231,62 @@
         }
 
         .hidden { display: none !important; }
-        
-        /* 纱窗专属颜色 */
-        .screen-row td:first-child { 
-            color: #ff9800; 
-        } 
-        .screen-row .size-val b {
-            font-style: italic;
-        }
+        .screen-row td:first-child { color: #ff9800; } 
+        .screen-row .size-val b { font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="container">
     
-    <!-- 加回的大标题 -->
     <h1>门窗下料算料助手</h1>
     
-    <!-- 第一行：左边选择模式，右边输入数量 -->
     <div class="top-row">
         <div class="select-box">
             <label for="modeDropdown">计算模式</label>
             <select id="modeDropdown" onchange="switchMode(this.value)">
-                <option value="4" selected>4 块模式</option>
-                <option value="3">3 块模式</option>
-                <option value="double">双扇模式</option>
+                <option value="4" selected>4块 (左右分格+上亮)</option>
+                <option value="3">3块 (右开扇+通头顶上亮)</option>
+                <option value="tonggao">3块 (左通高大玻璃+右开扇)</option>
+                <option value="double">双扇 (两边开扇+中间固定)</option>
             </select>
         </div>
         <div class="num-box">
             <label>数量 (套)</label>
-            <input type="number" id="winNum" value="1" onclick="this.value=''" oninput="calc()">
+            <input type="number" id="winNum" value="1" onclick="handleInputClick(this)" oninput="calc()">
         </div>
     </div>
     
-    <!-- 第二行及以下：基础尺寸输入框 -->
+    <div class="diagram-container">
+        <div class="diagram-wrapper" id="diagramWrapper"></div>
+        <div class="area-display-box">
+            <div class="area-title">窗户总面积</div>
+            <div class="area-val-wrapper">
+                <span id="areaNum" class="area-num">-</span>
+                <span id="areaUnit" class="area-unit"></span>
+            </div>
+        </div>
+    </div>
+    
     <div class="input-group">
         <div class="input-box">
             <label>窗总高</label>
-            <input type="number" id="winH" onclick="this.value=''" oninput="calc()">
+            <input type="number" id="winH" onclick="handleInputClick(this)" oninput="calc()">
         </div>
         <div class="input-box">
             <label>窗总宽</label>
-            <input type="number" id="winW" onclick="this.value=''" oninput="calc()">
+            <input type="number" id="winW" onclick="handleInputClick(this)" oninput="calc()">
         </div>
         <div class="input-box">
             <label>扇子宽</label>
-            <input type="number" id="fanW" onclick="this.value=''" oninput="calc()">
+            <input type="number" id="fanW" onclick="handleInputClick(this)" oninput="calc()">
         </div>
         <div class="input-box">
             <label>扇子高</label>
-            <input type="number" id="fanH" onclick="this.value=''" oninput="calc()">
+            <input type="number" id="fanH" onclick="handleInputClick(this)" oninput="calc()">
         </div>
     </div>
     
-    <!-- 计算结果表格 -->
     <table>
         <tbody id="resultTable">
             <tr id="rowG1"><td id="label1">下固定玻璃</td><td><div class="result-cell"><span id="g1_size">-</span><span id="g1_count" class="count-val"></span></div></td></tr>
@@ -230,6 +302,7 @@
     let data = {
         4: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160, winNum: 1 },
         3: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160, winNum: 1 },
+        'tonggao': { winW: 1800, winH: 1800, fanW: 540, fanH: 1160, winNum: 1 },
         'double': { winW: 2040, winH: 1800, fanW: 540, fanH: 1160, winNum: 1 }
     };
     let currentMode = 4;
@@ -240,15 +313,91 @@
         }
     }, {passive: true});
 
+    // 触发轻微震动反馈
+    function triggerHaptic(ms) {
+        if (navigator.vibrate) {
+            navigator.vibrate(ms);
+        }
+    }
+
+    // 输入框点击处理：清空+微震
+    function handleInputClick(inputEl) {
+        triggerHaptic(10); // 10毫秒微震
+        inputEl.value = '';
+    }
+
+    function drawDiagram(mode) {
+        const wrapper = document.getElementById('diagramWrapper');
+        wrapper.innerHTML = ''; 
+        
+        if (mode === 4) {
+            wrapper.style.width = "120px";
+            wrapper.style.height = "120px";
+            wrapper.innerHTML = `
+                <svg class="svg-canvas" viewBox="0 0 120 120">
+                    <rect x="1" y="1" width="118" height="118" />
+                    <line x1="0" y1="40" x2="120" y2="40" />
+                    <line x1="80" y1="0" x2="80" y2="120" />
+                    <polyline points="110,62 93,80 110,98" />
+                </svg>
+            `;
+        } else if (mode === 3) {
+            wrapper.style.width = "120px";
+            wrapper.style.height = "120px";
+            wrapper.innerHTML = `
+                <svg class="svg-canvas" viewBox="0 0 120 120">
+                    <rect x="1" y="1" width="118" height="118" />
+                    <line x1="0" y1="40" x2="120" y2="40" />
+                    <line x1="80" y1="40" x2="80" y2="120" />
+                    <polyline points="110,62 93,80 110,98" />
+                </svg>
+            `;
+        } else if (mode === 'tonggao') {
+            wrapper.style.width = "120px";
+            wrapper.style.height = "120px";
+            wrapper.innerHTML = `
+                <svg class="svg-canvas" viewBox="0 0 120 120">
+                    <rect x="1" y="1" width="118" height="118" />
+                    <line x1="80" y1="0" x2="80" y2="120" />
+                    <line x1="80" y1="40" x2="120" y2="40" />
+                    <polyline points="110,62 93,80 110,98" />
+                </svg>
+            `;
+        } else if (mode === 'double') {
+            wrapper.style.width = "164px";
+            wrapper.style.height = "120px";
+            wrapper.innerHTML = `
+                <svg class="svg-canvas" viewBox="0 0 164 120">
+                    <rect x="1" y="1" width="162" height="118" />
+                    <line x1="0" y1="40" x2="164" y2="40" />
+                    <line x1="82" y1="0" x2="82" y2="40" />
+                    <line x1="38" y1="40" x2="38" y2="120" />
+                    <line x1="126" y1="40" x2="126" y2="120" />
+                    <polyline points="9,62 26,80 9,98" />
+                    <polyline points="155,62 138,80 155,98" />
+                </svg>
+            `;
+        }
+    }
+
     function switchMode(val) {
+        triggerHaptic(15); // 切换模式时短震反馈
         saveCurrentData();
         currentMode = (val === '3' || val === '4') ? parseInt(val) : val;
+        
+        drawDiagram(currentMode);
         
         if (currentMode === 'double') {
             document.getElementById('rowBright').className = '';
             document.getElementById('rowBrightFan').className = 'hidden'; 
             document.getElementById('label1').innerText = "下中间玻璃";
             document.getElementById('label2').innerText = "上亮玻璃";
+            document.getElementById('label4').innerText = "扇子玻璃";
+        } else if (currentMode === 'tonggao') {
+            document.getElementById('rowBright').className = '';
+            document.getElementById('rowBrightFan').className = 'hidden';
+            document.getElementById('label1').innerText = "通高大玻璃";
+            document.getElementById('label2').innerText = "右侧上亮玻璃";
             document.getElementById('label4').innerText = "扇子玻璃";
         } else if (currentMode === 3) {
             document.getElementById('rowBright').className = '';
@@ -289,7 +438,7 @@
     function showResult(id, sizeStr, countVal, unit) {
         const sizeEl = document.getElementById(id + '_size');
         const countEl = document.getElementById(id + '_count');
-        if (sizeEl) sizeEl.innerHTML = "<b>" + sizeStr + "</b>"; // 强行包裹 <b> 标签
+        if (sizeEl) sizeEl.innerHTML = "<b>" + sizeStr + "</b>"; 
         if (countEl) countEl.innerText = "*" + countVal + unit;
     }
 
@@ -300,6 +449,10 @@
         const FW = parseFloat(data[currentMode].fanW) || 0;
         const FH = parseFloat(data[currentMode].fanH) || 0;
         const num = parseInt(data[currentMode].winNum) || 1;
+
+        const totalArea = ((W * H) / 1000000).toFixed(2);
+        document.getElementById('areaNum').innerText = totalArea;
+        document.getElementById('areaUnit').innerText = "m² (共 " + num + " 套)";
 
         const gW = W - 100 - FW - 29 - 10;
         const gH = H - 100 - FH - 29 - 10;
@@ -313,6 +466,11 @@
             
             showResult('g4', Math.round(FW - 93) + "×" + Math.round(FH - 92), num * 2, '块');
             showResult('gScreen', Math.round(FH - 45) + "×" + Math.round(FW - 45), num * 2, '个');
+        } else if (currentMode === 'tonggao') {
+            showResult('g1', Math.round(gW) + "×" + Math.round(H - 100 - 10), num * 1, '块');
+            showResult('g2', Math.round(FW - 10) + "×" + Math.round(gH), num * 1, '块');
+            showResult('g4', Math.round(FW - 93) + "×" + Math.round(FH - 92), num * 1, '块');
+            showResult('gScreen', Math.round(FH - 45) + "×" + Math.round(FW - 45), num * 1, '个');
         } else {
             showResult('g1', Math.round(gW) + "×" + Math.round(FH - 10), num * 1, '块');
             showResult('g4', Math.round(FW - 93) + "×" + Math.round(FH - 92), num * 1, '块');
@@ -328,6 +486,7 @@
     }
     
     window.onload = function() {
+        drawDiagram(currentMode); 
         loadDataToInputs();
         calc();
     };
