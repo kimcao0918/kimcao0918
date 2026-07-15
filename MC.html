@@ -25,14 +25,13 @@
             background-color: var(--bg-color); 
             color: var(--text-main); 
             margin: 0; 
-            /* 核心修改：动态避开刘海/灵动岛，并额外向下垫高 15px 确保居中好看 */
             padding: calc(15px + env(safe-area-inset-top)) 20px 20px 20px; 
             user-select: none; 
         }
         .container { max-width: 100%; margin: auto; }
         h1 { text-align: center; font-size: 1.5rem; color: var(--accent); margin-bottom: 20px; }
-        .mode-select { display: flex; gap: 10px; margin-bottom: 20px; }
-        .mode-select button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; background: #ddd; color: #333; }
+        .mode-select { display: flex; gap: 8px; margin-bottom: 20px; }
+        .mode-select button { flex: 1; padding: 12px 5px; border: none; border-radius: 8px; font-weight: bold; background: #ddd; color: #333; font-size: 0.9rem; }
         .mode-select button.active { background: var(--accent); color: white; }
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .input-box { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; }
@@ -64,6 +63,7 @@
     <div class="mode-select">
         <button id="btn4" class="active" onclick="switchMode(4)">4 块模式</button>
         <button id="btn3" onclick="switchMode(3)">3 块模式</button>
+        <button id="btnDouble" onclick="switchMode('double')">双扇模式</button>
     </div>
     <div class="input-group">
         <div class="input-box"><label>窗总高</label><input type="number" id="winH" onclick="this.value=''" oninput="calc()"></div>
@@ -73,11 +73,11 @@
     </div>
     <table>
         <tbody id="resultTable">
-            <tr><td>下固定玻璃</td><td id="g1">-</td></tr>
+            <tr><td id="label1">下固定玻璃</td><td id="g1">-</td></tr>
             <tr id="rowBright"><td id="label2">上亮固定玻璃</td><td id="g2">-</td></tr>
             <tr id="rowBrightFan"><td>上亮扇固定玻璃</td><td id="g3">-</td></tr>
-            <tr><td>扇子玻璃</td><td id="g4">-</td></tr>
-            <tr class="screen-row"><td>纱窗尺寸</td><td id="gScreen">-</td></tr>
+            <tr><td id="label4">扇子玻璃</td><td id="g4">-</td></tr>
+            <tr class="screen-row"><td id="labelScreen">纱窗尺寸</td><td id="gScreen">-</td></tr>
         </tbody>
     </table>
 </div>
@@ -85,7 +85,8 @@
 <script>
     let data = {
         4: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 },
-        3: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 }
+        3: { winW: 1800, winH: 1800, fanW: 540, fanH: 1160 },
+        'double': { winW: 2040, winH: 1800, fanW: 540, fanH: 1160 }
     };
     let currentMode = 4;
 
@@ -113,11 +114,36 @@
     function switchMode(m) {
         saveCurrentData();
         currentMode = m;
+        
+        // 激活按钮样式
         document.getElementById('btn4').className = (m === 4 ? 'active' : '');
         document.getElementById('btn3').className = (m === 3 ? 'active' : '');
-        document.getElementById('rowBright').className = (m === 3 ? '' : '');
-        document.getElementById('rowBrightFan').className = (m === 3 ? 'hidden' : '');
-        document.getElementById('label2').innerText = (m === 3 ? "上亮玻璃" : "上亮固定玻璃");
+        document.getElementById('btnDouble').className = (m === 'double' ? 'active' : '');
+        
+        // 动态显示行和标签文字
+        if (m === 'double') {
+            document.getElementById('rowBright').className = '';
+            document.getElementById('rowBrightFan').className = 'hidden'; 
+            document.getElementById('label1').innerText = "下中间玻璃 (1块)";
+            document.getElementById('label2').innerText = "上亮玻璃 (2块)";
+            document.getElementById('label4').innerText = "扇子玻璃 (2块)";
+            document.getElementById('labelScreen').innerText = "纱窗尺寸 (2块)";
+        } else if (m === 3) {
+            document.getElementById('rowBright').className = '';
+            document.getElementById('rowBrightFan').className = 'hidden';
+            document.getElementById('label1').innerText = "下固定玻璃";
+            document.getElementById('label2').innerText = "上亮玻璃";
+            document.getElementById('label4').innerText = "扇子玻璃";
+            document.getElementById('labelScreen').innerText = "纱窗尺寸";
+        } else {
+            document.getElementById('rowBright').className = '';
+            document.getElementById('rowBrightFan').className = '';
+            document.getElementById('label1').innerText = "下固定玻璃";
+            document.getElementById('label2').innerText = "上亮固定玻璃";
+            document.getElementById('label4').innerText = "扇子玻璃";
+            document.getElementById('labelScreen').innerText = "纱窗尺寸";
+        }
+        
         loadDataToInputs();
         calc();
     }
@@ -148,16 +174,34 @@
         const gW = W - 100 - FW - 29 - 10;
         const gH = H - 100 - FH - 29 - 10;
 
-        document.getElementById('g1').innerText = Math.round(gW) + " × " + Math.round(FH - 10);
-        document.getElementById('g4').innerText = Math.round(FW - 93) + " × " + Math.round(FH - 92);
-        
-        document.getElementById('gScreen').innerText = Math.round(FH - 45) + " × " + Math.round(FW - 45);
+        if (currentMode === 'double') {
+            // 【精准修正】：((W - 100 - 29) / 2) - 10
+            // 2040 带入算出来正好是 945.5，四舍五入取整为 946 
+            const doubleUpW = ((W - 100 - 29) / 2) - 10;
+            document.getElementById('g2').innerText = Math.round(doubleUpW) + " × " + Math.round(gH);
 
-        if (currentMode === 4) {
-            document.getElementById('g2').innerText = Math.round(gW) + " × " + Math.round(gH);
-            document.getElementById('g3').innerText = Math.round(FW - 10) + " × " + Math.round(gH);
+            // 下中间玻璃计算
+            const doubleMidW = W - 100 - (2 * FW) - 29 - 29 - 10;
+            document.getElementById('g1').innerText = Math.round(doubleMidW) + " × " + Math.round(FH - 10);
+            
+            // 扇子玻璃
+            document.getElementById('g4').innerText = Math.round(FW - 93) + " × " + Math.round(FH - 92);
+            
+            // 纱窗尺寸
+            document.getElementById('gScreen').innerText = Math.round(FH - 45) + " × " + Math.round(FW - 45);
+
         } else {
-            document.getElementById('g2').innerText = Math.round(W - 100 - 10) + " × " + Math.round(gH);
+            // 传统 3块/4块 模式计算逻辑
+            document.getElementById('g1').innerText = Math.round(gW) + " × " + Math.round(FH - 10);
+            document.getElementById('g4').innerText = Math.round(FW - 93) + " × " + Math.round(FH - 92);
+            document.getElementById('gScreen').innerText = Math.round(FH - 45) + " × " + Math.round(FW - 45);
+
+            if (currentMode === 4) {
+                document.getElementById('g2').innerText = Math.round(gW) + " × " + Math.round(gH);
+                document.getElementById('g3').innerText = Math.round(FW - 10) + " × " + Math.round(gH);
+            } else {
+                document.getElementById('g2').innerText = Math.round(W - 100 - 10) + " × " + Math.round(gH);
+            }
         }
     }
     loadDataToInputs();
