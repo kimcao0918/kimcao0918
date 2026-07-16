@@ -242,6 +242,19 @@
             }
         }
 
+        .area-info-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .area-info-item {
+            text-align: center;
+            min-width: 0;
+        }
+
         .area-title {
             font-size: 0.85rem;
             font-weight: bold;
@@ -266,6 +279,87 @@
             font-weight: 800;
             color: #666;
             margin-left: 4px;
+        }
+
+        .perimeter-display {
+            display: none;
+        }
+
+        .perimeter-display.show {
+            display: block;
+        }
+
+        .perimeter-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ff9800;
+            margin-bottom: 3px;
+        }
+
+        .perimeter-num {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        .perimeter-unit {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #666;
+            margin-left: 4px;
+        }
+
+        .ios-switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 25px;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        .ios-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .ios-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #d1d1d6;
+            border-radius: 25px;
+            transition: 0.25s ease;
+        }
+
+        .ios-slider:before {
+            content: "";
+            position: absolute;
+            height: 21px;
+            width: 21px;
+            left: 2px;
+            top: 2px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+            transition: 0.25s ease;
+        }
+
+        .ios-switch input:checked + .ios-slider {
+            background-color: #34c759;
+        }
+
+        .ios-switch input:checked + .ios-slider:before {
+            transform: translateX(17px);
+        }
+
+        .perimeter-switch-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ff9800;
+            margin-bottom: 3px;
+            white-space: nowrap;
         }
 
         .input-group {
@@ -423,11 +517,37 @@
         <div class="diagram-wrapper" id="diagramWrapper"></div>
 
         <div class="area-display-box">
-            <div class="area-title">窗户总面积</div>
 
-            <div class="area-val-wrapper">
-                <span id="areaNum" class="area-num">-</span>
-                <span id="areaUnit" class="area-unit"></span>
+            <div class="area-info-row">
+
+                <div class="area-info-item">
+                    <div class="area-title">窗户总面积</div>
+
+                    <div class="area-val-wrapper">
+                        <span id="areaNum" class="area-num">-</span>
+                        <span id="areaUnit" class="area-unit"></span>
+                    </div>
+                </div>
+
+                <div class="area-info-item">
+
+                    <div class="perimeter-title">
+                        包边
+                        <label class="ios-switch">
+                            <input type="checkbox" id="perimeterToggle" onchange="togglePerimeter()">
+                            <span class="ios-slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="perimeterDisplay" class="perimeter-display">
+
+                        <span id="perimeterNum" class="perimeter-num">-</span>
+                        <span class="perimeter-unit">米</span>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
@@ -458,12 +578,12 @@
 
         <div class="input-box hidden" id="upperBrightBox">
             <label>上亮高度</label>
-            <input type="number" id="upperBright" onclick="clearInputOnClick(this)" oninput="balconyBrightInput('upper')">
+            <input type="number" id="upperBright" onclick="clearInputOnClick(this)" oninput="calc()">
         </div>
 
         <div class="input-box hidden" id="lowerBrightBox">
             <label>下亮高度</label>
-            <input type="number" id="lowerBright" onclick="clearInputOnClick(this)" oninput="balconyBrightInput('lower')">
+            <input type="number" id="lowerBright" onclick="clearInputOnClick(this)" oninput="calc()">
         </div>
 
     </div>
@@ -571,7 +691,6 @@
             fanH: 1200,
             upperBright: 721,
             lowerBright: 721,
-            brightMode: 'auto',
             winNum: 1
         }
 
@@ -579,7 +698,6 @@
 
     let currentMode = 4;
     let diagramCollapsed = false;
-    let balconyBrightMode = 'auto';
 
 
     document.addEventListener('touchstart', function () {
@@ -634,9 +752,23 @@
     }
 
 
-    function balconyBrightInput(type) {
+    function togglePerimeter() {
 
-        balconyBrightMode = type;
+        const toggle =
+            document.getElementById('perimeterToggle');
+
+        const display =
+            document.getElementById('perimeterDisplay');
+
+        if (toggle.checked) {
+
+            display.classList.add('show');
+
+        } else {
+
+            display.classList.remove('show');
+
+        }
 
         calc();
 
@@ -1268,9 +1400,6 @@
 
         if (currentMode === 'balcony') {
 
-            balconyBrightMode =
-                data[currentMode].brightMode || 'auto';
-
             upperBrightBox.classList.remove('hidden');
 
             lowerBrightBox.classList.remove('hidden');
@@ -1389,11 +1518,6 @@
 
             lowerBright: document.getElementById('lowerBright').value,
 
-            brightMode:
-                currentMode === 'balcony'
-                    ? balconyBrightMode
-                    : data[currentMode].brightMode,
-
             winNum: document.getElementById('winNum').value
 
         };
@@ -1423,13 +1547,6 @@
 
         document.getElementById('winNum').value =
             data[currentMode].winNum || 1;
-
-        if (currentMode === 'balcony') {
-
-            balconyBrightMode =
-                data[currentMode].brightMode || 'auto';
-
-        }
 
     }
 
@@ -1478,67 +1595,13 @@
         const num =
             parseInt(data[currentMode].winNum) || 1;
 
-        let upperBright =
+        const upperBright =
             parseFloat(data[currentMode].upperBright) || 0;
 
-        let lowerBright =
+        const lowerBright =
             parseFloat(data[currentMode].lowerBright) || 0;
 
-
-        if (currentMode === 'balcony') {
-
-            const totalBrightH =
-                H - 100 - FH - 29 - 29;
-
-
-            if (balconyBrightMode === 'upper') {
-
-                upperBright =
-                    Math.max(0, upperBright);
-
-                lowerBright =
-                    Math.max(0, totalBrightH - upperBright);
-
-            } else if (balconyBrightMode === 'lower') {
-
-                lowerBright =
-                    Math.max(0, lowerBright);
-
-                upperBright =
-                    Math.max(0, totalBrightH - lowerBright);
-
-            } else {
-
-                upperBright =
-                    totalBrightH / 2;
-
-                lowerBright =
-                    totalBrightH / 2;
-
-            }
-
-
-            data[currentMode].upperBright =
-                Math.round(upperBright);
-
-            data[currentMode].lowerBright =
-                Math.round(lowerBright);
-
-            data[currentMode].brightMode =
-                balconyBrightMode;
-
-
-            document.getElementById('upperBright').value =
-                Math.round(upperBright);
-
-            document.getElementById('lowerBright').value =
-                Math.round(lowerBright);
-
-        }
-
-
         drawDiagram();
-
 
         const totalArea =
             ((W * H * num) / 1000000).toFixed(2);
@@ -1549,6 +1612,11 @@
         document.getElementById('areaUnit').innerText =
             'm² (共 ' + num + ' 套)';
 
+        const perimeter =
+            (((H / 1000) + (W / 1000)) * 2 * num).toFixed(2);
+
+        document.getElementById('perimeterNum').innerText =
+            perimeter;
 
         const gW =
             W - 100 - FW - 29 - 10;
@@ -1568,33 +1636,29 @@
             const totalBrightH =
                 H - 100 - FH - 29 - 29;
 
-            let upperH =
-                upperBright;
+            let upperH = upperBright;
 
-            let lowerH =
-                lowerBright;
+            let lowerH = lowerBright;
 
+            if (upperH <= 0 && lowerH <= 0) {
 
-            if (balconyBrightMode === 'upper') {
+                upperH =
+                    totalBrightH / 2;
+
+                lowerH =
+                    totalBrightH / 2;
+
+            } else if (upperH > 0 && lowerH <= 0) {
 
                 lowerH =
                     totalBrightH - upperH;
 
-            } else if (balconyBrightMode === 'lower') {
+            } else if (lowerH > 0 && upperH <= 0) {
 
                 upperH =
                     totalBrightH - lowerH;
 
-            } else {
-
-                upperH =
-                    totalBrightH / 2;
-
-                lowerH =
-                    totalBrightH / 2;
-
             }
-
 
             showResult(
                 'g1',
