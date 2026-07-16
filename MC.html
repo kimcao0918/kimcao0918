@@ -1,1833 +1,952 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>门窗玻璃计算器</title>
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-touch-fullscreen" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="门窗助手">
-
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22short_name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22start_url%22:%22https://kimcao0918.github.io/kimcao0918/MC.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f0f2f5%22}">
-
-    <link rel="icon" href="favicon.ico" sizes="any">
-    <link rel="apple-touch-icon" href="icon-180.png">
-
-    <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-main: #333;
-            --accent: #4CAF50;
-            --input-bg: #f8f8f8;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #121212;
-                --card-bg: #1e1e1e;
-                --text-main: #fff;
-                --accent: #66bb6a;
-                --input-bg: #2d2d2d;
-            }
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: calc(15px + env(safe-area-inset-top)) 20px 20px 20px;
-            user-select: none;
-        }
-
-        .container {
-            max-width: 100%;
-            margin: auto;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            color: var(--accent);
-            margin: 0 0 15px 0;
-            font-weight: 800;
-        }
-
-        .top-row {
-            display: grid;
-            grid-template-columns: 1.3fr 0.7fr;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .select-box {
-            background: var(--card-bg);
-            padding: 10px 12px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .select-box label {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #888;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-
-        .select-box select {
-            width: 100%;
-            padding: 10px 25px 10px 10px;
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: var(--text-main);
-            background-color: var(--input-bg);
-            border: none;
-            border-radius: 8px;
-            outline: none;
-            text-align: center;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 16px;
-        }
-
-        .num-box {
-            background: #eef9ee;
-            border: 1px dashed var(--accent);
-            padding: 10px 12px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .num-box label {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--accent);
-            margin-bottom: 5px;
-            text-align: center;
-        }
-
-        .num-box input {
-            width: 100%;
-            padding: 8px 0;
-            border: none;
-            background: transparent;
-            color: var(--text-main);
-            font-size: 1.3rem;
-            font-weight: 800;
-            text-align: center;
-        }
-
-        .diagram-container {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .diagram-title-row {
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 3px;
-        }
-
-        .diagram-toggle {
-            border: 1px solid #cccccc;
-            background: var(--input-bg);
-            color: var(--text-main);
-            border-radius: 8px;
-            padding: 4px 12px;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-
-        .diagram-wrapper {
-            width: 220px;
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 12px;
-            overflow: visible;
-            transition: all 0.3s ease;
-        }
-
-        .diagram-wrapper.collapse {
-            height: 0;
-            margin-bottom: 0;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .svg-canvas {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
-
-        .svg-canvas rect {
-            fill: rgba(76, 175, 80, 0.02);
-            stroke: var(--text-main);
-            stroke-width: 2;
-        }
-
-        .svg-canvas line {
-            stroke: var(--text-main);
-            stroke-width: 2;
-        }
-
-        .svg-canvas polyline {
-            fill: none;
-            stroke: var(--text-main);
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .dimension-line {
-            stroke: var(--text-main);
-            stroke-width: 1.2;
-            fill: none;
-        }
-
-        .dimension-dash {
-            stroke: var(--text-main);
-            stroke-width: 1;
-            stroke-dasharray: 3 3;
-            fill: none;
-        }
-
-        .dimension-text {
-            fill: var(--text-main);
-            font-family: "Arial Narrow", "Roboto Condensed", Arial, sans-serif;
-            font-size: 8px;
-            font-weight: 400;
-            letter-spacing: -0.3px;
-            text-anchor: middle;
-            dominant-baseline: middle;
-        }
-
-        .area-display-box {
-            width: 100%;
-            border-top: 1px dashed rgba(0,0,0,0.08);
-            padding-top: 10px;
-            text-align: center;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .area-display-box {
-                border-top-color: rgba(255,255,255,0.08);
-            }
-        }
-
-        .area-info-row {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 18px;
-        }
-
-        .area-info-item {
-            text-align: center;
-            min-width: 0;
-        }
-
-        .area-title {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #2196F3;
-            margin-bottom: 3px;
-        }
-
-        .area-val-wrapper {
-            display: inline-flex;
-            align-items: baseline;
-            justify-content: center;
-        }
-
-        .area-num {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--text-main);
-        }
-
-        .area-unit {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: #666;
-            margin-left: 4px;
-        }
-
-        .perimeter-display {
-            display: none;
-        }
-
-        .perimeter-display.show {
-            display: block;
-        }
-
-        .perimeter-title {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #ff9800;
-            margin-bottom: 3px;
-        }
-
-        .perimeter-num {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--text-main);
-        }
-
-        .perimeter-unit {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: #666;
-            margin-left: 4px;
-        }
-
-        .ios-switch {
-            position: relative;
-            display: inline-block;
-            width: 42px;
-            height: 25px;
-            vertical-align: middle;
-            margin-left: 5px;
-        }
-
-        .ios-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .ios-slider {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background-color: #d1d1d6;
-            border-radius: 25px;
-            transition: 0.25s ease;
-        }
-
-        .ios-slider:before {
-            content: "";
-            position: absolute;
-            height: 21px;
-            width: 21px;
-            left: 2px;
-            top: 2px;
-            background-color: white;
-            border-radius: 50%;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-            transition: 0.25s ease;
-        }
-
-        .ios-switch input:checked + .ios-slider {
-            background-color: #34c759;
-        }
-
-        .ios-switch input:checked + .ios-slider:before {
-            transform: translateX(17px);
-        }
-
-        .perimeter-switch-title {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #ff9800;
-            margin-bottom: 3px;
-            white-space: nowrap;
-        }
-
-        .input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .input-box {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .input-box label {
-            display: block;
-            font-size: 0.9rem;
-            color: #888;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .input-box input {
-            width: 90%;
-            padding: 12px;
-            border: none;
-            background: var(--input-bg);
-            color: var(--text-main);
-            font-size: 1.4rem;
-            font-weight: 800;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-            table-layout: fixed;
-        }
-
-        td {
-            background: var(--card-bg);
-            padding: 15px 10px;
-            border: 1px solid rgba(0,0,0,0.1);
-            vertical-align: middle;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            position: relative;
-        }
-
-        td:first-child {
-            border-radius: 12px 0 0 12px;
-            color: var(--accent);
-            width: 35%;
-            font-size: 0.95rem;
-            font-weight: 800;
-            text-align: center;
-            word-break: break-all;
-        }
-
-        td:last-child {
-            border-radius: 0 12px 12px 0;
-            width: 65%;
-        }
-
-        .result-cell {
-            position: relative;
-            width: 100%;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .size-val {
-            font-size: 1.35rem;
-            white-space: nowrap;
-            text-align: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .size-val b {
-            font-weight: 900 !important;
-        }
-
-        .count-val {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: #666;
-            position: absolute;
-            right: 10px;
-            white-space: nowrap;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .count-val {
-                color: #aaa;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .screen-row td:first-child {
-            color: #ff9800;
-        }
-
-        .screen-row .size-val b {
-            font-style: italic;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>门窗玻璃计算器</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="门窗助手">
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22short_name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22start_url%22:%22https://kimcao0918.github.io/kimcao0918/MC.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f0f2f5%22}">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="icon-180.png">
+
+<style>
+:root{--bg-color:#f0f2f5;--card-bg:#fff;--text-main:#333;--accent:#4CAF50;--input-bg:#f8f8f8}
+@media(prefers-color-scheme:dark){:root{--bg-color:#121212;--card-bg:#1e1e1e;--text-main:#fff;--accent:#66bb6a;--input-bg:#2d2d2d}}
+*{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg-color);color:var(--text-main);margin:0;padding:calc(15px + env(safe-area-inset-top)) 20px 20px;user-select:none}
+.container{max-width:100%;margin:auto}
+h1{text-align:center;font-size:1.5rem;color:var(--accent);margin:0 0 15px;font-weight:800}
+.top-row{display:grid;grid-template-columns:1.3fr .7fr;gap:12px;margin-bottom:15px}
+.select-box,.num-box,.diagram-container,.input-box{background:var(--card-bg);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.select-box{padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
+.select-box label,.num-box label{font-size:.85rem;font-weight:bold;margin-bottom:5px;text-align:center}
+.select-box label{color:#888}
+.select-box select{width:100%;padding:10px 25px 10px 10px;font-size:.95rem;font-weight:800;color:var(--text-main);background:var(--input-bg);border:0;border-radius:8px;outline:0;text-align:center;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");background-repeat:no-repeat;background-position:right 8px center;background-size:16px}
+.num-box{background:#eef9ee;border:1px dashed var(--accent);padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
+.num-box label{color:var(--accent)}
+.num-box input{width:100%;padding:8px 0;border:0;background:transparent;color:var(--text-main);font-size:1.3rem;font-weight:800;text-align:center}
+
+.diagram-container{padding:15px;display:flex;flex-direction:column;align-items:center;margin-bottom:15px}
+.diagram-title-row{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.diagram-toggle{border:1px solid #ccc;background:var(--input-bg);color:var(--text-main);border-radius:8px;padding:4px 12px;font-size:.8rem;cursor:pointer}
+.diagram-wrapper{width:220px;height:180px;display:flex;justify-content:center;align-items:center;margin-bottom:12px;overflow:visible;transition:all .3s}
+.diagram-wrapper.collapse{height:0;margin-bottom:0;opacity:0;pointer-events:none}
+.svg-canvas{width:100%;height:100%;overflow:visible}
+.svg-canvas rect{fill:rgba(76,175,80,.02);stroke:var(--text-main);stroke-width:2}
+.svg-canvas line{stroke:var(--text-main);stroke-width:2}
+.svg-canvas polyline{fill:none;stroke:var(--text-main);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dimension-line{stroke:var(--text-main);stroke-width:1.2;fill:none}
+.dimension-dash{stroke:var(--text-main);stroke-width:1;stroke-dasharray:3 3;fill:none}
+.dimension-text{fill:var(--text-main);font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;font-size:8px;font-weight:400;letter-spacing:-.3px;text-anchor:middle;dominant-baseline:middle}
+
+.area-display-box{width:100%;border-top:1px dashed rgba(0,0,0,.08);padding-top:10px;text-align:center}
+.area-info-row{width:100%;display:flex;align-items:center;justify-content:center;gap:18px}
+.area-info-item{text-align:center;min-width:0}
+.area-title{font-size:.85rem;font-weight:bold;color:#2196F3;margin-bottom:3px}
+.area-val-wrapper{display:inline-flex;align-items:baseline;justify-content:center}
+.area-num{font-size:1.5rem;font-weight:900}
+.area-unit{font-size:.95rem;font-weight:800;color:#666;margin-left:4px}
+.perimeter-display{display:none}
+.perimeter-display.show{display:block}
+.perimeter-title{font-size:.85rem;font-weight:bold;color:#ff9800;margin-bottom:3px;white-space:nowrap}
+.perimeter-num{font-size:1.5rem;font-weight:900}
+.perimeter-unit{font-size:.95rem;font-weight:800;color:#666;margin-left:4px}
+
+.ios-switch{position:relative;display:inline-block;width:42px;height:25px;vertical-align:middle;margin-left:5px}
+.ios-switch input{opacity:0;width:0;height:0}
+.ios-slider{position:absolute;cursor:pointer;inset:0;background:#d1d1d6;border-radius:25px;transition:.25s}
+.ios-slider:before{content:"";position:absolute;height:21px;width:21px;left:2px;top:2px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.25s}
+.ios-switch input:checked+.ios-slider{background:#34c759}
+.ios-switch input:checked+.ios-slider:before{transform:translateX(17px)}
+
+.input-group{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px}
+.input-box{padding:15px;text-align:center}
+.input-box label{display:block;font-size:.9rem;color:#888;margin-bottom:8px;font-weight:bold}
+.input-box input{width:90%;padding:12px;border:0;background:var(--input-bg);color:var(--text-main);font-size:1.4rem;font-weight:800;border-radius:8px;text-align:center}
+
+table{width:100%;border-collapse:separate;border-spacing:0 10px;table-layout:fixed}
+td{background:var(--card-bg);padding:15px 10px;border:1px solid rgba(0,0,0,.1);vertical-align:middle;box-shadow:0 2px 4px rgba(0,0,0,.02);position:relative}
+td:first-child{border-radius:12px 0 0 12px;color:var(--accent);width:35%;font-size:.95rem;font-weight:800;text-align:center;word-break:break-all}
+td:last-child{border-radius:0 12px 12px 0;width:65%}
+.result-cell{position:relative;width:100%;height:24px;display:flex;align-items:center;justify-content:center}
+.size-val{font-size:1.35rem;white-space:nowrap;text-align:center;position:absolute;left:50%;transform:translateX(-50%)}
+.size-val b{font-weight:900!important}
+.count-val{font-size:.95rem;font-weight:800;color:#666;position:absolute;right:10px;white-space:nowrap}
+.hidden{display:none!important}
+.screen-row td:first-child{color:#ff9800}
+.screen-row .size-val b{font-style:italic}
+</style>
 </head>
 
 <body>
-
 <div class="container">
 
-    <h1>门窗下料算料助手</h1>
+<h1>门窗下料算料助手</h1>
 
-    <div class="top-row">
+<div class="top-row">
+<div class="select-box">
+<label for="modeDropdown">计算模式</label>
+<select id="modeDropdown" onchange="switchMode(this.value)">
+<option value="4" selected>4块 (左右分格+上亮)</option>
+<option value="3">3块 (右开扇+通头顶上亮)</option>
+<option value="tonggao">3块 (左通高大玻璃+右开扇)</option>
+<option value="double">双扇 (两边开扇+中间固定)</option>
+<option value="balcony">阳台 (固+扇+固)</option>
+<option value="balcony2">阳台 (固+扇+固+扇)</option>
+</select>
+</div>
 
-        <div class="select-box">
-            <label for="modeDropdown">计算模式</label>
+<div class="num-box">
+<label>数量 (套)</label>
+<input type="number" id="winNum" value="1" onclick="clearInputOnClick(this)" oninput="calc()">
+</div>
+</div>
 
-            <select id="modeDropdown" onchange="switchMode(this.value)">
-                <option value="4" selected>4块 (左右分格+上亮)</option>
-                <option value="3">3块 (右开扇+通头顶上亮)</option>
-                <option value="tonggao">3块 (左通高大玻璃+右开扇)</option>
-                <option value="double">双扇 (两边开扇+中间固定)</option>
-                <option value="balcony">阳台 (上亮+下亮+中间扇子)</option>
-            </select>
-        </div>
+<div class="diagram-container">
 
-        <div class="num-box">
-            <label>数量 (套)</label>
-            <input type="number" id="winNum" value="1" onclick="clearInputOnClick(this)" oninput="calc()">
-        </div>
+<div class="diagram-title-row">
+<button id="exportButton" class="diagram-toggle" onclick="exportGlassImage(event)">导出玻璃</button>
+<button id="diagramToggle" class="diagram-toggle" onclick="toggleDiagram()">收起图示</button>
+</div>
 
-    </div>
+<div class="diagram-wrapper" id="diagramWrapper"></div>
 
-    <div class="diagram-container">
+<div class="area-display-box">
+<div class="area-info-row">
 
-        <div class="diagram-title-row">
-            <button id="diagramToggle" class="diagram-toggle" onclick="toggleDiagram()">
-                收起图示
-            </button>
-        </div>
+<div class="area-info-item">
+<div class="area-title">窗户总面积</div>
+<div class="area-val-wrapper">
+<span id="areaNum" class="area-num">-</span>
+<span id="areaUnit" class="area-unit"></span>
+</div>
+</div>
 
-        <div class="diagram-wrapper" id="diagramWrapper"></div>
+<div class="area-info-item">
+<div class="perimeter-title">
+包边
+<label class="ios-switch">
+<input type="checkbox" id="perimeterToggle" onchange="togglePerimeter()">
+<span class="ios-slider"></span>
+</label>
+</div>
 
-        <div class="area-display-box">
+<div id="perimeterDisplay" class="perimeter-display">
+<span id="perimeterNum" class="perimeter-num">-</span>
+<span class="perimeter-unit">米</span>
+</div>
+</div>
 
-            <div class="area-info-row">
+</div>
+</div>
+</div>
 
-                <div class="area-info-item">
-                    <div class="area-title">窗户总面积</div>
+<div class="input-group">
+<div class="input-box">
+<label>窗总高</label>
+<input type="number" id="winH" onclick="clearInputOnClick(this)" oninput="calc()">
+</div>
 
-                    <div class="area-val-wrapper">
-                        <span id="areaNum" class="area-num">-</span>
-                        <span id="areaUnit" class="area-unit"></span>
-                    </div>
-                </div>
+<div class="input-box">
+<label>窗总宽</label>
+<input type="number" id="winW" onclick="clearInputOnClick(this)" oninput="calc()">
+</div>
 
-                <div class="area-info-item">
+<div class="input-box" id="fanWBox">
+<label>扇子宽</label>
+<input type="number" id="fanW" onclick="clearInputOnClick(this)" oninput="calc()">
+</div>
 
-                    <div class="perimeter-title">
-                        包边
-                        <label class="ios-switch">
-                            <input type="checkbox" id="perimeterToggle" onchange="togglePerimeter()">
-                            <span class="ios-slider"></span>
-                        </label>
-                    </div>
+<div class="input-box" id="fanHBox">
+<label>扇子高</label>
+<input type="number" id="fanH" onclick="clearInputOnClick(this)" oninput="calc()">
+</div>
 
-                    <div id="perimeterDisplay" class="perimeter-display">
+<div class="input-box hidden" id="upperBrightBox">
+<label>上亮高度</label>
+<input type="number" id="upperBright" onclick="clearInputOnClick(this)" oninput="calc()">
+</div>
 
-                        <span id="perimeterNum" class="perimeter-num">-</span>
-                        <span class="perimeter-unit">米</span>
+<div class="input-box hidden" id="lowerBrightBox">
+<label>下亮高度</label>
+<input type="number" id="lowerBright" onclick="clearInputOnClick(this)" oninput="calc()">
+</div>
+</div>
 
-                    </div>
+<table>
+<tbody id="resultTable">
 
-                </div>
+<tr id="rowG1">
+<td id="label1">下固定玻璃</td>
+<td>
+<div class="result-cell">
+<span id="g1_size" class="size-val">-</span>
+<span id="g1_count" class="count-val"></span>
+</div>
+</td>
+</tr>
 
-            </div>
+<tr id="rowBright">
+<td id="label2">上亮固定玻璃</td>
+<td>
+<div class="result-cell">
+<span id="g2_size" class="size-val">-</span>
+<span id="g2_count" class="count-val"></span>
+</div>
+</td>
+</tr>
 
-        </div>
+<tr id="rowBrightFan">
+<td>上亮扇固定玻璃</td>
+<td>
+<div class="result-cell">
+<span id="g3_size" class="size-val">-</span>
+<span id="g3_count" class="count-val"></span>
+</div>
+</td>
+</tr>
 
-    </div>
+<tr id="rowG4">
+<td id="label4">扇子玻璃</td>
+<td>
+<div class="result-cell">
+<span id="g4_size" class="size-val">-</span>
+<span id="g4_count" class="count-val"></span>
+</div>
+</td>
+</tr>
 
-    <div class="input-group">
+<tr id="rowScreen" class="screen-row">
+<td id="labelScreen">纱窗尺寸</td>
+<td>
+<div class="result-cell">
+<span id="gScreen_size" class="size-val">-</span>
+<span id="gScreen_count" class="count-val"></span>
+</div>
+</td>
+</tr>
 
-        <div class="input-box">
-            <label>窗总高</label>
-            <input type="number" id="winH" onclick="clearInputOnClick(this)" oninput="calc()">
-        </div>
-
-        <div class="input-box">
-            <label>窗总宽</label>
-            <input type="number" id="winW" onclick="clearInputOnClick(this)" oninput="calc()">
-        </div>
-
-        <div class="input-box" id="fanWBox">
-            <label>扇子宽</label>
-            <input type="number" id="fanW" onclick="clearInputOnClick(this)" oninput="calc()">
-        </div>
-
-        <div class="input-box" id="fanHBox">
-            <label>扇子高</label>
-            <input type="number" id="fanH" onclick="clearInputOnClick(this)" oninput="calc()">
-        </div>
-
-        <div class="input-box hidden" id="upperBrightBox">
-            <label>上亮高度</label>
-            <input type="number" id="upperBright" onclick="clearInputOnClick(this)" oninput="calc()">
-        </div>
-
-        <div class="input-box hidden" id="lowerBrightBox">
-            <label>下亮高度</label>
-            <input type="number" id="lowerBright" onclick="clearInputOnClick(this)" oninput="calc()">
-        </div>
-
-    </div>
-
-    <table>
-
-        <tbody id="resultTable">
-
-            <tr id="rowG1">
-                <td id="label1">下固定玻璃</td>
-                <td>
-                    <div class="result-cell">
-                        <span id="g1_size">-</span>
-                        <span id="g1_count" class="count-val"></span>
-                    </div>
-                </td>
-            </tr>
-
-            <tr id="rowBright">
-                <td id="label2">上亮固定玻璃</td>
-                <td>
-                    <div class="result-cell">
-                        <span id="g2_size">-</span>
-                        <span id="g2_count" class="count-val"></span>
-                    </div>
-                </td>
-            </tr>
-
-            <tr id="rowBrightFan">
-                <td>上亮扇固定玻璃</td>
-                <td>
-                    <div class="result-cell">
-                        <span id="g3_size">-</span>
-                        <span id="g3_count" class="count-val"></span>
-                    </div>
-                </td>
-            </tr>
-
-            <tr id="rowG4">
-                <td id="label4">扇子玻璃</td>
-                <td>
-                    <div class="result-cell">
-                        <span id="g4_size">-</span>
-                        <span id="g4_count" class="count-val"></span>
-                    </div>
-                </td>
-            </tr>
-
-            <tr id="rowScreen" class="screen-row">
-                <td id="labelScreen">纱窗尺寸</td>
-                <td>
-                    <div class="result-cell">
-                        <span id="gScreen_size">-</span>
-                        <span id="gScreen_count" class="count-val"></span>
-                    </div>
-                </td>
-            </tr>
-
-        </tbody>
-
-    </table>
+</tbody>
+</table>
 
 </div>
 
 <script>
-
-    const data = {
-
-        4: {
-            winW: 1800,
-            winH: 1800,
-            fanW: 540,
-            fanH: 1160,
-            winNum: 1
-        },
-
-        3: {
-            winW: 1800,
-            winH: 1800,
-            fanW: 540,
-            fanH: 1160,
-            winNum: 1
-        },
-
-        tonggao: {
-            winW: 1800,
-            winH: 1800,
-            fanW: 540,
-            fanH: 1160,
-            winNum: 1
-        },
-
-        double: {
-            winW: 2040,
-            winH: 1800,
-            fanW: 540,
-            fanH: 1160,
-            winNum: 1
-        },
-
-        balcony: {
-            winW: 2800,
-            winH: 2800,
-            fanW: 540,
-            fanH: 1200,
-            upperBright: 721,
-            lowerBright: 721,
-            winNum: 1
-        }
-
-    };
-
-    let currentMode = 4;
-    let diagramCollapsed = false;
-
-
-    document.addEventListener('touchstart', function () {
-
-        if (!window.navigator.standalone) {
-            window.scrollTo(0, 1);
-        }
-
-    }, { passive: true });
-
-
-    function clearInputOnClick(input) {
-
-        if (!input.dataset.clicked) {
-
-            input.dataset.clicked = '1';
-            input.value = '';
-
-            setTimeout(function () {
-                delete input.dataset.clicked;
-            }, 300);
-
-        }
-
-    }
-
-
-    function toggleDiagram() {
-
-        diagramCollapsed = !diagramCollapsed;
-
-        const wrapper =
-            document.getElementById('diagramWrapper');
-
-        const button =
-            document.getElementById('diagramToggle');
-
-        if (diagramCollapsed) {
-
-            wrapper.classList.add('collapse');
-
-            button.innerText = '展开图示';
-
-        } else {
-
-            wrapper.classList.remove('collapse');
-
-            button.innerText = '收起图示';
-
-        }
-
-    }
-
-
-    function togglePerimeter() {
-
-        const toggle =
-            document.getElementById('perimeterToggle');
-
-        const display =
-            document.getElementById('perimeterDisplay');
-
-        if (toggle.checked) {
-
-            display.classList.add('show');
-
-        } else {
-
-            display.classList.remove('show');
-
-        }
-
-        calc();
-
-    }
-
-
-    function getValues() {
-
-        return {
-
-            W: parseFloat(data[currentMode].winW) || 0,
-
-            H: parseFloat(data[currentMode].winH) || 0,
-
-            FW: parseFloat(data[currentMode].fanW) || 0,
-
-            FH: parseFloat(data[currentMode].fanH) || 0,
-
-            upperBright: parseFloat(data[currentMode].upperBright) || 0,
-
-            lowerBright: parseFloat(data[currentMode].lowerBright) || 0
-
-        };
-
-    }
-
-
-    function svgHeader() {
-
-        return `
-
-            <defs>
-
-                <marker
-                    id="arrow"
-                    markerWidth="5"
-                    markerHeight="5"
-                    refX="2.5"
-                    refY="2.5"
-                    orient="auto-start-reverse"
-                >
-
-                    <path
-                        d="M 0 0 L 5 2.5 L 0 5 z"
-                        fill="var(--text-main)"
-                    />
-
-                </marker>
-
-            </defs>
-
-        `;
-
-    }
-
-
-    function verticalDimension(x, y1, y2, text, guideX) {
-
-        return `
-
-            <line
-                class="dimension-line"
-                x1="${x}"
-                y1="${y1}"
-                x2="${x}"
-                y2="${y2}"
-                marker-start="url(#arrow)"
-                marker-end="url(#arrow)"
-            />
-
-            <line
-                class="dimension-dash"
-                x1="${x + 5}"
-                y1="${y1}"
-                x2="${guideX}"
-                y2="${y1}"
-            />
-
-            <line
-                class="dimension-dash"
-                x1="${x + 5}"
-                y1="${y2}"
-                x2="${guideX}"
-                y2="${y2}"
-            />
-
-            <text
-                class="dimension-text"
-                x="${x - 10}"
-                y="${(y1 + y2) / 2}"
-            >${text}</text>
-
-        `;
-
-    }
-
-
-    function totalHeightDimension(x, y1, y2, text, guideX) {
-
-        return `
-
-            <line
-                class="dimension-line"
-                x1="${x}"
-                y1="${y1}"
-                x2="${x}"
-                y2="${y2}"
-                marker-start="url(#arrow)"
-                marker-end="url(#arrow)"
-            />
-
-            <line
-                class="dimension-dash"
-                x1="${guideX}"
-                y1="${y1}"
-                x2="${x - 5}"
-                y2="${y1}"
-            />
-
-            <line
-                class="dimension-dash"
-                x1="${guideX}"
-                y1="${y2}"
-                x2="${x - 5}"
-                y2="${y2}"
-            />
-
-            <text
-                class="dimension-text"
-                x="${x + 10}"
-                y="${(y1 + y2) / 2}"
-            >${text}</text>
-
-        `;
-
-    }
-
-
-    function horizontalDimension(x1, x2, y, text, guideY) {
-
-        return `
-
-            <line
-                class="dimension-line"
-                x1="${x1}"
-                y1="${y}"
-                x2="${x2}"
-                y2="${y}"
-                marker-start="url(#arrow)"
-                marker-end="url(#arrow)"
-            />
-
-            <line
-                class="dimension-dash"
-                x1="${x1}"
-                y1="${guideY}"
-                x2="${x1}"
-                y2="${y - 5}"
-            />
-
-            <line
-                class="dimension-dash"
-                x1="${x2}"
-                y1="${guideY}"
-                x2="${x2}"
-                y2="${y - 5}"
-            />
-
-            <text
-                class="dimension-text"
-                x="${(x1 + x2) / 2}"
-                y="${y + 9}"
-            >${text}</text>
-
-        `;
-
-    }
-
-
-    function drawMode4() {
-
-        const { W, H, FH } = getValues();
-
-        const x = 50;
-        const y = 20;
-        const width = 120;
-        const height = 120;
-
-        const upperHeight =
-            H - 100 - FH - 29;
-
-        const lowerHeight = FH;
-
-        const upperY =
-            y + height * (upperHeight / H);
-
-        document.getElementById('diagramWrapper').innerHTML = `
-
-            <svg class="svg-canvas" viewBox="0 0 220 180">
-
-                ${svgHeader()}
-
-                <rect x="${x}" y="${y}" width="${width}" height="${height}" />
-
-                <line x1="${x}" y1="${upperY}" x2="${x + width}" y2="${upperY}" />
-
-                <line x1="${x + 80}" y1="${y}" x2="${x + 80}" y2="${y + height}" />
-
-                <polyline
-                    points="${x + 110},${y + 62} ${x + 93},${y + 80} ${x + 110},${y + 98}"
-                />
-
-                ${verticalDimension(25, y, upperY, Math.round(upperHeight), x)}
-
-                ${verticalDimension(25, upperY, y + height, Math.round(lowerHeight), x)}
-
-                ${totalHeightDimension(190, y, y + height, Math.round(H), x + width)}
-
-                ${horizontalDimension(x, x + width, 165, Math.round(W), y + height)}
-
-            </svg>
-
-        `;
-
-    }
-
-
-    function drawMode3() {
-
-        const { W, H, FH } = getValues();
-
-        const x = 50;
-        const y = 20;
-        const width = 120;
-        const height = 120;
-
-        const upperHeight =
-            H - 100 - FH - 29;
-
-        const lowerHeight = FH;
-
-        const upperY =
-            y + height * (upperHeight / H);
-
-        document.getElementById('diagramWrapper').innerHTML = `
-
-            <svg class="svg-canvas" viewBox="0 0 220 180">
-
-                ${svgHeader()}
-
-                <rect x="${x}" y="${y}" width="${width}" height="${height}" />
-
-                <line x1="${x}" y1="${upperY}" x2="${x + width}" y2="${upperY}" />
-
-                <line x1="${x + 80}" y1="${upperY}" x2="${x + 80}" y2="${y + height}" />
-
-                <polyline
-                    points="${x + 110},${y + 62} ${x + 93},${y + 80} ${x + 110},${y + 98}"
-                />
-
-                ${verticalDimension(25, y, upperY, Math.round(upperHeight), x)}
-
-                ${verticalDimension(25, upperY, y + height, Math.round(lowerHeight), x)}
-
-                ${totalHeightDimension(190, y, y + height, Math.round(H), x + width)}
-
-                ${horizontalDimension(x, x + width, 165, Math.round(W), y + height)}
-
-            </svg>
-
-        `;
-
-    }
-
-
-    function drawModeTonggao() {
-
-        const { W, H, FH } = getValues();
-
-        const x = 50;
-        const y = 20;
-        const width = 120;
-        const height = 120;
-
-        const upperHeight =
-            H - 100 - FH - 29;
-
-        const lowerHeight = FH;
-
-        const upperY =
-            y + height * (upperHeight / H);
-
-        document.getElementById('diagramWrapper').innerHTML = `
-
-            <svg class="svg-canvas" viewBox="0 0 220 180">
-
-                ${svgHeader()}
-
-                <rect x="${x}" y="${y}" width="${width}" height="${height}" />
-
-                <line x1="${x + 80}" y1="${y}" x2="${x + 80}" y2="${y + height}" />
-
-                <line x1="${x + 80}" y1="${upperY}" x2="${x + width}" y2="${upperY}" />
-
-                <polyline
-                    points="${x + 110},${y + 62} ${x + 93},${y + 80} ${x + 110},${y + 98}"
-                />
-
-                ${verticalDimension(25, y, upperY, Math.round(upperHeight), x)}
-
-                ${verticalDimension(25, upperY, y + height, Math.round(lowerHeight), x)}
-
-                ${totalHeightDimension(190, y, y + height, Math.round(H), x + width)}
-
-                ${horizontalDimension(x, x + width, 165, Math.round(W), y + height)}
-
-            </svg>
-
-        `;
-
-    }
-
-
-    function drawModeDouble() {
-
-        const { W, H, FH } = getValues();
-
-        const x = 35;
-        const y = 20;
-        const width = 150;
-        const height = 120;
-
-        const upperHeight =
-            H - 100 - FH - 29;
-
-        const lowerHeight = FH;
-
-        const upperY =
-            y + height * (upperHeight / H);
-
-        const leftFanX = x + 35;
-        const rightFanX = x + 115;
-
-        document.getElementById('diagramWrapper').innerHTML = `
-
-            <svg class="svg-canvas" viewBox="0 0 220 180">
-
-                ${svgHeader()}
-
-                <rect x="${x}" y="${y}" width="${width}" height="${height}" />
-
-                <line x1="${x}" y1="${upperY}" x2="${x + width}" y2="${upperY}" />
-
-                <line x1="${x + 75}" y1="${y}" x2="${x + 75}" y2="${upperY}" />
-
-                <line x1="${leftFanX}" y1="${upperY}" x2="${leftFanX}" y2="${y + height}" />
-
-                <line x1="${rightFanX}" y1="${upperY}" x2="${rightFanX}" y2="${y + height}" />
-
-                <polyline
-                    points="${x + 9},${y + 62} ${x + 26},${y + 80} ${x + 9},${y + 98}"
-                />
-
-                <polyline
-                    points="${x + width - 9},${y + 62} ${x + width - 26},${y + 80} ${x + width - 9},${y + 98}"
-                />
-
-                ${verticalDimension(10, y, upperY, Math.round(upperHeight), x)}
-
-                ${verticalDimension(10, upperY, y + height, Math.round(lowerHeight), x)}
-
-                ${totalHeightDimension(210, y, y + height, Math.round(H), x + width)}
-
-                ${horizontalDimension(x, x + width, 165, Math.round(W), y + height)}
-
-            </svg>
-
-        `;
-
-    }
-
-
-    function drawModeBalcony() {
-
-        const { W, H, FW, FH, upperBright, lowerBright } = getValues();
-
-        const x = 35;
-        const y = 20;
-
-        const frameW = 100;
-        const frameH = 100;
-
-        const usableW = W - frameW - 29 - 29;
-
-        const leftFixedW = (usableW - FW) / 2;
-        const rightFixedW = leftFixedW;
-
-        const totalInnerH = H - 100 - FH - 29 - 29;
-
-        let upperH = upperBright;
-        let lowerH = lowerBright;
-
-        if (upperH <= 0 && lowerH <= 0) {
-
-            upperH = totalInnerH / 2;
-            lowerH = totalInnerH / 2;
-
-        } else if (upperH > 0 && lowerH <= 0) {
-
-            lowerH = totalInnerH - upperH;
-
-        } else if (lowerH > 0 && upperH <= 0) {
-
-            upperH = totalInnerH - lowerH;
-
-        }
-
-        const middleH = FH;
-
-        const totalH =
-            upperH + middleH + lowerH;
-
-        const widthRatio = W > 0 ? W : 1;
-        const heightRatio = H > 0 ? H : 1;
-
-        const width = 150;
-        const height = width * (heightRatio / widthRatio);
-
-        const maxHeight = 125;
-
-        let drawW = width;
-        let drawH = height;
-
-        if (drawH > maxHeight) {
-
-            drawH = maxHeight;
-            drawW = drawH * (widthRatio / heightRatio);
-
-        }
-
-        const frameX = (220 - drawW) / 2;
-        const frameY = 18;
-
-        const usableDrawW =
-            drawW * (usableW / W);
-
-        const frameLeft =
-            frameX + (drawW - usableDrawW) / 2;
-
-        const frameRight =
-            frameLeft + usableDrawW;
-
-        const drawUpperH =
-            drawH * (upperH / H);
-
-        const drawFanH =
-            drawH * (middleH / H);
-
-        const drawLowerH =
-            drawH * (lowerH / H);
-
-        const upperY =
-            frameY + drawUpperH;
-
-        const fanBottomY =
-            upperY + drawFanH;
-
-        const leftFixedDrawW =
-            usableDrawW * (leftFixedW / usableW);
-
-        const fanDrawW =
-            usableDrawW * (FW / usableW);
-
-        const fanX =
-            frameLeft + leftFixedDrawW;
-
-        const rightFixedX =
-            fanX + fanDrawW;
-
-        const frameBottom =
-            frameY + drawH;
-
-        const arrowX =
-            fanX + fanDrawW / 2;
-
-        document.getElementById('diagramWrapper').innerHTML = `
-
-            <svg class="svg-canvas" viewBox="0 0 220 180">
-
-                ${svgHeader()}
-
-                <rect
-                    x="${frameX}"
-                    y="${frameY}"
-                    width="${drawW}"
-                    height="${drawH}"
-                />
-
-                <line
-                    x1="${frameLeft}"
-                    y1="${upperY}"
-                    x2="${frameRight}"
-                    y2="${upperY}"
-                />
-
-                <line
-                    x1="${frameLeft}"
-                    y1="${fanBottomY}"
-                    x2="${frameRight}"
-                    y2="${fanBottomY}"
-                />
-
-                <line
-                    x1="${fanX}"
-                    y1="${frameY}"
-                    x2="${fanX}"
-                    y2="${frameBottom}"
-                />
-
-                <line
-                    x1="${rightFixedX}"
-                    y1="${frameY}"
-                    x2="${rightFixedX}"
-                    y2="${frameBottom}"
-                />
-
-                <polyline
-                    points="
-                        ${arrowX + 12},${upperY + drawFanH / 2 - 18}
-                        ${arrowX - 5},${upperY + drawFanH / 2}
-                        ${arrowX + 12},${upperY + drawFanH / 2 + 18}
-                    "
-                />
-
-                ${verticalDimension(
-                    12,
-                    frameY,
-                    upperY,
-                    Math.round(upperH),
-                    frameLeft
-                )}
-
-                ${verticalDimension(
-                    12,
-                    upperY,
-                    fanBottomY,
-                    Math.round(FH),
-                    frameLeft
-                )}
-
-                ${verticalDimension(
-                    12,
-                    fanBottomY,
-                    frameBottom,
-                    Math.round(lowerH),
-                    frameLeft
-                )}
-
-                ${totalHeightDimension(
-                    208,
-                    frameY,
-                    frameBottom,
-                    Math.round(H),
-                    frameRight
-                )}
-
-                ${horizontalDimension(
-                    frameX,
-                    frameX + drawW,
-                    165,
-                    Math.round(W),
-                    frameBottom
-                )}
-
-            </svg>
-
-        `;
-
-    }
-
-
-    function drawDiagram() {
-
-        if (currentMode === 4) {
-
-            drawMode4();
-
-        } else if (currentMode === 3) {
-
-            drawMode3();
-
-        } else if (currentMode === 'tonggao') {
-
-            drawModeTonggao();
-
-        } else if (currentMode === 'double') {
-
-            drawModeDouble();
-
-        } else if (currentMode === 'balcony') {
-
-            drawModeBalcony();
-
-        }
-
-    }
-
-
-    function switchMode(value) {
-
-        saveCurrentData();
-
-        currentMode =
-            value === '3' || value === '4'
-                ? parseInt(value)
-                : value;
-
-        const upperBrightBox =
-            document.getElementById('upperBrightBox');
-
-        const lowerBrightBox =
-            document.getElementById('lowerBrightBox');
-
-        const fanWBox =
-            document.getElementById('fanWBox');
-
-        const fanHBox =
-            document.getElementById('fanHBox');
-
-        if (currentMode === 'balcony') {
-
-            upperBrightBox.classList.remove('hidden');
-
-            lowerBrightBox.classList.remove('hidden');
-
-            fanWBox.classList.remove('hidden');
-
-            fanHBox.classList.remove('hidden');
-
-            document.getElementById('rowBright').className = '';
-
-            document.getElementById('rowBrightFan').className = 'hidden';
-
-            document.getElementById('label1').innerText =
-                '下亮固定玻璃';
-
-            document.getElementById('label2').innerText =
-                '上亮固定玻璃';
-
-            document.getElementById('label4').innerText =
-                '扇子玻璃';
-
-        } else {
-
-            upperBrightBox.classList.add('hidden');
-
-            lowerBrightBox.classList.add('hidden');
-
-            fanWBox.classList.remove('hidden');
-
-            fanHBox.classList.remove('hidden');
-
-            if (currentMode === 'double') {
-
-                document.getElementById('rowBright').className = '';
-
-                document.getElementById('rowBrightFan').className = 'hidden';
-
-                document.getElementById('label1').innerText =
-                    '下中间玻璃';
-
-                document.getElementById('label2').innerText =
-                    '上亮玻璃';
-
-                document.getElementById('label4').innerText =
-                    '扇子玻璃';
-
-            } else if (currentMode === 'tonggao') {
-
-                document.getElementById('rowBright').className = '';
-
-                document.getElementById('rowBrightFan').className = 'hidden';
-
-                document.getElementById('label1').innerText =
-                    '通高大玻璃';
-
-                document.getElementById('label2').innerText =
-                    '右侧上亮玻璃';
-
-                document.getElementById('label4').innerText =
-                    '扇子玻璃';
-
-            } else if (currentMode === 3) {
-
-                document.getElementById('rowBright').className = '';
-
-                document.getElementById('rowBrightFan').className = 'hidden';
-
-                document.getElementById('label1').innerText =
-                    '下固定玻璃';
-
-                document.getElementById('label2').innerText =
-                    '上亮玻璃';
-
-                document.getElementById('label4').innerText =
-                    '扇子玻璃';
-
-            } else {
-
-                document.getElementById('rowBright').className = '';
-
-                document.getElementById('rowBrightFan').className = '';
-
-                document.getElementById('label1').innerText =
-                    '下固定玻璃';
-
-                document.getElementById('label2').innerText =
-                    '上亮固定玻璃';
-
-                document.getElementById('label4').innerText =
-                    '扇子玻璃';
-
-            }
-
-        }
-
-        loadDataToInputs();
-
-        calc();
-
-    }
-
-
-    function saveCurrentData() {
-
-        data[currentMode] = {
-
-            winW: document.getElementById('winW').value,
-
-            winH: document.getElementById('winH').value,
-
-            fanW: document.getElementById('fanW').value,
-
-            fanH: document.getElementById('fanH').value,
-
-            upperBright: document.getElementById('upperBright').value,
-
-            lowerBright: document.getElementById('lowerBright').value,
-
-            winNum: document.getElementById('winNum').value
-
-        };
-
-    }
-
-
-    function loadDataToInputs() {
-
-        document.getElementById('winW').value =
-            data[currentMode].winW;
-
-        document.getElementById('winH').value =
-            data[currentMode].winH;
-
-        document.getElementById('fanW').value =
-            data[currentMode].fanW;
-
-        document.getElementById('fanH').value =
-            data[currentMode].fanH;
-
-        document.getElementById('upperBright').value =
-            data[currentMode].upperBright || '';
-
-        document.getElementById('lowerBright').value =
-            data[currentMode].lowerBright || '';
-
-        document.getElementById('winNum').value =
-            data[currentMode].winNum || 1;
-
-    }
-
-
-    function showResult(id, sizeStr, countVal, unit) {
-
-        const sizeEl =
-            document.getElementById(id + '_size');
-
-        const countEl =
-            document.getElementById(id + '_count');
-
-        if (sizeEl) {
-
-            sizeEl.innerHTML =
-                '<b>' + sizeStr + '</b>';
-
-        }
-
-        if (countEl) {
-
-            countEl.innerText =
-                '*' + countVal + unit;
-
-        }
-
-    }
-
-
-    function calc() {
-
-        saveCurrentData();
-
-        const W =
-            parseFloat(data[currentMode].winW) || 0;
-
-        const H =
-            parseFloat(data[currentMode].winH) || 0;
-
-        const FW =
-            parseFloat(data[currentMode].fanW) || 0;
-
-        const FH =
-            parseFloat(data[currentMode].fanH) || 0;
-
-        const num =
-            parseInt(data[currentMode].winNum) || 1;
-
-        const upperBright =
-            parseFloat(data[currentMode].upperBright) || 0;
-
-        const lowerBright =
-            parseFloat(data[currentMode].lowerBright) || 0;
-
-        drawDiagram();
-
-        const totalArea =
-            ((W * H * num) / 1000000).toFixed(2);
-
-        document.getElementById('areaNum').innerText =
-            totalArea;
-
-        document.getElementById('areaUnit').innerText =
-            'm² (共 ' + num + ' 套)';
-
-        const perimeter =
-            (((H / 1000) + (W / 1000)) * 2 * num).toFixed(2);
-
-        document.getElementById('perimeterNum').innerText =
-            perimeter;
-
-        const gW =
-            W - 100 - FW - 29 - 10;
-
-        const gH =
-            H - 100 - FH - 29 - 10;
-
-
-        if (currentMode === 'balcony') {
-
-            const usableW =
-                W - 100 - 29 - 29;
-
-            const fixedW =
-                (usableW - FW) / 2;
-
-            const totalBrightH =
-                H - 100 - FH - 29 - 29;
-
-            let upperH = upperBright;
-
-            let lowerH = lowerBright;
-
-            if (upperH <= 0 && lowerH <= 0) {
-
-                upperH =
-                    totalBrightH / 2;
-
-                lowerH =
-                    totalBrightH / 2;
-
-            } else if (upperH > 0 && lowerH <= 0) {
-
-                lowerH =
-                    totalBrightH - upperH;
-
-            } else if (lowerH > 0 && upperH <= 0) {
-
-                upperH =
-                    totalBrightH - lowerH;
-
-            }
-
-            showResult(
-                'g1',
-                Math.round(fixedW) + '×' + Math.round(lowerH),
-                num * 2,
-                '块'
-            );
-
-            showResult(
-                'g2',
-                Math.round(fixedW) + '×' + Math.round(upperH),
-                num * 2,
-                '块'
-            );
-
-            showResult(
-                'g4',
-                Math.round(FW - 93) + '×' + Math.round(FH - 92),
-                num,
-                '块'
-            );
-
-            showResult(
-                'gScreen',
-                Math.round(FH - 45) + '×' + Math.round(FW - 45),
-                num,
-                '个'
-            );
-
-            return;
-
-        }
-
-
-        if (currentMode === 'double') {
-
-            const doubleUpW =
-                ((W - 100 - 29) / 2) - 10;
-
-            const doubleMidW =
-                W - 100 - (2 * FW) - 29 - 29 - 10;
-
-            showResult(
-                'g2',
-                Math.round(doubleUpW) + '×' + Math.round(gH),
-                num * 2,
-                '块'
-            );
-
-            showResult(
-                'g1',
-                Math.round(doubleMidW) + '×' + Math.round(FH - 10),
-                num,
-                '块'
-            );
-
-            showResult(
-                'g4',
-                Math.round(FW - 93) + '×' + Math.round(FH - 92),
-                num * 2,
-                '块'
-            );
-
-            showResult(
-                'gScreen',
-                Math.round(FH - 45) + '×' + Math.round(FW - 45),
-                num * 2,
-                '个'
-            );
-
-
-        } else if (currentMode === 'tonggao') {
-
-            showResult(
-                'g1',
-                Math.round(gW) + '×' + Math.round(H - 100 - 10),
-                num,
-                '块'
-            );
-
-            showResult(
-                'g2',
-                Math.round(FW - 10) + '×' + Math.round(gH),
-                num,
-                '块'
-            );
-
-            showResult(
-                'g4',
-                Math.round(FW - 93) + '×' + Math.round(FH - 92),
-                num,
-                '块'
-            );
-
-            showResult(
-                'gScreen',
-                Math.round(FH - 45) + '×' + Math.round(FW - 45),
-                num,
-                '个'
-            );
-
-
-        } else {
-
-            showResult(
-                'g1',
-                Math.round(gW) + '×' + Math.round(FH - 10),
-                num,
-                '块'
-            );
-
-            showResult(
-                'g4',
-                Math.round(FW - 93) + '×' + Math.round(FH - 92),
-                num,
-                '块'
-            );
-
-            showResult(
-                'gScreen',
-                Math.round(FH - 45) + '×' + Math.round(FW - 45),
-                num,
-                '个'
-            );
-
-
-            if (currentMode === 4) {
-
-                showResult(
-                    'g2',
-                    Math.round(gW) + '×' + Math.round(gH),
-                    num,
-                    '块'
-                );
-
-                showResult(
-                    'g3',
-                    Math.round(FW - 10) + '×' + Math.round(gH),
-                    num,
-                    '块'
-                );
-
-
-            } else {
-
-                showResult(
-                    'g2',
-                    Math.round(W - 100 - 10) + '×' + Math.round(gH),
-                    num,
-                    '块'
-                );
-
-            }
-
-        }
-
-    }
-
-
-    window.onload = function () {
-
-        drawDiagram();
-
-        loadDataToInputs();
-
-        calc();
-
-    };
-
+const data={
+4:{winW:1800,winH:1800,fanW:540,fanH:1160,winNum:1},
+3:{winW:1800,winH:1800,fanW:540,fanH:1160,winNum:1},
+tonggao:{winW:1800,winH:1800,fanW:540,fanH:1160,winNum:1},
+double:{winW:2040,winH:1800,fanW:540,fanH:1160,winNum:1},
+balcony:{winW:2800,winH:2800,fanW:540,fanH:1200,upperBright:721,lowerBright:721,winNum:1},
+balcony2:{winW:3600,winH:2800,fanW:540,fanH:1200,upperBright:721,lowerBright:721,winNum:1}
+};
+
+let currentMode=4,diagramCollapsed=false;
+
+function clearInputOnClick(i){
+if(!i.dataset.clicked){
+i.dataset.clicked='1';
+i.value='';
+setTimeout(()=>delete i.dataset.clicked,300)
+}
+}
+
+function toggleDiagram(){
+diagramCollapsed=!diagramCollapsed;
+const w=document.getElementById('diagramWrapper');
+const b=document.getElementById('diagramToggle');
+w.classList.toggle('collapse',diagramCollapsed);
+b.innerText=diagramCollapsed?'展开图示':'收起图示'
+}
+
+function togglePerimeter(){
+const t=document.getElementById('perimeterToggle');
+const d=document.getElementById('perimeterDisplay');
+d.classList.toggle('show',t.checked);
+calc()
+}
+
+function getValues(){
+return{
+W:+data[currentMode].winW||0,
+H:+data[currentMode].winH||0,
+FW:+data[currentMode].fanW||0,
+FH:+data[currentMode].fanH||0,
+upperBright:+data[currentMode].upperBright||0,
+lowerBright:+data[currentMode].lowerBright||0
+}
+}
+
+function svgHeader(){
+return`<defs>
+<marker id="arrow" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto-start-reverse">
+<path d="M 0 0 L 5 2.5 L 0 5 z" fill="var(--text-main)"/>
+</marker>
+</defs>`
+}
+
+function verticalDimension(x,y1,y2,text,guideX){
+return`<line class="dimension-line" x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line class="dimension-dash" x1="${x+5}" y1="${y1}" x2="${guideX}" y2="${y1}"/>
+<line class="dimension-dash" x1="${x+5}" y1="${y2}" x2="${guideX}" y2="${y2}"/>
+<text class="dimension-text" x="${x-10}" y="${(y1+y2)/2}">${text}</text>`
+}
+
+function totalHeightDimension(x,y1,y2,text,guideX){
+return`<line class="dimension-line" x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line class="dimension-dash" x1="${guideX}" y1="${y1}" x2="${x-5}" y2="${y1}"/>
+<line class="dimension-dash" x1="${guideX}" y1="${y2}" x2="${x-5}" y2="${y2}"/>
+<text class="dimension-text" x="${x+10}" y="${(y1+y2)/2}">${text}</text>`
+}
+
+function horizontalDimension(x1,x2,y,text,guideY){
+return`<line class="dimension-line" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<line class="dimension-dash" x1="${x1}" y1="${guideY}" x2="${x1}" y2="${y-5}"/>
+<line class="dimension-dash" x1="${x2}" y1="${guideY}" x2="${x2}" y2="${y-5}"/>
+<text class="dimension-text" x="${(x1+x2)/2}" y="${y+9}">${text}</text>`
+}
+
+function drawMode4(){
+const{W,H,FH}=getValues();
+const x=50,y=20,width=120,height=120;
+const upperHeight=H-100-FH-29;
+const upperY=y+height*(upperHeight/H);
+
+document.getElementById('diagramWrapper').innerHTML=
+`<svg class="svg-canvas" viewBox="0 0 220 180">
+${svgHeader()}
+<rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+<line x1="${x}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+<line x1="${x+80}" y1="${y}" x2="${x+80}" y2="${y+height}"/>
+<polyline points="${x+110},${y+62} ${x+93},${y+80} ${x+110},${y+98}"/>
+${verticalDimension(25,y,upperY,Math.round(upperHeight),x)}
+${verticalDimension(25,upperY,y+height,Math.round(FH),x)}
+${totalHeightDimension(190,y,y+height,Math.round(H),x+width)}
+${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+</svg>`
+}
+
+function drawMode3(){
+const{W,H,FH}=getValues();
+const x=50,y=20,width=120,height=120;
+const upperHeight=H-100-FH-29;
+const upperY=y+height*(upperHeight/H);
+
+document.getElementById('diagramWrapper').innerHTML=
+`<svg class="svg-canvas" viewBox="0 0 220 180">
+${svgHeader()}
+<rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+<line x1="${x}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+<line x1="${x+80}" y1="${upperY}" x2="${x+80}" y2="${y+height}"/>
+<polyline points="${x+110},${y+62} ${x+93},${y+80} ${x+110},${y+98}"/>
+${verticalDimension(25,y,upperY,Math.round(upperHeight),x)}
+${verticalDimension(25,upperY,y+height,Math.round(FH),x)}
+${totalHeightDimension(190,y,y+height,Math.round(H),x+width)}
+${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+</svg>`
+}
+
+function drawModeTonggao(){
+const{W,H,FH}=getValues();
+const x=50,y=20,width=120,height=120;
+const upperHeight=H-100-FH-29;
+const upperY=y+height*(upperHeight/H);
+
+document.getElementById('diagramWrapper').innerHTML=
+`<svg class="svg-canvas" viewBox="0 0 220 180">
+${svgHeader()}
+<rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+<line x1="${x+80}" y1="${y}" x2="${x+80}" y2="${y+height}"/>
+<line x1="${x+80}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+<polyline points="${x+110},${y+62} ${x+93},${y+80} ${x+110},${y+98}"/>
+${verticalDimension(25,y,upperY,Math.round(upperHeight),x)}
+${verticalDimension(25,upperY,y+height,Math.round(FH),x)}
+${totalHeightDimension(190,y,y+height,Math.round(H),x+width)}
+${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+</svg>`
+}
+
+function drawModeDouble(){
+const{W,H,FH}=getValues();
+const x=35,y=20,width=150,height=120;
+const upperHeight=H-100-FH-29;
+const upperY=y+height*(upperHeight/H);
+const leftFanX=x+35,rightFanX=x+115;
+
+document.getElementById('diagramWrapper').innerHTML=
+`<svg class="svg-canvas" viewBox="0 0 220 180">
+${svgHeader()}
+<rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+<line x1="${x}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+<line x1="${x+75}" y1="${y}" x2="${x+75}" y2="${upperY}"/>
+<line x1="${leftFanX}" y1="${upperY}" x2="${leftFanX}" y2="${y+height}"/>
+<line x1="${rightFanX}" y1="${upperY}" x2="${rightFanX}" y2="${y+height}"/>
+<polyline points="${x+9},${y+62} ${x+26},${y+80} ${x+9},${y+98}"/>
+<polyline points="${x+width-9},${y+62} ${x+width-26},${y+80} ${x+width-9},${y+98}"/>
+${verticalDimension(10,y,upperY,Math.round(upperHeight),x)}
+${verticalDimension(10,upperY,y+height,Math.round(FH),x)}
+${totalHeightDimension(210,y,y+height,Math.round(H),x+width)}
+${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+</svg>`
+}
+
+function drawModeBalcony(){
+const{W,H,FW,FH,upperBright,lowerBright}=getValues();
+
+const frameW=100;
+const usableW=W-frameW-29-29;
+const leftFixedW=(usableW-FW)/2;
+const totalInnerH=H-100-FH-29-29;
+
+let upperH=upperBright;
+let lowerH=lowerBright;
+
+if(upperH<=0&&lowerH<=0){
+upperH=totalInnerH/2;
+lowerH=totalInnerH/2
+}else if(upperH>0&&lowerH<=0){
+lowerH=totalInnerH-upperH
+}else if(lowerH>0&&upperH<=0){
+upperH=totalInnerH-lowerH
+}
+
+const widthRatio=W||1;
+const heightRatio=H||1;
+
+let width=150;
+let height=width*(heightRatio/widthRatio);
+const maxHeight=125;
+
+let drawW=width;
+let drawH=height;
+
+if(drawH>maxHeight){
+drawH=maxHeight;
+drawW=drawH*(widthRatio/heightRatio)
+}
+
+const frameX=(220-drawW)/2;
+const frameY=18;
+const usableDrawW=drawW*(usableW/W);
+const frameLeft=frameX+(drawW-usableDrawW)/2;
+const frameRight=frameLeft+usableDrawW;
+const upperY=frameY+drawH*(upperH/H);
+const fanBottomY=upperY+drawH*(FH/H);
+const leftFixedDrawW=usableDrawW*(leftFixedW/usableW);
+const fanDrawW=usableDrawW*(FW/usableW);
+const fanX=frameLeft+leftFixedDrawW;
+const rightFixedX=fanX+fanDrawW;
+const frameBottom=frameY+drawH;
+const arrowX=fanX+fanDrawW/2;
+
+document.getElementById('diagramWrapper').innerHTML=
+`<svg class="svg-canvas" viewBox="0 0 220 180">
+${svgHeader()}
+<rect x="${frameX}" y="${frameY}" width="${drawW}" height="${drawH}"/>
+<line x1="${frameLeft}" y1="${upperY}" x2="${frameRight}" y2="${upperY}"/>
+<line x1="${frameLeft}" y1="${fanBottomY}" x2="${frameRight}" y2="${fanBottomY}"/>
+<line x1="${fanX}" y1="${frameY}" x2="${fanX}" y2="${frameBottom}"/>
+<line x1="${rightFixedX}" y1="${frameY}" x2="${rightFixedX}" y2="${frameBottom}"/>
+<polyline points="${arrowX+12},${upperY+(fanBottomY-upperY)/2-18} ${arrowX-5},${upperY+(fanBottomY-upperY)/2} ${arrowX+12},${upperY+(fanBottomY-upperY)/2+18}"/>
+${verticalDimension(12,frameY,upperY,Math.round(upperH),frameLeft)}
+${verticalDimension(12,upperY,fanBottomY,Math.round(FH),frameLeft)}
+${verticalDimension(12,fanBottomY,frameBottom,Math.round(lowerH),frameLeft)}
+${totalHeightDimension(208,frameY,frameBottom,Math.round(H),frameRight)}
+${horizontalDimension(frameX,frameX+drawW,165,Math.round(W),frameBottom)}
+</svg>`
+}
+
+function drawModeBalconyDouble(){
+const{W,H,FW,FH,upperBright,lowerBright}=getValues();
+
+const frameW=100;
+const usableW=W-frameW-29-29;
+const fixedW=(usableW-FW*2)/2;
+const totalInnerH=H-100-FH-29-29;
+
+let upperH=upperBright;
+let lowerH=lowerBright;
+
+if(upperH<=0&&lowerH<=0){
+upperH=totalInnerH/2;
+lowerH=totalInnerH/2
+}else if(upperH>0&&lowerH<=0){
+lowerH=totalInnerH-upperH
+}else if(lowerH>0&&upperH<=0){
+upperH=totalInnerH-lowerH
+}
+
+const widthRatio=W||1;
+const heightRatio=H||1;
+
+let width=170;
+let height=width*(heightRatio/widthRatio);
+const maxHeight=125;
+
+let drawW=width;
+let drawH=height;
+
+if(drawH>maxHeight){
+drawH=maxHeight;
+drawW=drawH*(widthRatio/heightRatio)
+}
+
+const frameX=(220-drawW)/2;
+const frameY=18;
+const usableDrawW=drawW*(usableW/W);
+const frameLeft=frameX+(drawW-usableDrawW)/2;
+const frameRight=frameLeft+usableDrawW;
+const upperY=frameY+drawH*(upperH/H);
+const fanBottomY=upperY+drawH*(FH/H);
+const fixedDrawW=usableDrawW*(fixedW/usableW);
+const fanDrawW=usableDrawW*(FW/usableW);
+const fan1X=frameLeft+fixedDrawW;
+const fixed2X=fan1X+fanDrawW;
+const fan2X=fixed2X+fixedDrawW;
+const frameBottom=frameY+drawH;
+const arrow1X=fan1X+fanDrawW/2;
+const arrow2X=fan2X+fanDrawW/2;
+
+document.getElementById('diagramWrapper').innerHTML=
+`<svg class="svg-canvas" viewBox="0 0 220 180">
+${svgHeader()}
+<rect x="${frameX}" y="${frameY}" width="${drawW}" height="${drawH}"/>
+<line x1="${frameLeft}" y1="${upperY}" x2="${frameRight}" y2="${upperY}"/>
+<line x1="${frameLeft}" y1="${fanBottomY}" x2="${frameRight}" y2="${fanBottomY}"/>
+<line x1="${fan1X}" y1="${frameY}" x2="${fan1X}" y2="${frameBottom}"/>
+<line x1="${fixed2X}" y1="${frameY}" x2="${fixed2X}" y2="${frameBottom}"/>
+<line x1="${fan2X}" y1="${frameY}" x2="${fan2X}" y2="${frameBottom}"/>
+<polyline points="${arrow1X+12},${upperY+(fanBottomY-upperY)/2-18} ${arrow1X-5},${upperY+(fanBottomY-upperY)/2} ${arrow1X+12},${upperY+(fanBottomY-upperY)/2+18}"/>
+<polyline points="${arrow2X+12},${upperY+(fanBottomY-upperY)/2-18} ${arrow2X-5},${upperY+(fanBottomY-upperY)/2} ${arrow2X+12},${upperY+(fanBottomY-upperY)/2+18}"/>
+${verticalDimension(8,frameY,upperY,Math.round(upperH),frameLeft)}
+${verticalDimension(8,upperY,fanBottomY,Math.round(FH),frameLeft)}
+${verticalDimension(8,fanBottomY,frameBottom,Math.round(lowerH),frameLeft)}
+${totalHeightDimension(212,frameY,frameBottom,Math.round(H),frameRight)}
+${horizontalDimension(frameX,frameX+drawW,165,Math.round(W),frameBottom)}
+</svg>`
+}
+
+function drawDiagram(){
+if(currentMode===4)drawMode4();
+else if(currentMode===3)drawMode3();
+else if(currentMode==='tonggao')drawModeTonggao();
+else if(currentMode==='double')drawModeDouble();
+else if(currentMode==='balcony')drawModeBalcony();
+else drawModeBalconyDouble()
+}
+
+function switchMode(v){
+saveCurrentData();
+currentMode=v==='3'||v==='4'?+v:v;
+
+const u=document.getElementById('upperBrightBox');
+const l=document.getElementById('lowerBrightBox');
+
+if(currentMode==='balcony'||currentMode==='balcony2'){
+u.classList.remove('hidden');
+l.classList.remove('hidden');
+rowBright.className='';
+rowBrightFan.className='hidden';
+label1.innerText='下亮固定玻璃';
+label2.innerText='上亮固定玻璃';
+label4.innerText='扇子玻璃'
+}else{
+u.classList.add('hidden');
+l.classList.add('hidden');
+rowBright.className='';
+rowBrightFan.className='hidden';
+
+if(currentMode===4){
+rowBrightFan.className='';
+label1.innerText='下固定玻璃';
+label2.innerText='上亮固定玻璃';
+label4.innerText='扇子玻璃'
+}else if(currentMode==='double'){
+label1.innerText='下中间玻璃';
+label2.innerText='上亮玻璃';
+label4.innerText='扇子玻璃'
+}else if(currentMode==='tonggao'){
+label1.innerText='通高大玻璃';
+label2.innerText='右侧上亮玻璃';
+label4.innerText='扇子玻璃'
+}else{
+label1.innerText='下固定玻璃';
+label2.innerText='上亮玻璃';
+label4.innerText='扇子玻璃'
+}
+}
+
+loadDataToInputs();
+calc()
+}
+
+function saveCurrentData(){
+data[currentMode]={
+winW:winW.value,
+winH:winH.value,
+fanW:fanW.value,
+fanH:fanH.value,
+upperBright:upperBright.value,
+lowerBright:lowerBright.value,
+winNum:document.getElementById('winNum').value
+}
+}
+
+function loadDataToInputs(){
+winW.value=data[currentMode].winW;
+winH.value=data[currentMode].winH;
+fanW.value=data[currentMode].fanW;
+fanH.value=data[currentMode].fanH;
+upperBright.value=data[currentMode].upperBright||'';
+lowerBright.value=data[currentMode].lowerBright||'';
+document.getElementById('winNum').value=data[currentMode].winNum||1
+}
+
+function showResult(id,size,count,unit){
+document.getElementById(id+'_size').innerHTML='<b>'+size+'</b>';
+document.getElementById(id+'_count').innerText='*'+count+unit
+}
+
+function calc(){
+saveCurrentData();
+
+const{W,H,FW,FH,upperBright,lowerBright}=getValues();
+const num=parseInt(data[currentMode].winNum)||1;
+
+drawDiagram();
+
+areaNum.innerText=((W*H*num)/1e6).toFixed(2);
+areaUnit.innerText='m² (共 '+num+' 套)';
+perimeterNum.innerText=(((H+W)/1000)*2*num).toFixed(2);
+
+const gW=W-100-FW-29-10;
+const gH=H-100-FH-29-10;
+
+if(currentMode==='balcony'||currentMode==='balcony2'){
+
+const usableW=W-100-29-29;
+const fixedW=currentMode==='balcony2'?(usableW-FW*2)/2:(usableW-FW)/2;
+const totalBrightH=H-100-FH-29-29;
+
+let up=upperBright;
+let lo=lowerBright;
+
+if(up<=0&&lo<=0){
+up=totalBrightH/2;
+lo=totalBrightH/2
+}else if(up>0&&lo<=0){
+lo=totalBrightH-up
+}else if(lo>0&&up<=0){
+up=totalBrightH-lo
+}
+
+showResult('g1',Math.round(fixedW)+'×'+Math.round(lo),num*2,'块');
+showResult('g2',Math.round(fixedW)+'×'+Math.round(up),num*2,'块');
+showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),currentMode==='balcony2'?num*2:num,'块');
+showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),currentMode==='balcony2'?num*2:num,'个');
+
+return
+}
+
+if(currentMode==='double'){
+
+showResult('g2',Math.round(((W-100-29)/2)-10)+'×'+Math.round(gH),num*2,'块');
+showResult('g1',Math.round(W-100-2*FW-29-29-10)+'×'+Math.round(FH-10),num,'块');
+showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num*2,'块');
+showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num*2,'个')
+
+}else if(currentMode==='tonggao'){
+
+showResult('g1',Math.round(gW)+'×'+Math.round(H-110),num,'块');
+showResult('g2',Math.round(FW-10)+'×'+Math.round(gH),num,'块');
+showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num,'块');
+showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num,'个')
+
+}else{
+
+showResult('g1',Math.round(gW)+'×'+Math.round(FH-10),num,'块');
+showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num,'块');
+showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num,'个');
+
+if(currentMode===4){
+
+showResult('g2',Math.round(gW)+'×'+Math.round(gH),num,'块');
+showResult('g3',Math.round(FW-10)+'×'+Math.round(gH),num,'块')
+
+}else{
+
+showResult('g2',Math.round(W-110)+'×'+Math.round(gH),num,'块')
+
+}
+}
+}
+
+/* =========================
+   导出玻璃图片
+   ========================= */
+
+function exportGlassImage(event){
+
+if(event)event.preventDefault();
+
+saveCurrentData();
+
+const glassList=[];
+
+['rowG1','rowBright','rowBrightFan','rowG4'].forEach(id=>{
+
+const row=document.getElementById(id);
+
+if(!row||row.classList.contains('hidden'))return;
+
+const size=row.querySelector('[id$="_size"]');
+const count=row.querySelector('[id$="_count"]');
+
+if(size&&size.innerText!=='-'){
+
+glassList.push({
+size:size.innerText.trim(),
+count:count?count.innerText.trim():''
+});
+
+}
+
+});
+
+if(!glassList.length)return;
+
+const svg=document.querySelector('#diagramWrapper svg');
+
+if(!svg)return;
+
+let svgText=new XMLSerializer().serializeToString(svg);
+
+const exportStyle=`
+<style>
+.svg-canvas rect{
+fill:#fff;
+stroke:#333;
+stroke-width:2
+}
+.svg-canvas line{
+stroke:#333;
+stroke-width:2
+}
+.svg-canvas polyline{
+fill:none;
+stroke:#333;
+stroke-width:2;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+.dimension-line{
+stroke:#333;
+stroke-width:1.2;
+fill:none
+}
+.dimension-dash{
+stroke:#333;
+stroke-width:1;
+stroke-dasharray:3 3;
+fill:none
+}
+.dimension-text{
+fill:#333;
+font-family:Arial,sans-serif;
+font-size:8px;
+font-weight:400;
+letter-spacing:-.3px;
+text-anchor:middle;
+dominant-baseline:middle
+}
+</style>`;
+
+svgText=svgText.replace('<defs>',exportStyle+'<defs>');
+svgText=svgText.replace(/var\(--text-main\)/g,'#333');
+
+const canvas=document.createElement('canvas');
+
+const scale=2;
+const canvasW=1800;
+const canvasH=1100;
+
+canvas.width=canvasW*scale;
+canvas.height=canvasH*scale;
+
+const ctx=canvas.getContext('2d');
+
+ctx.scale(scale,scale);
+
+ctx.fillStyle='#fff';
+ctx.fillRect(0,0,canvasW,canvasH);
+
+const img=new Image();
+
+const svgBlob=new Blob(
+[svgText],
+{type:'image/svg+xml;charset=utf-8'}
+);
+
+const url=URL.createObjectURL(svgBlob);
+
+img.onload=()=>{
+
+/* =========================
+   右侧卡片
+   ========================= */
+
+const cardX=820;
+const cardW=930;
+const cardH=150;
+const gap=20;
+const cardTop=60;
+
+const cardsHeight=
+glassList.length*cardH+
+(glassList.length-1)*gap;
+
+/* =========================
+   左侧窗型图
+   ========================= */
+
+const diagramBoxX=45;
+const diagramBoxW=700;
+
+const svgViewW=220;
+const svgViewH=180;
+
+const diagramW=700;
+const diagramH=diagramW*(svgViewH/svgViewW);
+
+/*
+ * 关键修改：
+ * 窗型图按照右侧玻璃列表整体高度
+ * 自动上下居中
+ *
+ * 这样上下留白对称
+ * 横向尺寸线保持水平
+ * 不再出现窗型图偏上或偏下
+ */
+
+const diagramY=
+cardTop+
+(cardsHeight-diagramH)/2;
+
+ctx.drawImage(
+img,
+diagramBoxX,
+diagramY,
+diagramW,
+diagramH
+);
+
+/* =========================
+   右侧玻璃尺寸卡片
+   ========================= */
+
+glassList.forEach((item,i)=>{
+
+const y=cardTop+i*(cardH+gap);
+
+ctx.save();
+
+ctx.strokeStyle='#e3e3e3';
+ctx.lineWidth=2;
+
+ctx.beginPath();
+ctx.roundRect(
+cardX,
+y,
+cardW,
+cardH,
+26
+);
+ctx.stroke();
+
+ctx.fillStyle='#333';
+
+ctx.font='900 68px Arial,sans-serif';
+ctx.textAlign='center';
+ctx.textBaseline='middle';
+
+ctx.fillText(
+item.size,
+cardX+cardW/2-35,
+y+cardH/2
+);
+
+ctx.fillStyle='#666';
+
+ctx.font='800 38px Arial,sans-serif';
+ctx.textAlign='right';
+
+ctx.fillText(
+item.count,
+cardX+cardW-35,
+y+cardH/2
+);
+
+ctx.restore();
+
+});
+
+URL.revokeObjectURL(url);
+
+canvas.toBlob(async blob=>{
+
+const file=new File(
+[blob],
+'玻璃尺寸.png',
+{type:'image/png'}
+);
+
+if(
+navigator.share&&
+navigator.canShare&&
+navigator.canShare({files:[file]})
+){
+
+try{
+
+await navigator.share({
+files:[file],
+title:'玻璃尺寸'
+});
+
+}catch(e){}
+
+}else{
+
+const a=document.createElement('a');
+
+a.download='玻璃尺寸.png';
+a.href=URL.createObjectURL(blob);
+
+a.click();
+
+setTimeout(
+()=>URL.revokeObjectURL(a.href),
+1000
+);
+
+}
+
+},'image/png');
+
+};
+
+img.src=url;
+
+}
+
+window.onload=()=>{
+loadDataToInputs();
+calc()
+}
 </script>
 
 </body>
