@@ -70,8 +70,7 @@ margin-bottom:10px
 .diagram-container,
 .input-box,
 .action-panel,
-.history-panel,
-.glass-panel{
+.history-panel{
 background:var(--card-bg);
 border-radius:12px;
 box-shadow:0 2px 8px rgba(0,0,0,.05)
@@ -224,8 +223,7 @@ border-radius:9px;
 padding:10px;
 margin-bottom:8px;
 font-size:.9rem;
-position:relative;
-cursor:pointer
+position:relative
 }
 
 .list-item:last-child,
@@ -256,8 +254,20 @@ color:#f44336;
 font-size:1rem;
 font-weight:bold;
 padding:3px 6px;
-cursor:pointer;
 z-index:2
+}
+
+.history-delete-btn{
+position:absolute;
+right:8px;
+top:8px;
+border:0;
+background:transparent;
+color:#f44336;
+font-size:1.1rem;
+font-weight:bold;
+padding:3px 6px;
+z-index:3
 }
 
 .clear-panel-btn{
@@ -512,34 +522,26 @@ border-radius:8px;
 text-align:center
 }
 
-.glass-panel{
-margin-bottom:10px;
-overflow:hidden
-}
-
-.glass-panel-title{
-height:48px;
-padding:0 14px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-font-size:1rem;
-font-weight:900
+.glass-section{
+position:relative
 }
 
 .glass-toggle{
+width:100%;
 border:1px solid #ccc;
-background:var(--input-bg);
+border-radius:10px;
+background:var(--card-bg);
 color:var(--text-main);
-border-radius:8px;
-padding:5px 12px;
-font-size:.8rem;
-cursor:pointer
+padding:10px;
+font-size:.9rem;
+font-weight:800;
+margin-bottom:8px;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent
 }
 
 .glass-table-wrap{
-display:none;
-padding:0 10px 5px
+display:none
 }
 
 .glass-table-wrap.show{
@@ -630,27 +632,12 @@ margin-left:5px
 color:#9c27b0
 }
 
-.history-item:hover{
-opacity:.9
+.history-item{
+cursor:pointer
 }
 
-.history-delete{
-position:absolute;
-right:8px;
-top:8px;
-border:0;
-background:transparent;
-color:#f44336;
-font-size:1.1rem;
-font-weight:900;
-padding:2px 6px;
-cursor:pointer;
-z-index:3
-}
-
-.export-screen-label{
-font-weight:900;
-color:#ff9800
+.history-item:active{
+transform:scale(.99)
 }
 </style>
 </head>
@@ -824,17 +811,11 @@ color:#ff9800
 
 </div>
 
-<div class="glass-panel">
+<div class="glass-section">
 
-<div class="glass-panel-title">
-
-<span>玻璃尺寸</span>
-
-<button type="button" id="glassToggle" class="glass-toggle">
-展开
+<button type="button" class="glass-toggle" id="glassToggle">
+展开玻璃尺寸
 </button>
-
-</div>
 
 <div class="glass-table-wrap" id="glassTableWrap">
 
@@ -957,7 +938,7 @@ glassCollapsed=!glassCollapsed;
 $('glassTableWrap').classList.toggle('show',!glassCollapsed);
 
 $('glassToggle').innerText=
-glassCollapsed?'展开':'收起';
+glassCollapsed?'展开玻璃尺寸':'收起玻璃尺寸';
 
 }
 
@@ -1800,11 +1781,17 @@ mode:$('modeDropdown').selectedOptions[0].text,
 
 modeValue:currentMode,
 
-data:JSON.parse(JSON.stringify(data[currentMode])),
-
 W:data[currentMode].winW,
 
 H:data[currentMode].winH,
+
+FW:data[currentMode].fanW,
+
+FH:data[currentMode].fanH,
+
+upperBright:data[currentMode].upperBright,
+
+lowerBright:data[currentMode].lowerBright,
 
 num:parseInt(data[currentMode].winNum)||1,
 
@@ -1912,128 +1899,29 @@ renderList()
 
 }
 
-function renderHistory(){
-
-const box=$('historyContent');
-
-if(!historyList.length){
-
-box.innerHTML='<div class="panel-empty">暂无历史记录</div>';
-
-return
-
-}
-
-box.innerHTML='';
-
-historyList.forEach(item=>{
-
-const div=document.createElement('div');
-
-div.className='history-item';
-
-let html='';
-
-item.results.forEach(r=>{
-
-html+=`${r.name}：${r.size} ${r.count}<br>`
-
-});
-
-const num=item.num||1;
-
-div.innerHTML=`
-
-<button type="button" class="history-delete" data-id="${item.id}">×</button>
-
-<div class="history-item-title">
-${item.mode}
-<span class="item-size">${item.W}×${item.H}×${num}个</span>
-</div>
-
-<div class="history-item-detail">
-${item.time}<br>
-${html}
-</div>
-
-`;
-
-div.addEventListener('click',function(){
-
-restoreHistory(item)
-
-});
-
-box.appendChild(div)
-
-});
-
-box.querySelectorAll('.history-delete').forEach(btn=>{
-
-btn.addEventListener('click',function(e){
-
-e.stopPropagation();
-
-const id=Number(this.dataset.id);
-
-historyList=historyList.filter(i=>i.id!==id);
-
-localStorage.setItem(
-'windowHistoryList',
-JSON.stringify(historyList)
-);
-
-renderHistory()
-
-})
-
-})
-
-}
-
 function restoreHistory(item){
 
-const mode=item.modeValue!==undefined?
-item.modeValue:
-currentMode;
+currentMode=item.modeValue;
 
-if(!data[mode])return;
+$('modeDropdown').value=String(currentMode);
 
-currentMode=mode;
+data[currentMode]={
 
-$('modeDropdown').value=String(mode);
+winW:item.W||'',
 
-if(item.data){
+winH:item.H||'',
 
-data[mode]=Object.assign(
-{},
-data[mode],
-item.data
-)
+fanW:item.FW||'',
 
-}else{
+fanH:item.FH||'',
 
-data[mode].winW=item.W||data[mode].winW;
+upperBright:item.upperBright||'',
 
-data[mode].winH=item.H||data[mode].winH;
+lowerBright:item.lowerBright||'',
 
-data[mode].winNum=item.num||1
+winNum:item.num||1
 
-}
-
-switchModeWithoutSave();
-
-loadDataToInputs();
-
-calc();
-
-$('historyPanel').classList.remove('show');
-
-alert('已恢复历史窗户');
-
-}
-
-function switchModeWithoutSave(){
+};
 
 const u=$('upperBrightBox');
 
@@ -2103,6 +1991,94 @@ $('label4').innerText='扇子玻璃'
 
 }
 
+loadDataToInputs();
+
+calc();
+
+window.scrollTo({
+top:0,
+behavior:'smooth'
+});
+
+}
+
+function renderHistory(){
+
+const box=$('historyContent');
+
+if(!historyList.length){
+
+box.innerHTML='<div class="panel-empty">暂无历史记录</div>';
+
+return
+
+}
+
+box.innerHTML='';
+
+historyList.forEach(item=>{
+
+const div=document.createElement('div');
+
+div.className='history-item';
+
+let html='';
+
+item.results.forEach(r=>{
+
+html+=`${r.name}：${r.size} ${r.count}<br>`
+
+});
+
+const num=item.num||1;
+
+div.innerHTML=`
+
+<button type="button" class="history-delete-btn" data-id="${item.id}">×</button>
+
+<div class="history-item-title">
+${item.mode}
+<span class="item-size">${item.W}×${item.H}×${num}个</span>
+</div>
+
+<div class="history-item-detail">
+${item.time}<br>
+${html}
+</div>
+
+`;
+
+div.addEventListener('click',function(){
+
+restoreHistory(item)
+
+});
+
+box.appendChild(div)
+
+});
+
+box.querySelectorAll('.history-delete-btn').forEach(btn=>{
+
+btn.addEventListener('click',function(e){
+
+e.stopPropagation();
+
+const id=Number(this.dataset.id);
+
+historyList=historyList.filter(i=>i.id!==id);
+
+localStorage.setItem(
+'windowHistoryList',
+JSON.stringify(historyList)
+);
+
+renderHistory()
+
+})
+
+})
+
 }
 
 function toggleList(){
@@ -2147,13 +2123,33 @@ saveCurrentData();
 
 const glassList=getCurrentResults();
 
-if(!glassList.length)return;
+if(!glassList.length){
 
-const svg=$('#diagramWrapper svg');
+alert('暂无玻璃尺寸');
 
-if(!svg)return;
+return
 
-let svgText=new XMLSerializer().serializeToString(svg);
+}
+
+const sourceSvg=$('diagramWrapper').querySelector('svg');
+
+if(!sourceSvg){
+
+alert('暂无窗型图');
+
+return
+
+}
+
+const svgClone=sourceSvg.cloneNode(true);
+
+svgClone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+
+svgClone.setAttribute('width','220');
+
+svgClone.setAttribute('height','180');
+
+let svgText=new XMLSerializer().serializeToString(svgClone);
 
 svgText=svgText.replace(
 /var\(--text-main\)/g,
@@ -2161,25 +2157,17 @@ svgText=svgText.replace(
 );
 
 svgText=svgText.replace(
-'<svg ',
-'<svg xmlns="http://www.w3.org/2000/svg" '
-);
-
-const exportStyle=`
-
-<style>
-
+/<defs>/,
+`<style>
 .svg-canvas rect{
 fill:#fff;
 stroke:#333;
 stroke-width:2
 }
-
 .svg-canvas line{
 stroke:#333;
 stroke-width:2
 }
-
 .svg-canvas polyline{
 fill:none;
 stroke:#333;
@@ -2187,20 +2175,17 @@ stroke-width:2;
 stroke-linecap:round;
 stroke-linejoin:round
 }
-
 .dimension-line{
 stroke:#333;
 stroke-width:1.2;
 fill:none
 }
-
 .dimension-dash{
 stroke:#333;
 stroke-width:1;
 stroke-dasharray:3 3;
 fill:none
 }
-
 .dimension-text{
 fill:#333;
 font-family:Arial,sans-serif;
@@ -2210,29 +2195,39 @@ letter-spacing:-.3px;
 text-anchor:middle;
 dominant-baseline:middle
 }
-
-</style>`;
-
-svgText=svgText.replace(
-'<defs>',
-exportStyle+'<defs>'
+</style><defs>`
 );
 
 const canvas=document.createElement('canvas');
 
-const scale=2;
-
 const canvasW=1800;
 
-const canvasH=1100;
+const cardH=150;
 
-canvas.width=canvasW*scale;
+const gap=20;
 
-canvas.height=canvasH*scale;
+const cardTop=60;
+
+const cardsHeight=
+glassList.length*cardH+
+(glassList.length-1)*gap;
+
+const diagramW=700;
+
+const diagramH=diagramW*(180/220);
+
+const canvasH=Math.max(
+1100,
+Math.ceil(Math.max(cardsHeight,diagramH)+120)
+);
+
+canvas.width=canvasW*2;
+
+canvas.height=canvasH*2;
 
 const ctx=canvas.getContext('2d');
 
-ctx.scale(scale,scale);
+ctx.scale(2,2);
 
 ctx.fillStyle='#fff';
 
@@ -2249,41 +2244,23 @@ const url=URL.createObjectURL(svgBlob);
 
 img.onload=()=>{
 
-const cardX=820;
-
-const cardW=930;
-
-const cardH=150;
-
-const gap=20;
-
-const cardTop=60;
-
-const cardsHeight=
-glassList.length*cardH+
-(glassList.length-1)*gap;
-
-const diagramBoxX=45;
-
-const svgViewW=220;
-
-const svgViewH=180;
-
-const diagramW=700;
-
-const diagramH=diagramW*(svgViewH/svgViewW);
+const diagramX=50;
 
 const diagramY=
-cardTop+
-(cardsHeight-diagramH)/2;
+60+
+(Math.max(cardsHeight,diagramH)-diagramH)/2;
 
 ctx.drawImage(
 img,
-diagramBoxX,
+diagramX,
 diagramY,
 diagramW,
 diagramH
 );
+
+const cardX=820;
+
+const cardW=930;
 
 glassList.forEach((item,i)=>{
 
@@ -2293,8 +2270,6 @@ const isScreen=
 item.name.includes('纱窗');
 
 ctx.save();
-
-ctx.fillStyle=isScreen?'#fff8e8':'#fff';
 
 ctx.strokeStyle=isScreen?'#ff9800':'#e3e3e3';
 
@@ -2309,8 +2284,6 @@ cardW,
 cardH,
 26
 );
-
-ctx.fill();
 
 ctx.stroke();
 
@@ -2344,7 +2317,7 @@ if(isScreen){
 
 ctx.fillStyle='#ff9800';
 
-ctx.font='900 34px sans-serif';
+ctx.font='900 34px Arial,sans-serif';
 
 ctx.textAlign='left';
 
@@ -2363,6 +2336,14 @@ ctx.restore()
 URL.revokeObjectURL(url);
 
 canvas.toBlob(async blob=>{
+
+if(!blob){
+
+alert('导出失败');
+
+return
+
+}
 
 const file=new File(
 [blob],
@@ -2410,7 +2391,7 @@ img.onerror=()=>{
 
 URL.revokeObjectURL(url);
 
-alert('窗户图导出失败，请重新点击导出');
+alert('导出失败');
 
 };
 
@@ -2503,6 +2484,10 @@ loadDataToInputs();
 renderList();
 
 renderHistory();
+
+$('glassTableWrap').classList.remove('show');
+
+$('glassToggle').innerText='展开玻璃尺寸';
 
 calc()
 
