@@ -4,93 +4,669 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>门窗玻璃计算器</title>
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-touch-fullscreen" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="门窗助手">
+
 <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22short_name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22start_url%22:%22https://kimcao0918.github.io/kimcao0918/MC.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f0f2f5%22}">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="icon-180.png">
 
 <style>
-:root{--bg-color:#f0f2f5;--card-bg:#fff;--text-main:#333;--accent:#4CAF50;--input-bg:#f8f8f8}
-@media(prefers-color-scheme:dark){:root{--bg-color:#121212;--card-bg:#1e1e1e;--text-main:#fff;--accent:#66bb6a;--input-bg:#2d2d2d}}
+:root{
+--bg-color:#f0f2f5;
+--card-bg:#fff;
+--text-main:#333;
+--accent:#4CAF50;
+--input-bg:#f8f8f8
+}
+
+@media(prefers-color-scheme:dark){
+:root{
+--bg-color:#121212;
+--card-bg:#1e1e1e;
+--text-main:#fff;
+--accent:#66bb6a;
+--input-bg:#2d2d2d
+}
+}
+
 *{box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg-color);color:var(--text-main);margin:0;padding:calc(15px + env(safe-area-inset-top)) 20px 20px;user-select:none}
-.container{max-width:100%;margin:auto}
-h1{text-align:center;font-size:1.5rem;color:var(--accent);margin:0 0 15px;font-weight:800}
-.top-row{display:grid;grid-template-columns:1.3fr .7fr;gap:12px;margin-bottom:15px}
-.select-box,.num-box,.diagram-container,.input-box{background:var(--card-bg);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.select-box{padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
-.select-box label,.num-box label{font-size:.85rem;font-weight:bold;margin-bottom:5px;text-align:center}
-.select-box label{color:#888}
-.select-box select{width:100%;padding:10px 25px 10px 10px;font-size:.95rem;font-weight:800;color:var(--text-main);background:var(--input-bg);border:0;border-radius:8px;outline:0;text-align:center;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");background-repeat:no-repeat;background-position:right 8px center;background-size:16px}
-.num-box{background:#eef9ee;border:1px dashed var(--accent);padding:10px 12px;display:flex;flex-direction:column;justify-content:center}
-.num-box label{color:var(--accent)}
-.num-box input{width:100%;padding:8px 0;border:0;background:transparent;color:var(--text-main);font-size:1.3rem;font-weight:800;text-align:center}
 
-.diagram-container{padding:15px;display:flex;flex-direction:column;align-items:center;margin-bottom:15px}
-.diagram-title-row{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
-.diagram-toggle{border:1px solid #ccc;background:var(--input-bg);color:var(--text-main);border-radius:8px;padding:4px 12px;font-size:.8rem;cursor:pointer}
-.diagram-wrapper{width:220px;height:180px;display:flex;justify-content:center;align-items:center;margin-bottom:12px;overflow:visible;transition:all .3s}
-.diagram-wrapper.collapse{height:0;margin-bottom:0;opacity:0;pointer-events:none}
-.svg-canvas{width:100%;height:100%;overflow:visible}
-.svg-canvas rect{fill:rgba(76,175,80,.02);stroke:var(--text-main);stroke-width:2}
-.svg-canvas line{stroke:var(--text-main);stroke-width:2}
-.svg-canvas polyline{fill:none;stroke:var(--text-main);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.dimension-line{stroke:var(--text-main);stroke-width:1.2;fill:none}
-.dimension-dash{stroke:var(--text-main);stroke-width:1;stroke-dasharray:3 3;fill:none}
-.dimension-text{fill:var(--text-main);font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;font-size:8px;font-weight:400;letter-spacing:-.3px;text-anchor:middle;dominant-baseline:middle}
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+background:var(--bg-color);
+color:var(--text-main);
+margin:0;
+padding:calc(15px + env(safe-area-inset-top)) 20px 20px;
+user-select:none
+}
 
-.area-display-box{width:100%;border-top:1px dashed rgba(0,0,0,.08);padding-top:10px;text-align:center}
-.area-info-row{width:100%;display:flex;align-items:center;justify-content:center;gap:18px}
-.area-info-item{text-align:center;min-width:0}
-.area-title{font-size:.85rem;font-weight:bold;color:#2196F3;margin-bottom:3px}
-.area-val-wrapper{display:inline-flex;align-items:baseline;justify-content:center}
-.area-num{font-size:1.5rem;font-weight:900}
-.area-unit{font-size:.95rem;font-weight:800;color:#666;margin-left:4px}
-.perimeter-display{display:none}
-.perimeter-display.show{display:block}
-.perimeter-title{font-size:.85rem;font-weight:bold;color:#ff9800;margin-bottom:3px;white-space:nowrap}
-.perimeter-num{font-size:1.5rem;font-weight:900}
-.perimeter-unit{font-size:.95rem;font-weight:800;color:#666;margin-left:4px}
+.container{
+max-width:100%;
+margin:auto
+}
 
-.ios-switch{position:relative;display:inline-block;width:42px;height:25px;vertical-align:middle;margin-left:5px}
-.ios-switch input{opacity:0;width:0;height:0}
-.ios-slider{position:absolute;cursor:pointer;inset:0;background:#d1d1d6;border-radius:25px;transition:.25s}
-.ios-slider:before{content:"";position:absolute;height:21px;width:21px;left:2px;top:2px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.25s}
-.ios-switch input:checked+.ios-slider{background:#34c759}
-.ios-switch input:checked+.ios-slider:before{transform:translateX(17px)}
+h1{
+text-align:center;
+font-size:1.5rem;
+color:var(--accent);
+margin:0 0 15px;
+font-weight:800
+}
 
-.input-group{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px}
-.input-box{padding:15px;text-align:center}
-.input-box label{display:block;font-size:.9rem;color:#888;margin-bottom:8px;font-weight:bold}
-.input-box input{width:90%;padding:12px;border:0;background:var(--input-bg);color:var(--text-main);font-size:1.4rem;font-weight:800;border-radius:8px;text-align:center}
+.top-row{
+display:grid;
+grid-template-columns:1.3fr .7fr;
+gap:12px;
+margin-bottom:10px
+}
 
-table{width:100%;border-collapse:separate;border-spacing:0 10px;table-layout:fixed}
-td{background:var(--card-bg);padding:15px 10px;border:1px solid rgba(0,0,0,.1);vertical-align:middle;box-shadow:0 2px 4px rgba(0,0,0,.02);position:relative}
-td:first-child{border-radius:12px 0 0 12px;color:var(--accent);width:35%;font-size:.95rem;font-weight:800;text-align:center;word-break:break-all}
-td:last-child{border-radius:0 12px 12px 0;width:65%}
-.result-cell{position:relative;width:100%;height:24px;display:flex;align-items:center;justify-content:center}
-.size-val{font-size:1.35rem;white-space:nowrap;text-align:center;position:absolute;left:50%;transform:translateX(-50%)}
-.size-val b{font-weight:900!important}
-.count-val{font-size:.95rem;font-weight:800;color:#666;position:absolute;right:10px;white-space:nowrap}
-.hidden{display:none!important}
-.screen-row td:first-child{color:#ff9800}
-.screen-row .size-val b{font-style:italic}
+.select-box,
+.num-box,
+.diagram-container,
+.input-box,
+.action-panel,
+.history-panel,
+.glass-panel{
+background:var(--card-bg);
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.05)
+}
+
+.select-box{
+padding:10px 12px;
+display:flex;
+flex-direction:column;
+justify-content:center
+}
+
+.select-box label,
+.num-box label{
+font-size:.85rem;
+font-weight:bold;
+margin-bottom:5px;
+text-align:center
+}
+
+.select-box label{
+color:#888
+}
+
+.select-box select{
+width:100%;
+padding:10px 25px 10px 10px;
+font-size:.95rem;
+font-weight:800;
+color:var(--text-main);
+background:var(--input-bg);
+border:0;
+border-radius:8px;
+outline:0;
+text-align:center;
+appearance:none;
+-webkit-appearance:none;
+background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+background-repeat:no-repeat;
+background-position:right 8px center;
+background-size:16px
+}
+
+.num-box{
+background:#eef9ee;
+border:1px dashed var(--accent);
+padding:10px 12px;
+display:flex;
+flex-direction:column;
+justify-content:center
+}
+
+.num-box label{
+color:var(--accent)
+}
+
+.num-box input{
+width:100%;
+padding:8px 0;
+border:0;
+background:transparent;
+color:var(--text-main);
+font-size:1.3rem;
+font-weight:800;
+text-align:center
+}
+
+.action-row{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;
+margin-bottom:10px
+}
+
+.action-btn{
+border:0;
+border-radius:10px;
+padding:10px 4px;
+font-size:.82rem;
+font-weight:800;
+background:var(--card-bg);
+color:var(--text-main);
+box-shadow:0 2px 8px rgba(0,0,0,.05);
+cursor:pointer;
+-webkit-tap-highlight-color:transparent
+}
+
+.action-btn:active{
+transform:scale(.96)
+}
+
+.action-btn.green{
+color:#4CAF50;
+border:1px solid #4CAF50
+}
+
+.action-btn.blue{
+color:#2196F3;
+border:1px solid #2196F3
+}
+
+.action-btn.orange{
+color:#ff9800;
+border:1px solid #ff9800
+}
+
+.action-btn.purple{
+color:#9c27b0;
+border:1px solid #9c27b0
+}
+
+.action-panel,
+.history-panel{
+display:none;
+padding:12px;
+margin-bottom:10px
+}
+
+.action-panel.show,
+.history-panel.show{
+display:block
+}
+
+.panel-title{
+font-size:1rem;
+font-weight:900;
+margin-bottom:10px;
+display:flex;
+justify-content:space-between;
+align-items:center
+}
+
+.panel-title span{
+font-size:.8rem;
+font-weight:normal;
+color:#888
+}
+
+.panel-empty{
+text-align:center;
+color:#999;
+font-size:.9rem;
+padding:15px 0
+}
+
+.list-item,
+.history-item{
+background:var(--input-bg);
+border-radius:9px;
+padding:10px;
+margin-bottom:8px;
+font-size:.9rem;
+position:relative;
+cursor:pointer
+}
+
+.list-item:last-child,
+.history-item:last-child{
+margin-bottom:0
+}
+
+.list-item-title,
+.history-item-title{
+font-weight:900;
+margin-bottom:5px
+}
+
+.list-item-detail,
+.history-item-detail{
+color:#666;
+line-height:1.6;
+font-size:.84rem
+}
+
+.delete-btn{
+position:absolute;
+right:8px;
+top:8px;
+border:0;
+background:transparent;
+color:#f44336;
+font-size:1rem;
+font-weight:bold;
+padding:3px 6px;
+cursor:pointer;
+z-index:2
+}
+
+.clear-panel-btn{
+border:0;
+background:transparent;
+color:#f44336;
+font-size:.8rem;
+font-weight:bold;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent
+}
+
+.diagram-container{
+padding:15px;
+display:flex;
+flex-direction:column;
+align-items:center;
+margin-bottom:15px
+}
+
+.diagram-title-row{
+width:100%;
+display:flex;
+justify-content:flex-end;
+align-items:center;
+margin-bottom:3px
+}
+
+.diagram-toggle{
+border:1px solid #ccc;
+background:var(--input-bg);
+color:var(--text-main);
+border-radius:8px;
+padding:4px 12px;
+font-size:.8rem;
+cursor:pointer
+}
+
+.diagram-wrapper{
+width:220px;
+height:180px;
+display:flex;
+justify-content:center;
+align-items:center;
+margin-bottom:12px;
+overflow:visible;
+transition:all .3s
+}
+
+.diagram-wrapper.collapse{
+height:0;
+margin-bottom:0;
+opacity:0;
+pointer-events:none
+}
+
+.svg-canvas{
+width:100%;
+height:100%;
+overflow:visible
+}
+
+.svg-canvas rect{
+fill:rgba(76,175,80,.02);
+stroke:var(--text-main);
+stroke-width:2
+}
+
+.svg-canvas line{
+stroke:var(--text-main);
+stroke-width:2
+}
+
+.svg-canvas polyline{
+fill:none;
+stroke:var(--text-main);
+stroke-width:2;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+.dimension-line{
+stroke:var(--text-main);
+stroke-width:1.2;
+fill:none
+}
+
+.dimension-dash{
+stroke:var(--text-main);
+stroke-width:1;
+stroke-dasharray:3 3;
+fill:none
+}
+
+.dimension-text{
+fill:var(--text-main);
+font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;
+font-size:8px;
+font-weight:400;
+letter-spacing:-.3px;
+text-anchor:middle;
+dominant-baseline:middle
+}
+
+.area-display-box{
+width:100%;
+border-top:1px dashed rgba(0,0,0,.08);
+padding-top:10px;
+text-align:center
+}
+
+.area-info-row{
+width:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:18px
+}
+
+.area-info-item{
+text-align:center;
+min-width:0
+}
+
+.area-title{
+font-size:.85rem;
+font-weight:bold;
+color:#2196F3;
+margin-bottom:3px
+}
+
+.area-val-wrapper{
+display:inline-flex;
+align-items:baseline;
+justify-content:center
+}
+
+.area-num{
+font-size:1.5rem;
+font-weight:900
+}
+
+.area-unit{
+font-size:.95rem;
+font-weight:800;
+color:#666;
+margin-left:4px
+}
+
+.perimeter-display{
+display:none
+}
+
+.perimeter-display.show{
+display:block
+}
+
+.perimeter-title{
+font-size:.85rem;
+font-weight:bold;
+color:#ff9800;
+margin-bottom:3px;
+white-space:nowrap
+}
+
+.perimeter-num{
+font-size:1.5rem;
+font-weight:900
+}
+
+.perimeter-unit{
+font-size:.95rem;
+font-weight:800;
+color:#666;
+margin-left:4px
+}
+
+.ios-switch{
+position:relative;
+display:inline-block;
+width:42px;
+height:25px;
+vertical-align:middle;
+margin-left:5px
+}
+
+.ios-switch input{
+opacity:0;
+width:0;
+height:0
+}
+
+.ios-slider{
+position:absolute;
+cursor:pointer;
+inset:0;
+background:#d1d1d6;
+border-radius:25px;
+transition:.25s
+}
+
+.ios-slider:before{
+content:"";
+position:absolute;
+height:21px;
+width:21px;
+left:2px;
+top:2px;
+background:#fff;
+border-radius:50%;
+box-shadow:0 1px 3px rgba(0,0,0,.25);
+transition:.25s
+}
+
+.ios-switch input:checked+.ios-slider{
+background:#34c759
+}
+
+.ios-switch input:checked+.ios-slider:before{
+transform:translateX(17px)
+}
+
+.input-group{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-bottom:20px
+}
+
+.input-box{
+padding:15px;
+text-align:center
+}
+
+.input-box label{
+display:block;
+font-size:.9rem;
+color:#888;
+margin-bottom:8px;
+font-weight:bold
+}
+
+.input-box input{
+width:90%;
+padding:12px;
+border:0;
+background:var(--input-bg);
+color:var(--text-main);
+font-size:1.4rem;
+font-weight:800;
+border-radius:8px;
+text-align:center
+}
+
+.glass-panel{
+margin-bottom:10px;
+overflow:hidden
+}
+
+.glass-panel-title{
+height:48px;
+padding:0 14px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+font-size:1rem;
+font-weight:900
+}
+
+.glass-toggle{
+border:1px solid #ccc;
+background:var(--input-bg);
+color:var(--text-main);
+border-radius:8px;
+padding:5px 12px;
+font-size:.8rem;
+cursor:pointer
+}
+
+.glass-table-wrap{
+display:none;
+padding:0 10px 5px
+}
+
+.glass-table-wrap.show{
+display:block
+}
+
+table{
+width:100%;
+border-collapse:separate;
+border-spacing:0 10px;
+table-layout:fixed
+}
+
+td{
+background:var(--card-bg);
+padding:15px 10px;
+border:1px solid rgba(0,0,0,.1);
+vertical-align:middle;
+box-shadow:0 2px 4px rgba(0,0,0,.02);
+position:relative
+}
+
+td:first-child{
+border-radius:12px 0 0 12px;
+color:var(--accent);
+width:35%;
+font-size:.95rem;
+font-weight:800;
+text-align:center;
+word-break:break-all
+}
+
+td:last-child{
+border-radius:0 12px 12px 0;
+width:65%
+}
+
+.result-cell{
+position:relative;
+width:100%;
+height:24px;
+display:flex;
+align-items:center;
+justify-content:center
+}
+
+.size-val{
+font-size:1.35rem;
+white-space:nowrap;
+text-align:center;
+position:absolute;
+left:50%;
+transform:translateX(-50%)
+}
+
+.size-val b{
+font-weight:900!important
+}
+
+.count-val{
+font-size:.95rem;
+font-weight:800;
+color:#666;
+position:absolute;
+right:10px;
+white-space:nowrap
+}
+
+.hidden{
+display:none!important
+}
+
+.screen-row td:first-child{
+color:#ff9800
+}
+
+.screen-row .size-val b{
+font-style:italic
+}
+
+.item-size{
+font-weight:900;
+color:var(--accent);
+margin-left:5px
+}
+
+.history-item-title .item-size{
+color:#9c27b0
+}
+
+.history-item:hover{
+opacity:.9
+}
+
+.history-delete{
+position:absolute;
+right:8px;
+top:8px;
+border:0;
+background:transparent;
+color:#f44336;
+font-size:1.1rem;
+font-weight:900;
+padding:2px 6px;
+cursor:pointer;
+z-index:3
+}
+
+.export-screen-label{
+font-weight:900;
+color:#ff9800
+}
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <h1>门窗下料算料助手</h1>
 
 <div class="top-row">
+
 <div class="select-box">
 <label for="modeDropdown">计算模式</label>
-<select id="modeDropdown" onchange="switchMode(this.value)">
+
+<select id="modeDropdown">
 <option value="4" selected>4块 (左右分格+上亮)</option>
 <option value="3">3块 (右开扇+通头顶上亮)</option>
 <option value="tonggao">3块 (左通高大玻璃+右开扇)</option>
@@ -98,86 +674,172 @@ td:last-child{border-radius:0 12px 12px 0;width:65%}
 <option value="balcony">阳台 (固+扇+固)</option>
 <option value="balcony2">阳台 (固+扇+固+扇)</option>
 </select>
+
 </div>
 
 <div class="num-box">
 <label>数量 (套)</label>
-<input type="number" id="winNum" value="1" onclick="clearInputOnClick(this)" oninput="calc()">
+<input type="number" id="winNum" value="1">
 </div>
+
+</div>
+
+<div class="action-row">
+
+<button type="button" class="action-btn green" id="exportButton">
+导出玻璃
+</button>
+
+<button type="button" class="action-btn blue" id="addListButton">
+加入清单
+</button>
+
+<button type="button" class="action-btn orange" id="listButton">
+整理清单
+</button>
+
+<button type="button" class="action-btn purple" id="historyButton">
+历史记录
+</button>
+
+</div>
+
+<div class="action-panel" id="listPanel">
+
+<div class="panel-title">
+<span>整理清单</span>
+<button type="button" class="clear-panel-btn" id="clearListButton">清空清单</button>
+</div>
+
+<div id="listContent"></div>
+
+</div>
+
+<div class="history-panel" id="historyPanel">
+
+<div class="panel-title">
+<span>历史记录</span>
+<button type="button" class="clear-panel-btn" id="clearHistoryButton">清空历史</button>
+</div>
+
+<div id="historyContent"></div>
+
 </div>
 
 <div class="diagram-container">
 
 <div class="diagram-title-row">
-<button id="exportButton" class="diagram-toggle" onclick="exportGlassImage(event)">导出玻璃</button>
-<button id="diagramToggle" class="diagram-toggle" onclick="toggleDiagram()">收起图示</button>
+
+<button type="button" id="diagramToggle" class="diagram-toggle">
+收起图示
+</button>
+
 </div>
 
 <div class="diagram-wrapper" id="diagramWrapper"></div>
 
 <div class="area-display-box">
+
 <div class="area-info-row">
 
 <div class="area-info-item">
-<div class="area-title">窗户总面积</div>
-<div class="area-val-wrapper">
-<span id="areaNum" class="area-num">-</span>
-<span id="areaUnit" class="area-unit"></span>
+
+<div class="area-title">
+窗户总面积
 </div>
+
+<div class="area-val-wrapper">
+
+<span id="areaNum" class="area-num">-</span>
+
+<span id="areaUnit" class="area-unit"></span>
+
+</div>
+
 </div>
 
 <div class="area-info-item">
+
 <div class="perimeter-title">
+
 包边
+
 <label class="ios-switch">
-<input type="checkbox" id="perimeterToggle" onchange="togglePerimeter()">
+
+<input type="checkbox" id="perimeterToggle">
+
 <span class="ios-slider"></span>
+
 </label>
+
 </div>
 
 <div id="perimeterDisplay" class="perimeter-display">
+
 <span id="perimeterNum" class="perimeter-num">-</span>
+
 <span class="perimeter-unit">米</span>
-</div>
+
 </div>
 
 </div>
+
 </div>
+
+</div>
+
 </div>
 
 <div class="input-group">
+
 <div class="input-box">
 <label>窗总高</label>
-<input type="number" id="winH" onclick="clearInputOnClick(this)" oninput="calc()">
+<input type="number" id="winH">
 </div>
 
 <div class="input-box">
 <label>窗总宽</label>
-<input type="number" id="winW" onclick="clearInputOnClick(this)" oninput="calc()">
+<input type="number" id="winW">
 </div>
 
 <div class="input-box" id="fanWBox">
 <label>扇子宽</label>
-<input type="number" id="fanW" onclick="clearInputOnClick(this)" oninput="calc()">
+<input type="number" id="fanW">
 </div>
 
 <div class="input-box" id="fanHBox">
 <label>扇子高</label>
-<input type="number" id="fanH" onclick="clearInputOnClick(this)" oninput="calc()">
+<input type="number" id="fanH">
 </div>
 
 <div class="input-box hidden" id="upperBrightBox">
 <label>上亮高度</label>
-<input type="number" id="upperBright" onclick="clearInputOnClick(this)" oninput="calc()">
+<input type="number" id="upperBright">
 </div>
 
 <div class="input-box hidden" id="lowerBrightBox">
 <label>下亮高度</label>
-<input type="number" id="lowerBright" onclick="clearInputOnClick(this)" oninput="calc()">
-</div>
+<input type="number" id="lowerBright">
 </div>
 
+</div>
+
+<div class="glass-panel">
+
+<div class="glass-panel-title">
+
+<span>玻璃尺寸</span>
+
+<button type="button" id="glassToggle" class="glass-toggle">
+展开
+</button>
+
+</div>
+
+<div class="glass-table-wrap" id="glassTableWrap">
+
 <table>
+
 <tbody id="resultTable">
 
 <tr id="rowG1">
@@ -231,11 +893,17 @@ td:last-child{border-radius:0 12px 12px 0;width:65%}
 </tr>
 
 </tbody>
+
 </table>
 
 </div>
 
+</div>
+
+</div>
+
 <script>
+
 const data={
 4:{winW:1800,winH:1800,fanW:540,fanH:1160,winNum:1},
 3:{winW:1800,winH:1800,fanW:540,fanH:1160,winNum:1},
@@ -245,497 +913,1273 @@ balcony:{winW:2800,winH:2800,fanW:540,fanH:1200,upperBright:721,lowerBright:721,
 balcony2:{winW:3600,winH:2800,fanW:540,fanH:1200,upperBright:721,lowerBright:721,winNum:1}
 };
 
-let currentMode=4,diagramCollapsed=false;
+let currentMode=4;
+let diagramCollapsed=false;
+let glassCollapsed=true;
+
+let shoppingList=JSON.parse(localStorage.getItem('windowShoppingList')||'[]');
+let historyList=JSON.parse(localStorage.getItem('windowHistoryList')||'[]');
+
+function $(id){
+return document.getElementById(id)
+}
 
 function clearInputOnClick(i){
+
 if(!i.dataset.clicked){
+
 i.dataset.clicked='1';
 i.value='';
-setTimeout(()=>delete i.dataset.clicked,300)
+
+setTimeout(()=>{
+delete i.dataset.clicked
+},300)
+
 }
+
 }
 
 function toggleDiagram(){
+
 diagramCollapsed=!diagramCollapsed;
-const w=document.getElementById('diagramWrapper');
-const b=document.getElementById('diagramToggle');
-w.classList.toggle('collapse',diagramCollapsed);
-b.innerText=diagramCollapsed?'展开图示':'收起图示'
+
+$('diagramWrapper').classList.toggle('collapse',diagramCollapsed);
+
+$('diagramToggle').innerText=
+diagramCollapsed?'展开图示':'收起图示';
+
+}
+
+function toggleGlass(){
+
+glassCollapsed=!glassCollapsed;
+
+$('glassTableWrap').classList.toggle('show',!glassCollapsed);
+
+$('glassToggle').innerText=
+glassCollapsed?'展开':'收起';
+
 }
 
 function togglePerimeter(){
-const t=document.getElementById('perimeterToggle');
-const d=document.getElementById('perimeterDisplay');
-d.classList.toggle('show',t.checked);
+
+$('perimeterDisplay').classList.toggle(
+'show',
+$('perimeterToggle').checked
+);
+
 calc()
+
 }
 
 function getValues(){
+
 return{
+
 W:+data[currentMode].winW||0,
 H:+data[currentMode].winH||0,
 FW:+data[currentMode].fanW||0,
 FH:+data[currentMode].fanH||0,
 upperBright:+data[currentMode].upperBright||0,
 lowerBright:+data[currentMode].lowerBright||0
+
 }
+
 }
 
 function svgHeader(){
+
 return`<defs>
 <marker id="arrow" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto-start-reverse">
 <path d="M 0 0 L 5 2.5 L 0 5 z" fill="var(--text-main)"/>
 </marker>
 </defs>`
+
 }
 
 function verticalDimension(x,y1,y2,text,guideX){
+
 return`<line class="dimension-line" x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
 <line class="dimension-dash" x1="${x+5}" y1="${y1}" x2="${guideX}" y2="${y1}"/>
 <line class="dimension-dash" x1="${x+5}" y1="${y2}" x2="${guideX}" y2="${y2}"/>
 <text class="dimension-text" x="${x-10}" y="${(y1+y2)/2}">${text}</text>`
+
 }
 
 function totalHeightDimension(x,y1,y2,text,guideX){
+
 return`<line class="dimension-line" x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
 <line class="dimension-dash" x1="${guideX}" y1="${y1}" x2="${x-5}" y2="${y1}"/>
 <line class="dimension-dash" x1="${guideX}" y1="${y2}" x2="${x-5}" y2="${y2}"/>
 <text class="dimension-text" x="${x+10}" y="${(y1+y2)/2}">${text}</text>`
+
 }
 
 function horizontalDimension(x1,x2,y,text,guideY){
+
 return`<line class="dimension-line" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
 <line class="dimension-dash" x1="${x1}" y1="${guideY}" x2="${x1}" y2="${y-5}"/>
 <line class="dimension-dash" x1="${x2}" y1="${guideY}" x2="${x2}" y2="${y-5}"/>
 <text class="dimension-text" x="${(x1+x2)/2}" y="${y+9}">${text}</text>`
+
 }
 
 function drawMode4(){
+
 const{W,H,FH}=getValues();
+
 const x=50,y=20,width=120,height=120;
+
 const upperHeight=H-100-FH-29;
+
 const upperY=y+height*(upperHeight/H);
 
-document.getElementById('diagramWrapper').innerHTML=
+$('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
+
 ${svgHeader()}
+
 <rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+
 <line x1="${x}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+
 <line x1="${x+80}" y1="${y}" x2="${x+80}" y2="${y+height}"/>
+
 <polyline points="${x+110},${y+62} ${x+93},${y+80} ${x+110},${y+98}"/>
+
 ${verticalDimension(25,y,upperY,Math.round(upperHeight),x)}
+
 ${verticalDimension(25,upperY,y+height,Math.round(FH),x)}
+
 ${totalHeightDimension(190,y,y+height,Math.round(H),x+width)}
+
 ${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+
 </svg>`
+
 }
 
 function drawMode3(){
+
 const{W,H,FH}=getValues();
+
 const x=50,y=20,width=120,height=120;
+
 const upperHeight=H-100-FH-29;
+
 const upperY=y+height*(upperHeight/H);
 
-document.getElementById('diagramWrapper').innerHTML=
+$('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
+
 ${svgHeader()}
+
 <rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+
 <line x1="${x}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+
 <line x1="${x+80}" y1="${upperY}" x2="${x+80}" y2="${y+height}"/>
+
 <polyline points="${x+110},${y+62} ${x+93},${y+80} ${x+110},${y+98}"/>
+
 ${verticalDimension(25,y,upperY,Math.round(upperHeight),x)}
+
 ${verticalDimension(25,upperY,y+height,Math.round(FH),x)}
+
 ${totalHeightDimension(190,y,y+height,Math.round(H),x+width)}
+
 ${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+
 </svg>`
+
 }
 
 function drawModeTonggao(){
+
 const{W,H,FH}=getValues();
+
 const x=50,y=20,width=120,height=120;
+
 const upperHeight=H-100-FH-29;
+
 const upperY=y+height*(upperHeight/H);
 
-document.getElementById('diagramWrapper').innerHTML=
+$('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
+
 ${svgHeader()}
+
 <rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+
 <line x1="${x+80}" y1="${y}" x2="${x+80}" y2="${y+height}"/>
+
 <line x1="${x+80}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+
 <polyline points="${x+110},${y+62} ${x+93},${y+80} ${x+110},${y+98}"/>
+
 ${verticalDimension(25,y,upperY,Math.round(upperHeight),x)}
+
 ${verticalDimension(25,upperY,y+height,Math.round(FH),x)}
+
 ${totalHeightDimension(190,y,y+height,Math.round(H),x+width)}
+
 ${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+
 </svg>`
+
 }
 
 function drawModeDouble(){
-const{W,H,FH}=getValues();
-const x=35,y=20,width=150,height=120;
-const upperHeight=H-100-FH-29;
-const upperY=y+height*(upperHeight/H);
-const leftFanX=x+35,rightFanX=x+115;
 
-document.getElementById('diagramWrapper').innerHTML=
+const{W,H,FH}=getValues();
+
+const x=35,y=20,width=150,height=120;
+
+const upperHeight=H-100-FH-29;
+
+const upperY=y+height*(upperHeight/H);
+
+const leftFanX=x+35;
+
+const rightFanX=x+115;
+
+$('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
+
 ${svgHeader()}
+
 <rect x="${x}" y="${y}" width="${width}" height="${height}"/>
+
 <line x1="${x}" y1="${upperY}" x2="${x+width}" y2="${upperY}"/>
+
 <line x1="${x+75}" y1="${y}" x2="${x+75}" y2="${upperY}"/>
+
 <line x1="${leftFanX}" y1="${upperY}" x2="${leftFanX}" y2="${y+height}"/>
+
 <line x1="${rightFanX}" y1="${upperY}" x2="${rightFanX}" y2="${y+height}"/>
+
 <polyline points="${x+9},${y+62} ${x+26},${y+80} ${x+9},${y+98}"/>
+
 <polyline points="${x+width-9},${y+62} ${x+width-26},${y+80} ${x+width-9},${y+98}"/>
+
 ${verticalDimension(10,y,upperY,Math.round(upperHeight),x)}
+
 ${verticalDimension(10,upperY,y+height,Math.round(FH),x)}
+
 ${totalHeightDimension(210,y,y+height,Math.round(H),x+width)}
+
 ${horizontalDimension(x,x+width,165,Math.round(W),y+height)}
+
 </svg>`
+
 }
 
 function drawModeBalcony(){
+
 const{W,H,FW,FH,upperBright,lowerBright}=getValues();
 
 const frameW=100;
+
 const usableW=W-frameW-29-29;
+
 const leftFixedW=(usableW-FW)/2;
+
 const totalInnerH=H-100-FH-29-29;
 
 let upperH=upperBright;
+
 let lowerH=lowerBright;
 
 if(upperH<=0&&lowerH<=0){
+
 upperH=totalInnerH/2;
+
 lowerH=totalInnerH/2
+
 }else if(upperH>0&&lowerH<=0){
+
 lowerH=totalInnerH-upperH
+
 }else if(lowerH>0&&upperH<=0){
+
 upperH=totalInnerH-lowerH
+
 }
 
 const widthRatio=W||1;
+
 const heightRatio=H||1;
 
 let width=150;
+
 let height=width*(heightRatio/widthRatio);
+
 const maxHeight=125;
 
 let drawW=width;
+
 let drawH=height;
 
 if(drawH>maxHeight){
+
 drawH=maxHeight;
+
 drawW=drawH*(widthRatio/heightRatio)
+
 }
 
 const frameX=(220-drawW)/2;
+
 const frameY=18;
+
 const usableDrawW=drawW*(usableW/W);
+
 const frameLeft=frameX+(drawW-usableDrawW)/2;
+
 const frameRight=frameLeft+usableDrawW;
+
 const upperY=frameY+drawH*(upperH/H);
+
 const fanBottomY=upperY+drawH*(FH/H);
+
 const leftFixedDrawW=usableDrawW*(leftFixedW/usableW);
+
 const fanDrawW=usableDrawW*(FW/usableW);
+
 const fanX=frameLeft+leftFixedDrawW;
+
 const rightFixedX=fanX+fanDrawW;
+
 const frameBottom=frameY+drawH;
+
 const arrowX=fanX+fanDrawW/2;
 
-document.getElementById('diagramWrapper').innerHTML=
+$('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
+
 ${svgHeader()}
+
 <rect x="${frameX}" y="${frameY}" width="${drawW}" height="${drawH}"/>
+
 <line x1="${frameLeft}" y1="${upperY}" x2="${frameRight}" y2="${upperY}"/>
+
 <line x1="${frameLeft}" y1="${fanBottomY}" x2="${frameRight}" y2="${fanBottomY}"/>
+
 <line x1="${fanX}" y1="${frameY}" x2="${fanX}" y2="${frameBottom}"/>
+
 <line x1="${rightFixedX}" y1="${frameY}" x2="${rightFixedX}" y2="${frameBottom}"/>
+
 <polyline points="${arrowX+12},${upperY+(fanBottomY-upperY)/2-18} ${arrowX-5},${upperY+(fanBottomY-upperY)/2} ${arrowX+12},${upperY+(fanBottomY-upperY)/2+18}"/>
+
 ${verticalDimension(12,frameY,upperY,Math.round(upperH),frameLeft)}
+
 ${verticalDimension(12,upperY,fanBottomY,Math.round(FH),frameLeft)}
+
 ${verticalDimension(12,fanBottomY,frameBottom,Math.round(lowerH),frameLeft)}
+
 ${totalHeightDimension(208,frameY,frameBottom,Math.round(H),frameRight)}
+
 ${horizontalDimension(frameX,frameX+drawW,165,Math.round(W),frameBottom)}
+
 </svg>`
+
 }
 
 function drawModeBalconyDouble(){
+
 const{W,H,FW,FH,upperBright,lowerBright}=getValues();
 
 const frameW=100;
+
 const usableW=W-frameW-29-29;
+
 const fixedW=(usableW-FW*2)/2;
+
 const totalInnerH=H-100-FH-29-29;
 
 let upperH=upperBright;
+
 let lowerH=lowerBright;
 
 if(upperH<=0&&lowerH<=0){
+
 upperH=totalInnerH/2;
+
 lowerH=totalInnerH/2
+
 }else if(upperH>0&&lowerH<=0){
+
 lowerH=totalInnerH-upperH
+
 }else if(lowerH>0&&upperH<=0){
+
 upperH=totalInnerH-lowerH
+
 }
 
 const widthRatio=W||1;
+
 const heightRatio=H||1;
 
 let width=170;
+
 let height=width*(heightRatio/widthRatio);
+
 const maxHeight=125;
 
 let drawW=width;
+
 let drawH=height;
 
 if(drawH>maxHeight){
+
 drawH=maxHeight;
+
 drawW=drawH*(widthRatio/heightRatio)
+
 }
 
 const frameX=(220-drawW)/2;
+
 const frameY=18;
+
 const usableDrawW=drawW*(usableW/W);
+
 const frameLeft=frameX+(drawW-usableDrawW)/2;
+
 const frameRight=frameLeft+usableDrawW;
+
 const upperY=frameY+drawH*(upperH/H);
+
 const fanBottomY=upperY+drawH*(FH/H);
+
 const fixedDrawW=usableDrawW*(fixedW/usableW);
+
 const fanDrawW=usableDrawW*(FW/usableW);
+
 const fan1X=frameLeft+fixedDrawW;
+
 const fixed2X=fan1X+fanDrawW;
+
 const fan2X=fixed2X+fixedDrawW;
+
 const frameBottom=frameY+drawH;
+
 const arrow1X=fan1X+fanDrawW/2;
+
 const arrow2X=fan2X+fanDrawW/2;
 
-document.getElementById('diagramWrapper').innerHTML=
+$('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
+
 ${svgHeader()}
+
 <rect x="${frameX}" y="${frameY}" width="${drawW}" height="${drawH}"/>
+
 <line x1="${frameLeft}" y1="${upperY}" x2="${frameRight}" y2="${upperY}"/>
+
 <line x1="${frameLeft}" y1="${fanBottomY}" x2="${frameRight}" y2="${fanBottomY}"/>
+
 <line x1="${fan1X}" y1="${frameY}" x2="${fan1X}" y2="${frameBottom}"/>
+
 <line x1="${fixed2X}" y1="${frameY}" x2="${fixed2X}" y2="${frameBottom}"/>
+
 <line x1="${fan2X}" y1="${frameY}" x2="${fan2X}" y2="${frameBottom}"/>
+
 <polyline points="${arrow1X+12},${upperY+(fanBottomY-upperY)/2-18} ${arrow1X-5},${upperY+(fanBottomY-upperY)/2} ${arrow1X+12},${upperY+(fanBottomY-upperY)/2+18}"/>
+
 <polyline points="${arrow2X+12},${upperY+(fanBottomY-upperY)/2-18} ${arrow2X-5},${upperY+(fanBottomY-upperY)/2} ${arrow2X+12},${upperY+(fanBottomY-upperY)/2+18}"/>
+
 ${verticalDimension(8,frameY,upperY,Math.round(upperH),frameLeft)}
+
 ${verticalDimension(8,upperY,fanBottomY,Math.round(FH),frameLeft)}
+
 ${verticalDimension(8,fanBottomY,frameBottom,Math.round(lowerH),frameLeft)}
+
 ${totalHeightDimension(212,frameY,frameBottom,Math.round(H),frameRight)}
+
 ${horizontalDimension(frameX,frameX+drawW,165,Math.round(W),frameBottom)}
+
 </svg>`
+
 }
 
 function drawDiagram(){
+
 if(currentMode===4)drawMode4();
+
 else if(currentMode===3)drawMode3();
+
 else if(currentMode==='tonggao')drawModeTonggao();
+
 else if(currentMode==='double')drawModeDouble();
+
 else if(currentMode==='balcony')drawModeBalcony();
+
 else drawModeBalconyDouble()
+
 }
 
 function switchMode(v){
+
 saveCurrentData();
+
 currentMode=v==='3'||v==='4'?+v:v;
 
-const u=document.getElementById('upperBrightBox');
-const l=document.getElementById('lowerBrightBox');
+const u=$('upperBrightBox');
+
+const l=$('lowerBrightBox');
 
 if(currentMode==='balcony'||currentMode==='balcony2'){
+
 u.classList.remove('hidden');
+
 l.classList.remove('hidden');
-rowBright.className='';
-rowBrightFan.className='hidden';
-label1.innerText='下亮固定玻璃';
-label2.innerText='上亮固定玻璃';
-label4.innerText='扇子玻璃'
+
+$('rowBright').className='';
+
+$('rowBrightFan').className='hidden';
+
+$('label1').innerText='下亮固定玻璃';
+
+$('label2').innerText='上亮固定玻璃';
+
+$('label4').innerText='扇子玻璃'
+
 }else{
+
 u.classList.add('hidden');
+
 l.classList.add('hidden');
-rowBright.className='';
-rowBrightFan.className='hidden';
+
+$('rowBright').className='';
+
+$('rowBrightFan').className='hidden';
 
 if(currentMode===4){
-rowBrightFan.className='';
-label1.innerText='下固定玻璃';
-label2.innerText='上亮固定玻璃';
-label4.innerText='扇子玻璃'
+
+$('rowBrightFan').className='';
+
+$('label1').innerText='下固定玻璃';
+
+$('label2').innerText='上亮固定玻璃';
+
+$('label4').innerText='扇子玻璃'
+
 }else if(currentMode==='double'){
-label1.innerText='下中间玻璃';
-label2.innerText='上亮玻璃';
-label4.innerText='扇子玻璃'
+
+$('label1').innerText='下中间玻璃';
+
+$('label2').innerText='上亮玻璃';
+
+$('label4').innerText='扇子玻璃'
+
 }else if(currentMode==='tonggao'){
-label1.innerText='通高大玻璃';
-label2.innerText='右侧上亮玻璃';
-label4.innerText='扇子玻璃'
+
+$('label1').innerText='通高大玻璃';
+
+$('label2').innerText='右侧上亮玻璃';
+
+$('label4').innerText='扇子玻璃'
+
 }else{
-label1.innerText='下固定玻璃';
-label2.innerText='上亮玻璃';
-label4.innerText='扇子玻璃'
+
+$('label1').innerText='下固定玻璃';
+
+$('label2').innerText='上亮玻璃';
+
+$('label4').innerText='扇子玻璃'
+
 }
+
 }
 
 loadDataToInputs();
+
 calc()
+
 }
 
 function saveCurrentData(){
+
 data[currentMode]={
-winW:winW.value,
-winH:winH.value,
-fanW:fanW.value,
-fanH:fanH.value,
-upperBright:upperBright.value,
-lowerBright:lowerBright.value,
-winNum:document.getElementById('winNum').value
+
+winW:$('winW').value,
+
+winH:$('winH').value,
+
+fanW:$('fanW').value,
+
+fanH:$('fanH').value,
+
+upperBright:$('upperBright').value,
+
+lowerBright:$('lowerBright').value,
+
+winNum:$('winNum').value
+
 }
+
 }
 
 function loadDataToInputs(){
-winW.value=data[currentMode].winW;
-winH.value=data[currentMode].winH;
-fanW.value=data[currentMode].fanW;
-fanH.value=data[currentMode].fanH;
-upperBright.value=data[currentMode].upperBright||'';
-lowerBright.value=data[currentMode].lowerBright||'';
-document.getElementById('winNum').value=data[currentMode].winNum||1
+
+$('winW').value=data[currentMode].winW||'';
+
+$('winH').value=data[currentMode].winH||'';
+
+$('fanW').value=data[currentMode].fanW||'';
+
+$('fanH').value=data[currentMode].fanH||'';
+
+$('upperBright').value=data[currentMode].upperBright||'';
+
+$('lowerBright').value=data[currentMode].lowerBright||'';
+
+$('winNum').value=data[currentMode].winNum||1
+
 }
 
 function showResult(id,size,count,unit){
-document.getElementById(id+'_size').innerHTML='<b>'+size+'</b>';
-document.getElementById(id+'_count').innerText='*'+count+unit
+
+$(id+'_size').innerHTML='<b>'+size+'</b>';
+
+$(id+'_count').innerText='*'+count+unit
+
 }
 
 function calc(){
+
 saveCurrentData();
 
 const{W,H,FW,FH,upperBright,lowerBright}=getValues();
+
 const num=parseInt(data[currentMode].winNum)||1;
 
 drawDiagram();
 
-areaNum.innerText=((W*H*num)/1e6).toFixed(2);
-areaUnit.innerText='m² (共 '+num+' 套)';
-perimeterNum.innerText=(((H+W)/1000)*2*num).toFixed(2);
+$('areaNum').innerText=((W*H*num)/1e6).toFixed(2);
+
+$('areaUnit').innerText='m² (共 '+num+' 套)';
+
+$('perimeterNum').innerText=(((H+W)/1000)*2*num).toFixed(2);
 
 const gW=W-100-FW-29-10;
+
 const gH=H-100-FH-29-10;
 
 if(currentMode==='balcony'||currentMode==='balcony2'){
 
 const usableW=W-100-29-29;
+
 const fixedW=currentMode==='balcony2'?(usableW-FW*2)/2:(usableW-FW)/2;
+
 const totalBrightH=H-100-FH-29-29;
 
 let up=upperBright;
+
 let lo=lowerBright;
 
 if(up<=0&&lo<=0){
+
 up=totalBrightH/2;
+
 lo=totalBrightH/2
+
 }else if(up>0&&lo<=0){
+
 lo=totalBrightH-up
+
 }else if(lo>0&&up<=0){
+
 up=totalBrightH-lo
+
 }
 
-showResult('g1',Math.round(fixedW)+'×'+Math.round(lo),num*2,'块');
-showResult('g2',Math.round(fixedW)+'×'+Math.round(up),num*2,'块');
-showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),currentMode==='balcony2'?num*2:num,'块');
-showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),currentMode==='balcony2'?num*2:num,'个');
+showResult(
+'g1',
+Math.round(fixedW)+'×'+Math.round(lo),
+num*2,
+'块'
+);
+
+showResult(
+'g2',
+Math.round(fixedW)+'×'+Math.round(up),
+num*2,
+'块'
+);
+
+showResult(
+'g4',
+Math.round(FW-93)+'×'+Math.round(FH-92),
+currentMode==='balcony2'?num*2:num,
+'块'
+);
+
+showResult(
+'gScreen',
+Math.round(FH-45)+'×'+Math.round(FW-45),
+currentMode==='balcony2'?num*2:num,
+'个'
+);
 
 return
+
 }
 
 if(currentMode==='double'){
 
-showResult('g2',Math.round(((W-100-29)/2)-10)+'×'+Math.round(gH),num*2,'块');
-showResult('g1',Math.round(W-100-2*FW-29-29-10)+'×'+Math.round(FH-10),num,'块');
-showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num*2,'块');
-showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num*2,'个')
+showResult(
+'g2',
+Math.round(((W-100-29)/2)-10)+'×'+Math.round(gH),
+num*2,
+'块'
+);
+
+showResult(
+'g1',
+Math.round(W-100-2*FW-29-29-10)+'×'+Math.round(FH-10),
+num,
+'块'
+);
+
+showResult(
+'g4',
+Math.round(FW-93)+'×'+Math.round(FH-92),
+num*2,
+'块'
+);
+
+showResult(
+'gScreen',
+Math.round(FH-45)+'×'+Math.round(FW-45),
+num*2,
+'个'
+)
 
 }else if(currentMode==='tonggao'){
 
-showResult('g1',Math.round(gW)+'×'+Math.round(H-110),num,'块');
-showResult('g2',Math.round(FW-10)+'×'+Math.round(gH),num,'块');
-showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num,'块');
-showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num,'个')
+showResult(
+'g1',
+Math.round(gW)+'×'+Math.round(H-110),
+num,
+'块'
+);
+
+showResult(
+'g2',
+Math.round(FW-10)+'×'+Math.round(gH),
+num,
+'块'
+);
+
+showResult(
+'g4',
+Math.round(FW-93)+'×'+Math.round(FH-92),
+num,
+'块'
+);
+
+showResult(
+'gScreen',
+Math.round(FH-45)+'×'+Math.round(FW-45),
+num,
+'个'
+)
 
 }else{
 
-showResult('g1',Math.round(gW)+'×'+Math.round(FH-10),num,'块');
-showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num,'块');
-showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num,'个');
+showResult(
+'g1',
+Math.round(gW)+'×'+Math.round(FH-10),
+num,
+'块'
+);
+
+showResult(
+'g4',
+Math.round(FW-93)+'×'+Math.round(FH-92),
+num,
+'块'
+);
+
+showResult(
+'gScreen',
+Math.round(FH-45)+'×'+Math.round(FW-45),
+num,
+'个'
+);
 
 if(currentMode===4){
 
-showResult('g2',Math.round(gW)+'×'+Math.round(gH),num,'块');
-showResult('g3',Math.round(FW-10)+'×'+Math.round(gH),num,'块')
+showResult(
+'g2',
+Math.round(gW)+'×'+Math.round(gH),
+num,
+'块'
+);
+
+showResult(
+'g3',
+Math.round(FW-10)+'×'+Math.round(gH),
+num,
+'块'
+)
 
 }else{
 
-showResult('g2',Math.round(W-110)+'×'+Math.round(gH),num,'块')
+showResult(
+'g2',
+Math.round(W-110)+'×'+Math.round(gH),
+num,
+'块'
+)
 
 }
+
 }
+
 }
 
-/* =========================
-   导出玻璃图片
-   ========================= */
+function getCurrentResults(){
 
-function exportGlassImage(event){
+const result=[];
 
-if(event)event.preventDefault();
+const rows=[
+'rowG1',
+'rowBright',
+'rowBrightFan',
+'rowG4',
+'rowScreen'
+];
 
-saveCurrentData();
+rows.forEach(id=>{
 
-const glassList=[];
-
-['rowG1','rowBright','rowBrightFan','rowG4'].forEach(id=>{
-
-const row=document.getElementById(id);
+const row=$(id);
 
 if(!row||row.classList.contains('hidden'))return;
 
-const size=row.querySelector('[id$="_size"]');
-const count=row.querySelector('[id$="_count"]');
+const size=row.querySelector('.size-val');
 
-if(size&&size.innerText!=='-'){
+const count=row.querySelector('.count-val');
 
-glassList.push({
+if(size&&size.innerText&&size.innerText!=='-'){
+
+result.push({
+
+name:row.querySelector('td').innerText.trim(),
+
 size:size.innerText.trim(),
+
 count:count?count.innerText.trim():''
-});
+
+})
 
 }
 
 });
 
+return result
+
+}
+
+function addToList(){
+
+saveCurrentData();
+
+const results=getCurrentResults();
+
+if(!results.length)return;
+
+const item={
+
+id:Date.now(),
+
+mode:$('modeDropdown').selectedOptions[0].text,
+
+modeValue:currentMode,
+
+data:JSON.parse(JSON.stringify(data[currentMode])),
+
+W:data[currentMode].winW,
+
+H:data[currentMode].winH,
+
+num:parseInt(data[currentMode].winNum)||1,
+
+time:new Date().toLocaleString(),
+
+results:results
+
+};
+
+shoppingList.push(item);
+
+historyList.unshift(item);
+
+if(shoppingList.length>100)shoppingList.shift();
+
+if(historyList.length>100)historyList.pop();
+
+localStorage.setItem(
+'windowShoppingList',
+JSON.stringify(shoppingList)
+);
+
+localStorage.setItem(
+'windowHistoryList',
+JSON.stringify(historyList)
+);
+
+renderList();
+
+renderHistory();
+
+alert('已加入清单');
+
+}
+
+function renderList(){
+
+const box=$('listContent');
+
+if(!shoppingList.length){
+
+box.innerHTML='<div class="panel-empty">暂无清单内容</div>';
+
+return
+
+}
+
+box.innerHTML='';
+
+shoppingList.forEach(item=>{
+
+const div=document.createElement('div');
+
+div.className='list-item';
+
+let html='';
+
+item.results.forEach(r=>{
+
+html+=`${r.name}：${r.size} ${r.count}<br>`
+
+});
+
+const num=item.num||1;
+
+div.innerHTML=`
+
+<button type="button" class="delete-btn" data-id="${item.id}">×</button>
+
+<div class="list-item-title">
+${item.mode}
+<span class="item-size">${item.W}×${item.H}×${num}个</span>
+</div>
+
+<div class="list-item-detail">
+${html}
+</div>
+
+`;
+
+box.appendChild(div)
+
+});
+
+box.querySelectorAll('.delete-btn').forEach(btn=>{
+
+btn.onclick=function(e){
+
+e.stopPropagation();
+
+const id=Number(this.dataset.id);
+
+shoppingList=shoppingList.filter(i=>i.id!==id);
+
+localStorage.setItem(
+'windowShoppingList',
+JSON.stringify(shoppingList)
+);
+
+renderList()
+
+}
+
+})
+
+}
+
+function renderHistory(){
+
+const box=$('historyContent');
+
+if(!historyList.length){
+
+box.innerHTML='<div class="panel-empty">暂无历史记录</div>';
+
+return
+
+}
+
+box.innerHTML='';
+
+historyList.forEach(item=>{
+
+const div=document.createElement('div');
+
+div.className='history-item';
+
+let html='';
+
+item.results.forEach(r=>{
+
+html+=`${r.name}：${r.size} ${r.count}<br>`
+
+});
+
+const num=item.num||1;
+
+div.innerHTML=`
+
+<button type="button" class="history-delete" data-id="${item.id}">×</button>
+
+<div class="history-item-title">
+${item.mode}
+<span class="item-size">${item.W}×${item.H}×${num}个</span>
+</div>
+
+<div class="history-item-detail">
+${item.time}<br>
+${html}
+</div>
+
+`;
+
+div.addEventListener('click',function(){
+
+restoreHistory(item)
+
+});
+
+box.appendChild(div)
+
+});
+
+box.querySelectorAll('.history-delete').forEach(btn=>{
+
+btn.addEventListener('click',function(e){
+
+e.stopPropagation();
+
+const id=Number(this.dataset.id);
+
+historyList=historyList.filter(i=>i.id!==id);
+
+localStorage.setItem(
+'windowHistoryList',
+JSON.stringify(historyList)
+);
+
+renderHistory()
+
+})
+
+})
+
+}
+
+function restoreHistory(item){
+
+const mode=item.modeValue!==undefined?
+item.modeValue:
+currentMode;
+
+if(!data[mode])return;
+
+currentMode=mode;
+
+$('modeDropdown').value=String(mode);
+
+if(item.data){
+
+data[mode]=Object.assign(
+{},
+data[mode],
+item.data
+)
+
+}else{
+
+data[mode].winW=item.W||data[mode].winW;
+
+data[mode].winH=item.H||data[mode].winH;
+
+data[mode].winNum=item.num||1
+
+}
+
+switchModeWithoutSave();
+
+loadDataToInputs();
+
+calc();
+
+$('historyPanel').classList.remove('show');
+
+alert('已恢复历史窗户');
+
+}
+
+function switchModeWithoutSave(){
+
+const u=$('upperBrightBox');
+
+const l=$('lowerBrightBox');
+
+if(currentMode==='balcony'||currentMode==='balcony2'){
+
+u.classList.remove('hidden');
+
+l.classList.remove('hidden');
+
+$('rowBright').className='';
+
+$('rowBrightFan').className='hidden';
+
+$('label1').innerText='下亮固定玻璃';
+
+$('label2').innerText='上亮固定玻璃';
+
+$('label4').innerText='扇子玻璃'
+
+}else{
+
+u.classList.add('hidden');
+
+l.classList.add('hidden');
+
+$('rowBright').className='';
+
+$('rowBrightFan').className='hidden';
+
+if(currentMode===4){
+
+$('rowBrightFan').className='';
+
+$('label1').innerText='下固定玻璃';
+
+$('label2').innerText='上亮固定玻璃';
+
+$('label4').innerText='扇子玻璃'
+
+}else if(currentMode==='double'){
+
+$('label1').innerText='下中间玻璃';
+
+$('label2').innerText='上亮玻璃';
+
+$('label4').innerText='扇子玻璃'
+
+}else if(currentMode==='tonggao'){
+
+$('label1').innerText='通高大玻璃';
+
+$('label2').innerText='右侧上亮玻璃';
+
+$('label4').innerText='扇子玻璃'
+
+}else{
+
+$('label1').innerText='下固定玻璃';
+
+$('label2').innerText='上亮玻璃';
+
+$('label4').innerText='扇子玻璃'
+
+}
+
+}
+
+}
+
+function toggleList(){
+
+$('listPanel').classList.toggle('show');
+
+$('historyPanel').classList.remove('show');
+
+}
+
+function toggleHistory(){
+
+$('historyPanel').classList.toggle('show');
+
+$('listPanel').classList.remove('show');
+
+}
+
+function clearList(){
+
+shoppingList=[];
+
+localStorage.setItem('windowShoppingList','[]');
+
+renderList();
+
+}
+
+function clearHistory(){
+
+historyList=[];
+
+localStorage.setItem('windowHistoryList','[]');
+
+renderHistory();
+
+}
+
+function exportGlassImage(){
+
+saveCurrentData();
+
+const glassList=getCurrentResults();
+
 if(!glassList.length)return;
 
-const svg=document.querySelector('#diagramWrapper svg');
+const svg=$('#diagramWrapper svg');
 
 if(!svg)return;
 
 let svgText=new XMLSerializer().serializeToString(svg);
 
+svgText=svgText.replace(
+/var\(--text-main\)/g,
+'#333'
+);
+
+svgText=svgText.replace(
+'<svg ',
+'<svg xmlns="http://www.w3.org/2000/svg" '
+);
+
 const exportStyle=`
+
 <style>
+
 .svg-canvas rect{
 fill:#fff;
 stroke:#333;
 stroke-width:2
 }
+
 .svg-canvas line{
 stroke:#333;
 stroke-width:2
 }
+
 .svg-canvas polyline{
 fill:none;
 stroke:#333;
@@ -743,17 +2187,20 @@ stroke-width:2;
 stroke-linecap:round;
 stroke-linejoin:round
 }
+
 .dimension-line{
 stroke:#333;
 stroke-width:1.2;
 fill:none
 }
+
 .dimension-dash{
 stroke:#333;
 stroke-width:1;
 stroke-dasharray:3 3;
 fill:none
 }
+
 .dimension-text{
 fill:#333;
 font-family:Arial,sans-serif;
@@ -763,18 +2210,24 @@ letter-spacing:-.3px;
 text-anchor:middle;
 dominant-baseline:middle
 }
+
 </style>`;
 
-svgText=svgText.replace('<defs>',exportStyle+'<defs>');
-svgText=svgText.replace(/var\(--text-main\)/g,'#333');
+svgText=svgText.replace(
+'<defs>',
+exportStyle+'<defs>'
+);
 
 const canvas=document.createElement('canvas');
 
 const scale=2;
+
 const canvasW=1800;
+
 const canvasH=1100;
 
 canvas.width=canvasW*scale;
+
 canvas.height=canvasH*scale;
 
 const ctx=canvas.getContext('2d');
@@ -782,6 +2235,7 @@ const ctx=canvas.getContext('2d');
 ctx.scale(scale,scale);
 
 ctx.fillStyle='#fff';
+
 ctx.fillRect(0,0,canvasW,canvasH);
 
 const img=new Image();
@@ -795,42 +2249,29 @@ const url=URL.createObjectURL(svgBlob);
 
 img.onload=()=>{
 
-/* =========================
-   右侧卡片
-   ========================= */
-
 const cardX=820;
+
 const cardW=930;
+
 const cardH=150;
+
 const gap=20;
+
 const cardTop=60;
 
 const cardsHeight=
 glassList.length*cardH+
 (glassList.length-1)*gap;
 
-/* =========================
-   左侧窗型图
-   ========================= */
-
 const diagramBoxX=45;
-const diagramBoxW=700;
 
 const svgViewW=220;
+
 const svgViewH=180;
 
 const diagramW=700;
-const diagramH=diagramW*(svgViewH/svgViewW);
 
-/*
- * 关键修改：
- * 窗型图按照右侧玻璃列表整体高度
- * 自动上下居中
- *
- * 这样上下留白对称
- * 横向尺寸线保持水平
- * 不再出现窗型图偏上或偏下
- */
+const diagramH=diagramW*(svgViewH/svgViewW);
 
 const diagramY=
 cardTop+
@@ -844,20 +2285,23 @@ diagramW,
 diagramH
 );
 
-/* =========================
-   右侧玻璃尺寸卡片
-   ========================= */
-
 glassList.forEach((item,i)=>{
 
 const y=cardTop+i*(cardH+gap);
 
+const isScreen=
+item.name.includes('纱窗');
+
 ctx.save();
 
-ctx.strokeStyle='#e3e3e3';
+ctx.fillStyle=isScreen?'#fff8e8':'#fff';
+
+ctx.strokeStyle=isScreen?'#ff9800':'#e3e3e3';
+
 ctx.lineWidth=2;
 
 ctx.beginPath();
+
 ctx.roundRect(
 cardX,
 y,
@@ -865,12 +2309,17 @@ cardW,
 cardH,
 26
 );
+
+ctx.fill();
+
 ctx.stroke();
 
-ctx.fillStyle='#333';
+ctx.fillStyle=isScreen?'#ff9800':'#333';
 
 ctx.font='900 68px Arial,sans-serif';
+
 ctx.textAlign='center';
+
 ctx.textBaseline='middle';
 
 ctx.fillText(
@@ -879,9 +2328,10 @@ cardX+cardW/2-35,
 y+cardH/2
 );
 
-ctx.fillStyle='#666';
+ctx.fillStyle=isScreen?'#ff9800':'#666';
 
 ctx.font='800 38px Arial,sans-serif';
+
 ctx.textAlign='right';
 
 ctx.fillText(
@@ -890,7 +2340,23 @@ cardX+cardW-35,
 y+cardH/2
 );
 
-ctx.restore();
+if(isScreen){
+
+ctx.fillStyle='#ff9800';
+
+ctx.font='900 34px sans-serif';
+
+ctx.textAlign='left';
+
+ctx.fillText(
+'纱窗',
+cardX+35,
+y+cardH/2
+);
+
+}
+
+ctx.restore()
 
 });
 
@@ -924,6 +2390,7 @@ title:'玻璃尺寸'
 const a=document.createElement('a');
 
 a.download='玻璃尺寸.png';
+
 a.href=URL.createObjectURL(blob);
 
 a.click();
@@ -939,14 +2406,108 @@ setTimeout(
 
 };
 
+img.onerror=()=>{
+
+URL.revokeObjectURL(url);
+
+alert('窗户图导出失败，请重新点击导出');
+
+};
+
 img.src=url;
 
 }
 
-window.onload=()=>{
-loadDataToInputs();
-calc()
+function bindInput(id){
+
+$(id).addEventListener('click',function(){
+
+clearInputOnClick(this)
+
+});
+
+$(id).addEventListener('input',calc)
+
 }
+
+window.onload=function(){
+
+$('modeDropdown').addEventListener(
+'change',
+function(){
+switchMode(this.value)
+}
+);
+
+$('diagramToggle').addEventListener(
+'click',
+toggleDiagram
+);
+
+$('glassToggle').addEventListener(
+'click',
+toggleGlass
+);
+
+$('perimeterToggle').addEventListener(
+'change',
+togglePerimeter
+);
+
+$('exportButton').addEventListener(
+'click',
+exportGlassImage
+);
+
+$('addListButton').addEventListener(
+'click',
+addToList
+);
+
+$('listButton').addEventListener(
+'click',
+toggleList
+);
+
+$('historyButton').addEventListener(
+'click',
+toggleHistory
+);
+
+$('clearListButton').addEventListener(
+'click',
+clearList
+);
+
+$('clearHistoryButton').addEventListener(
+'click',
+clearHistory
+);
+
+bindInput('winNum');
+
+bindInput('winH');
+
+bindInput('winW');
+
+bindInput('fanW');
+
+bindInput('fanH');
+
+bindInput('upperBright');
+
+bindInput('lowerBright');
+
+loadDataToInputs();
+
+renderList();
+
+renderHistory();
+
+calc()
+
+}
+
 </script>
 
 </body>
