@@ -21,7 +21,10 @@
 --card-bg:#fff;
 --text-main:#333;
 --accent:#4CAF50;
---input-bg:#f8f8f8
+--input-bg:#f8f8f8;
+--num-box-bg:#eef9ee;
+--num-box-border:#4CAF50;
+--num-box-text:#4CAF50
 }
 
 @media(prefers-color-scheme:dark){
@@ -30,7 +33,10 @@
 --card-bg:#1e1e1e;
 --text-main:#fff;
 --accent:#66bb6a;
---input-bg:#2d2d2d
+--input-bg:#2d2d2d;
+--num-box-bg:rgba(102,187,106,0.15);
+--num-box-border:#66bb6a;
+--num-box-text:#81c784
 }
 }
 
@@ -115,8 +121,8 @@ background-size:16px
 }
 
 .num-box{
-background:#eef9ee;
-border:1px dashed var(--accent);
+background:var(--num-box-bg);
+border:1px dashed var(--num-box-border);
 padding:10px 12px;
 display:flex;
 flex-direction:column;
@@ -124,7 +130,7 @@ justify-content:center
 }
 
 .num-box label{
-color:var(--accent)
+color:var(--num-box-text)
 }
 
 .num-box input{
@@ -1425,10 +1431,10 @@ const g=getBalconyGeometry();
 const{fixedW,mainFixedH,sashH,fanCount,fixedCount}=g;
 
 showResult('g1',Math.floor(fixedW)+'×'+Math.floor(mainFixedH),num*fixedCount,'块');
-showResult('g2',Math.floor(fixedW)+'×'+Math.floor(upperBright),num*fixedCount,'块');
-showResult('g3',Math.floor(fixedW)+'×'+Math.floor(lowerBright),num*fixedCount,'块');
-showResult('g4',Math.floor(FW-10)+'×'+Math.floor(upperBright),num*fanCount,'块');
-showResult('g5',Math.floor(FW-10)+'×'+Math.floor(lowerBright),num*fanCount,'块');
+showResult('g2',Math.floor(fixedW)+'×'+Math.floor(upperBright-10),num*fixedCount,'块');
+showResult('g3',Math.floor(fixedW)+'×'+Math.floor(lowerBright-10),num*fixedCount,'块');
+showResult('g4',Math.floor(FW-10)+'×'+Math.floor(upperBright-10),num*fanCount,'块');
+showResult('g5',Math.floor(FW-10)+'×'+Math.floor(lowerBright-10),num*fanCount,'块');
 showResult('g6',Math.floor(FW-93)+'×'+Math.floor(sashH),num*fanCount,'块');
 showResult('gScreen',Math.floor(FH-45)+'×'+Math.floor(FW-45),num*fanCount,'个');
 return
