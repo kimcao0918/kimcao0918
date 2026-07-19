@@ -123,7 +123,7 @@ background-size:16px
 .num-box{
 background:var(--num-box-bg);
 border:1px dashed var(--num-box-border);
-padding:10px 12px;
+padding:10px 8px;
 display:flex;
 flex-direction:column;
 justify-content:center
@@ -133,9 +133,35 @@ justify-content:center
 color:var(--num-box-text)
 }
 
+.num-control{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:5px
+}
+
+.num-control button{
+width:28px;
+height:28px;
+border:0;
+border-radius:7px;
+background:var(--num-box-border);
+color:#fff;
+font-size:1.35rem;
+font-weight:800;
+line-height:24px;
+padding:0;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent
+}
+
+.num-control button:active{
+transform:scale(.9)
+}
+
 .num-box input{
-width:100%;
-padding:8px 0;
+width:42px;
+padding:4px 0;
 border:0;
 background:transparent;
 color:var(--text-main);
@@ -735,7 +761,13 @@ transform:scale(.99)
 
 <div class="num-box">
 <label>数量 (套)</label>
-<input type="number" id="winNum" value="1">
+
+<div class="num-control">
+<button type="button" id="minusNum">−</button>
+<input type="number" id="winNum" value="1" min="1">
+<button type="button" id="plusNum">+</button>
+</div>
+
 </div>
 
 </div>
@@ -1042,6 +1074,13 @@ delete i.dataset.clicked
 }
 }
 
+function changeNum(delta){
+let n=parseInt($('winNum').value)||1;
+n=Math.max(1,n+delta);
+$('winNum').value=n;
+calc()
+}
+
 function toggleDiagram(){
 diagramCollapsed=!diagramCollapsed;
 $('diagramWrapper').classList.toggle('collapse',diagramCollapsed);
@@ -1067,7 +1106,9 @@ return +el.value||0
 }
 return +oldValue||0
 };
+
 const d=data[currentMode]||{};
+
 return{
 W:read('winW',d.winW),
 H:read('winH',d.winH),
@@ -1112,6 +1153,7 @@ const{W,H,FH}=getValues();
 const x=50,y=20,width=120,height=120;
 const upperHeight=H-100-FH-29;
 const upperY=y+height*(upperHeight/H);
+
 $('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
 ${svgHeader()}
@@ -1131,6 +1173,7 @@ const{W,H,FH}=getValues();
 const x=50,y=20,width=120,height=120;
 const upperHeight=H-100-FH-29;
 const upperY=y+height*(upperHeight/H);
+
 $('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
 ${svgHeader()}
@@ -1150,6 +1193,7 @@ const{W,H,FH}=getValues();
 const x=50,y=20,width=120,height=120;
 const upperHeight=H-100-FH-29;
 const upperY=y+height*(upperHeight/H);
+
 $('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
 ${svgHeader()}
@@ -1171,6 +1215,7 @@ const upperHeight=H-100-FH-29;
 const upperY=y+height*(upperHeight/H);
 const leftFanX=x+35;
 const rightFanX=x+115;
+
 $('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
 ${svgHeader()}
@@ -1197,6 +1242,7 @@ const totalInnerH=H-100-upperBright-lowerBright-29-29;
 const mainFixedH=totalInnerH-10;
 const sashH=totalInnerH-82;
 const fixedW=Math.floor((W-100-FW*fanCount-29-29-29)/fixedCount)-10;
+
 return{
 W,H,FW,upperBright,lowerBright,fanCount,fixedCount,totalInnerH,mainFixedH,sashH,fixedW
 }
@@ -1207,12 +1253,15 @@ const g=getBalconyGeometry();
 const{W,H,FW,upperBright,lowerBright,fixedW,totalInnerH}=g;
 const widthRatio=W||1;
 const heightRatio=H||1;
+
 let drawW=150;
 let drawH=drawW*(heightRatio/widthRatio);
+
 if(drawH>125){
 drawH=125;
 drawW=drawH*(widthRatio/heightRatio)
 }
+
 const frameX=(220-drawW)/2;
 const frameY=18;
 const frameBottom=frameY+drawH;
@@ -1226,6 +1275,7 @@ const rightFixedX=fanX+fanDrawW;
 const upperY=frameY+drawH*((100+upperBright)/H);
 const fanBottomY=upperY+drawH*(totalInnerH/H);
 const arrowX=fanX+fanDrawW/2;
+
 $('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
 ${svgHeader()}
@@ -1248,12 +1298,15 @@ const g=getBalconyGeometry();
 const{W,H,FW,upperBright,lowerBright,fixedW,totalInnerH}=g;
 const widthRatio=W||1;
 const heightRatio=H||1;
+
 let drawW=170;
 let drawH=drawW*(heightRatio/widthRatio);
+
 if(drawH>125){
 drawH=125;
 drawW=drawH*(widthRatio/heightRatio)
 }
+
 const frameX=(220-drawW)/2;
 const frameY=18;
 const frameBottom=frameY+drawH;
@@ -1269,6 +1322,7 @@ const upperY=frameY+drawH*((100+upperBright)/H);
 const fanBottomY=upperY+drawH*(totalInnerH/H);
 const arrow1X=fan1X+fanDrawW/2;
 const arrow2X=fan2X+fanDrawW/2;
+
 $('diagramWrapper').innerHTML=
 `<svg class="svg-canvas" viewBox="0 0 220 180">
 ${svgHeader()}
@@ -1299,6 +1353,7 @@ else drawModeBalconyDouble()
 
 function updateGlassRows(){
 const balcony=currentMode==='balcony'||currentMode==='balcony2';
+
 $('rowBrightFan').className='hidden';
 $('rowLowerFan').className='hidden';
 $('rowSash').className='hidden';
@@ -1318,6 +1373,7 @@ return
 }
 
 $('rowBright').className='';
+
 if(currentMode===4){
 $('rowBrightFan').className='';
 $('label1').innerText='下固定玻璃';
@@ -1341,9 +1397,12 @@ $('label4').innerText='扇子玻璃'
 
 function switchMode(v){
 saveCurrentData();
+
 currentMode=v==='3'||v==='4'?+v:v;
+
 const u=$('upperBrightBox');
 const l=$('lowerBrightBox');
+
 if(currentMode==='balcony'||currentMode==='balcony2'){
 u.classList.remove('hidden');
 l.classList.remove('hidden')
@@ -1351,6 +1410,7 @@ l.classList.remove('hidden')
 u.classList.add('hidden');
 l.classList.add('hidden')
 }
+
 updateGlassRows();
 loadDataToInputs();
 calc()
@@ -1391,27 +1451,50 @@ $(id+'_count').innerText=''
 }
 
 function calc(){
+
 if(currentMode==='balcony'||currentMode==='balcony2'){
+
 const totalH=+$('winH').value||0;
 const uB=+$('upperBright').value||0;
 const lB=+$('lowerBright').value||0;
 const fH=+$('fanH').value||0;
 
 if(totalH>0){
-const active = document.activeElement;
+
+const active=document.activeElement;
+
 if(active===$('fanH')){
+
 const computedLB=totalH-100-29-29-uB-fH;
-if(computedLB>0){$('lowerBright').value=Math.round(computedLB)}
-}else if(active===$('upperBright') || active===$('lowerBright')){
+
+if(computedLB>0){
+$('lowerBright').value=Math.round(computedLB)
+}
+
+}else if(active===$('upperBright')||active===$('lowerBright')){
+
 const computedFH=totalH-100-29-29-uB-lB;
-if(computedFH>0){$('fanH').value=Math.round(computedFH)}
+
+if(computedFH>0){
+$('fanH').value=Math.round(computedFH)
+}
+
 }else{
-if(uB>0 && lB>0 && active!==$('fanH')){
+
+if(uB>0&&lB>0&&active!==$('fanH')){
+
 const computedFH=totalH-100-29-29-uB-lB;
-if(computedFH>0){$('fanH').value=Math.round(computedFH)}
+
+if(computedFH>0){
+$('fanH').value=Math.round(computedFH)
 }
+
 }
+
 }
+
+}
+
 }
 
 saveCurrentData();
@@ -1427,6 +1510,7 @@ $('areaUnit').innerText='m² (共 '+num+' 套)';
 $('perimeterNum').innerText=(((H+W)/1000)*2*num).toFixed(2);
 
 if(currentMode==='balcony'||currentMode==='balcony2'){
+
 const g=getBalconyGeometry();
 const{fixedW,mainFixedH,sashH,fanCount,fixedCount}=g;
 
@@ -1437,6 +1521,7 @@ showResult('g4',Math.floor(FW-10)+'×'+Math.floor(upperBright-10),num*fanCount,'
 showResult('g5',Math.floor(FW-10)+'×'+Math.floor(lowerBright-10),num*fanCount,'块');
 showResult('g6',Math.floor(FW-93)+'×'+Math.floor(sashH),num*fanCount,'块');
 showResult('gScreen',Math.floor(FH-45)+'×'+Math.floor(FW-45),num*fanCount,'个');
+
 return
 }
 
@@ -1444,51 +1529,86 @@ const gW=W-100-FW-29-10;
 const gH=H-100-FH-29-10;
 
 if(currentMode==='double'){
+
 showResult('g2',Math.round(((W-100-29)/2)-10)+'×'+Math.round(gH),num*2,'块');
 showResult('g1',Math.round(W-100-2*FW-29-29-10)+'×'+Math.round(FH-10),num,'块');
 showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num*2,'块');
 showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num*2,'个')
+
 }else if(currentMode==='tonggao'){
+
 showResult('g1',Math.round(gW)+'×'+Math.round(H-110),num,'块');
 showResult('g2',Math.round(FW-10)+'×'+Math.round(gH),num,'块');
 showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num,'块');
 showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num,'个')
+
 }else{
+
 showResult('g1',Math.round(gW)+'×'+Math.round(FH-10),num,'块');
 showResult('g4',Math.round(FW-93)+'×'+Math.round(FH-92),num,'块');
 showResult('gScreen',Math.round(FH-45)+'×'+Math.round(FW-45),num,'个');
+
 if(currentMode===4){
+
 showResult('g2',Math.round(gW)+'×'+Math.round(gH),num,'块');
 showResult('g3',Math.round(FW-10)+'×'+Math.round(gH),num,'块')
+
 }else{
+
 showResult('g2',Math.round(W-110)+'×'+Math.round(gH),num,'块')
+
 }
+
 }
+
 }
 
 function getCurrentResults(){
+
 const result=[];
-const rows=['rowG1','rowBright','rowBrightFan','rowG4','rowLowerFan','rowSash','rowScreen'];
+
+const rows=[
+'rowG1',
+'rowBright',
+'rowBrightFan',
+'rowG4',
+'rowLowerFan',
+'rowSash',
+'rowScreen'
+];
+
 rows.forEach(id=>{
+
 const row=$(id);
+
 if(!row||row.classList.contains('hidden'))return;
+
 const size=row.querySelector('.size-val');
 const count=row.querySelector('.count-val');
+
 if(size&&size.innerText&&size.innerText!=='-'){
+
 result.push({
 name:row.querySelector('td').innerText.trim(),
 size:size.innerText.trim(),
 count:count?count.innerText.trim():''
 })
+
 }
+
 });
+
 return result
 }
 
 function addToList(){
+
 saveCurrentData();
+
 const Glen=getCurrentResults();
+
 if(!Glen.length)return;
+
 const item={
 id:Date.now(),
 mode:$('modeDropdown').selectedOptions[0].text,
@@ -1504,83 +1624,137 @@ time:new Date().toLocaleString(),
 results:Glen,
 tag:''
 };
+
 shoppingList.push(item);
 historyList.unshift(item);
+
 if(shoppingList.length>100)shoppingList.shift();
 if(historyList.length>100)historyList.pop();
+
 localStorage.setItem('windowShoppingList',JSON.stringify(shoppingList));
 localStorage.setItem('windowHistoryList',JSON.stringify(historyList));
+
 renderList();
 renderHistory();
+
 alert('已加入清单');
 }
 
 function renderList(){
+
 const box=$('listContent');
+
 if(!shoppingList.length){
+
 box.innerHTML='<div class="panel-empty">暂无清单内容</div>';
+
 return
 }
+
 box.innerHTML='';
+
 shoppingList.forEach(item=>{
+
 const div=document.createElement('div');
+
 div.className='list-item';
+
 let html='';
+
 item.results.forEach(r=>{
-html+=`${r.name}：${r.size} ${r.count}<br>`
+
+html+=`${escapeHtml(r.name)}：${escapeHtml(r.size)} ${escapeHtml(r.count)}<br>`
+
 });
+
 const num=item.num||1;
+
 const tag=listEditMode
 ?`<input class="list-tag-input" data-id="${item.id}" value="${escapeHtml(item.tag||'')}" placeholder="输入标签">`
 :item.tag
 ?`<span class="list-tag">${escapeHtml(item.tag)}</span>`
 :'';
+
 div.innerHTML=`
+
 <button type="button" class="delete-btn" data-id="${item.id}">×</button>
+
 <div class="list-item-title">
-${tag}${item.mode}
-<span class="item-size">${item.W}×${item.H}×${num}个</span>
+
+${tag}${escapeHtml(item.mode)}
+
+<span class="item-size">高${item.H}×宽${item.W}×${num}个</span>
+
 </div>
+
 <div class="list-item-detail">
+
 ${html}
+
 </div>
+
 `;
+
 box.appendChild(div)
+
 });
 
 box.querySelectorAll('.list-tag-input').forEach(input=>{
+
 input.addEventListener('click',function(e){
 e.stopPropagation()
 });
+
 input.addEventListener('input',function(){
+
 const id=Number(this.dataset.id);
 const item=shoppingList.find(i=>i.id===id);
+
 if(item){
+
 item.tag=this.value;
 localStorage.setItem('windowShoppingList',JSON.stringify(shoppingList))
+
 }
+
 });
+
 input.addEventListener('keydown',function(e){
+
 if(e.key==='Enter'){
 this.blur()
 }
+
 })
+
 });
 
 box.querySelectorAll('.delete-btn').forEach(btn=>{
+
 btn.onclick=function(e){
+
 e.stopPropagation();
+
 const id=Number(this.dataset.id);
+
 shoppingList=shoppingList.filter(i=>i.id!==id);
+
 localStorage.setItem('windowShoppingList',JSON.stringify(shoppingList));
+
 renderList()
+
 }
+
 })
+
 }
 
 function restoreHistory(item){
+
 currentMode=item.modeValue;
+
 $('modeDropdown').value=String(currentMode);
+
 data[currentMode]={
 winW:item.W||'',
 winH:item.H||'',
@@ -1590,146 +1764,249 @@ upperBright:item.upperBright||'',
 lowerBright:item.lowerBright||'',
 winNum:item.num||1
 };
+
 const u=$('upperBrightBox');
 const l=$('lowerBrightBox');
+
 if(currentMode==='balcony'||currentMode==='balcony2'){
+
 u.classList.remove('hidden');
 l.classList.remove('hidden')
+
 }else{
+
 u.classList.add('hidden');
 l.classList.add('hidden')
+
 }
+
 updateGlassRows();
 loadDataToInputs();
 calc();
+
 window.scrollTo({
 top:0,
 behavior:'smooth'
 });
+
 }
 
 function renderHistory(){
+
 const box=$('historyContent');
+
 if(!historyList.length){
+
 box.innerHTML='<div class="panel-empty">暂无历史记录</div>';
+
 return
+
 }
+
 box.innerHTML='';
+
 historyList.forEach(item=>{
+
 const div=document.createElement('div');
+
 div.className='history-item';
+
 let html='';
+
 item.results.forEach(r=>{
-html+=`${r.name}：${r.size} ${r.count}<br>`
+
+html+=`${escapeHtml(r.name)}：${escapeHtml(r.size)} ${escapeHtml(r.count)}<br>`
+
 });
+
 const num=item.num||1;
+
 const tag=historyEditMode
 ?`<input class="history-tag-input" data-id="${item.id}" value="${escapeHtml(item.tag||'')}" placeholder="输入标签">`
 :item.tag
 ?`<span class="history-tag">${escapeHtml(item.tag)}</span>`
 :'';
+
 div.innerHTML=`
+
 <button type="button" class="history-delete-btn" data-id="${item.id}">×</button>
+
 <div class="history-item-title">
-${tag}${item.mode}
-<span class="item-size">${item.W}×${item.H}×${num}个</span>
+
+${tag}${escapeHtml(item.mode)}
+
+<span class="item-size">高${item.H}×宽${item.W}×${num}个</span>
+
 </div>
+
 <div class="history-item-detail">
-${item.time}<br>
+
+${escapeHtml(item.time)}<br>
+
 ${html}
+
 </div>
+
 `;
+
 div.addEventListener('click',function(e){
+
 if(historyEditMode)return;
+
 if(e.target.closest('.history-delete-btn'))return;
+
 restoreHistory(item)
+
 });
+
 box.appendChild(div)
+
 });
 
 box.querySelectorAll('.history-tag-input').forEach(input=>{
+
 input.addEventListener('click',function(e){
 e.stopPropagation()
 });
+
 input.addEventListener('input',function(){
+
 const id=Number(this.dataset.id);
+
 const item=historyList.find(i=>i.id===id);
+
 if(item){
+
 item.tag=this.value;
+
 localStorage.setItem('windowHistoryList',JSON.stringify(historyList))
+
 }
+
 });
+
 input.addEventListener('keydown',function(e){
+
 if(e.key==='Enter'){
 this.blur()
 }
+
 })
+
 });
 
 box.querySelectorAll('.history-delete-btn').forEach(btn=>{
+
 btn.addEventListener('click',function(e){
+
 e.stopPropagation();
+
 const id=Number(this.dataset.id);
+
 historyList=historyList.filter(i=>i.id!==id);
+
 localStorage.setItem('windowHistoryList',JSON.stringify(historyList));
+
 renderHistory()
+
 })
+
 })
+
 }
 
 function toggleListEdit(){
+
 listEditMode=!listEditMode;
+
 $('listEditButton').innerText=listEditMode?'完成':'编辑';
+
 renderList()
+
 }
 
 function toggleHistoryEdit(){
+
 historyEditMode=!historyEditMode;
+
 $('historyEditButton').innerText=historyEditMode?'完成':'编辑';
+
 renderHistory()
+
 }
 
 function toggleList(){
+
 $('listPanel').classList.toggle('show');
+
 $('historyPanel').classList.remove('show');
+
 }
 
 function toggleHistory(){
+
 $('historyPanel').classList.toggle('show');
+
 $('listPanel').classList.remove('show');
+
 }
 
 function clearList(){
+
 shoppingList=[];
+
 localStorage.setItem('windowShoppingList','[]');
+
 renderList();
+
 }
 
 function clearHistory(){
+
 historyList=[];
+
 localStorage.setItem('windowHistoryList','[]');
+
 renderHistory();
+
 }
 
 function exportGlassImage(){
+
 saveCurrentData();
+
 const glassList=getCurrentResults();
+
 if(!glassList.length){
+
 alert('暂无玻璃尺寸');
+
 return
+
 }
+
 const sourceSvg=$('diagramWrapper').querySelector('svg');
+
 if(!sourceSvg){
+
 alert('暂无窗型图');
+
 return
+
 }
+
 const svgClone=sourceSvg.cloneNode(true);
+
 svgClone.setAttribute('xmlns','http://www.w3.org/2000/svg');
 svgClone.setAttribute('width','220');
 svgClone.setAttribute('height','180');
+
 let svgText=new XMLSerializer().serializeToString(svgClone);
+
 svgText=svgText.replace(/var\(--text-main\)/g,'#333');
+
 svgText=svgText.replace(/<defs>/,
+
 `<style>
 .svg-canvas rect{fill:#fff;stroke:#333;stroke-width:2}
 .svg-canvas line{stroke:#333;stroke-width:2}
@@ -1740,6 +2017,7 @@ svgText=svgText.replace(/<defs>/,
 </style><defs>`);
 
 const canvas=document.createElement('canvas');
+
 const canvasW=1800;
 const cardH=150;
 const gap=20;
@@ -1751,29 +2029,38 @@ const canvasH=Math.max(1100,Math.ceil(Math.max(cardsHeight,diagramH)+120));
 
 canvas.width=canvasW*2;
 canvas.height=canvasH*2;
+
 const ctx=canvas.getContext('2d');
+
 ctx.scale(2,2);
 ctx.fillStyle='#fff';
 ctx.fillRect(0,0,canvasW,canvasH);
 
 const img=new Image();
+
 const svgBlob=new Blob([svgText],{type:'image/svg+xml;charset=utf-8'});
 const url=URL.createObjectURL(svgBlob);
 
 img.onload=()=>{
+
 const diagramX=50;
 const diagramY=60+(Math.max(cardsHeight,diagramH)-diagramH)/2;
+
 ctx.drawImage(img,diagramX,diagramY,diagramW,diagramH);
 
 const cardX=820;
 const cardW=930;
 
 glassList.forEach((item,i)=>{
+
 const y=cardTop+i*(cardH+gap);
 const isScreen=item.name.includes('纱窗');
+
 ctx.save();
+
 ctx.strokeStyle=isScreen?'#ff9800':'#e3e3e3';
 ctx.lineWidth=2;
+
 ctx.beginPath();
 ctx.roundRect(cardX,y,cardW,cardH,26);
 ctx.stroke();
@@ -1782,71 +2069,134 @@ ctx.fillStyle=isScreen?'#ff9800':'#333';
 ctx.font='900 68px Arial,sans-serif';
 ctx.textAlign='center';
 ctx.textBaseline='middle';
+
 ctx.fillText(item.size,cardX+cardW/2-35,y+cardH/2);
 
 ctx.fillStyle=isScreen?'#ff9800':'#666';
 ctx.font='800 38px Arial,sans-serif';
 ctx.textAlign='right';
+
 ctx.fillText(item.count,cardX+cardW-35,y+cardH/2);
 
 if(isScreen){
+
 ctx.fillStyle='#ff9800';
 ctx.font='900 34px Arial,sans-serif';
 ctx.textAlign='left';
-ctx.fillText('纱窗',cardX+35,y+cardH/2);
+
+ctx.fillText('纱窗',cardX+35,y+cardH/2)
+
 }
+
 ctx.restore()
+
 });
 
 URL.revokeObjectURL(url);
+
 canvas.toBlob(async blob=>{
+
 if(!blob){
+
 alert('导出失败');
+
 return
+
 }
+
 const file=new File([blob],'玻璃尺寸.png',{type:'image/png'});
+
 if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+
 try{
-await navigator.share({files:[file],title:'玻璃尺寸'});
+
+await navigator.share({
+files:[file],
+title:'玻璃尺寸'
+});
+
 }catch(e){}
+
 }else{
+
 const a=document.createElement('a');
+
 a.download='玻璃尺寸.png';
 a.href=URL.createObjectURL(blob);
 a.click();
+
 setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+
 }
+
 },'image/png');
+
 };
 
 img.onerror=()=>{
+
 URL.revokeObjectURL(url);
+
 alert('导出失败');
+
 };
+
 img.src=url;
+
 }
 
 function bindInput(id){
+
 $(id).addEventListener('click',function(){
+
 clearInputOnClick(this)
+
 });
+
 $(id).addEventListener('input',calc)
+
 }
 
 window.onload=function(){
+
 $('modeDropdown').addEventListener('change',function(){
+
 switchMode(this.value)
+
 });
+
+$('minusNum').addEventListener('click',function(){
+
+changeNum(-1)
+
+});
+
+$('plusNum').addEventListener('click',function(){
+
+changeNum(1)
+
+});
+
 $('diagramToggle').addEventListener('click',toggleDiagram);
+
 $('glassToggle').addEventListener('click',toggleGlass);
+
 $('perimeterToggle').addEventListener('change',togglePerimeter);
+
 $('exportButton').addEventListener('click',exportGlassImage);
+
 $('addListButton').addEventListener('click',addToList);
+
 $('listButton').addEventListener('click',toggleList);
+
 $('historyButton').addEventListener('click',toggleHistory);
+
 $('listEditButton').addEventListener('click',toggleListEdit);
+
 $('historyEditButton').addEventListener('click',toggleHistoryEdit);
+
 $('clearListButton').addEventListener('click',clearList);
+
 $('clearHistoryButton').addEventListener('click',clearHistory);
 
 bindInput('winNum');
@@ -1864,8 +2214,11 @@ renderHistory();
 
 $('glassTableWrap').classList.remove('show');
 $('glassToggle').innerText='展开玻璃尺寸';
+
 calc()
+
 }
+
 </script>
 
 </body>
