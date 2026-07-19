@@ -1653,7 +1653,8 @@ return
 
 box.innerHTML='';
 
-shoppingList.forEach(item=>{
+/* 最新加入的窗户排在最上面 */
+[...shoppingList].reverse().forEach(item=>{
 
 const div=document.createElement('div');
 
