@@ -1,6 +1,5 @@
 payload:
   # AV / 元数据
-  - DOMAIN-SUFFIX,avbase.net
   - DOMAIN-SUFFIX,javdb.com
   - DOMAIN-SUFFIX,freejavbt.com
   - DOMAIN-SUFFIX,jdbstatic.com
