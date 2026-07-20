@@ -1,6 +1,7 @@
 payload:
   # 日本资源站
   - DOMAIN-SUFFIX,amazon.co.jp
+  - DOMAIN-SUFFIX,avbase.net
   - DOMAIN-SUFFIX,dmm.co.jp
   - DOMAIN-SUFFIX,fc2.com
   - DOMAIN-SUFFIX,hbox.jp
