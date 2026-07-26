@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker N100 压制控制台</title>
+    <style>
+        /* CSS 变量：默认深色主题 */
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-accent: #38bdf8;
+            --input-bg: #0f172a;
+            --input-border: #475569;
+            --code-bg: #050505;
+            --code-text: #4ade80;
+            --btn-paste-bg: #334155;
+            --btn-paste-text: #38bdf8;
+            --btn-paste-hover: #0284c7;
+            --btn-copy-bg: #0284c7;
+            --btn-copy-hover: #0369a1;
+            --note-bg: rgba(56, 189, 248, 0.1);
+        }
+
+        /* 浅色主题 */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-body: #f1f5f9;
+                --bg-card: #ffffff;
+                --border-color: #e2e8f0;
+                --text-primary: #0f172a;
+                --text-secondary: #64748b;
+                --text-accent: #0284c7;
+                --input-bg: #f8fafc;
+                --input-border: #cbd5e1;
+                --code-bg: #1e293b;
+                --code-text: #4ade80;
+                --btn-paste-bg: #e2e8f0;
+                --btn-paste-text: #0284c7;
+                --btn-paste-hover: #0284c7;
+                --btn-copy-bg: #0284c7;
+                --btn-copy-hover: #0369a1;
+                --note-bg: #f0f9ff;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        h2 { 
+            margin-top: 0; 
+            color: var(--text-accent); 
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 12px; 
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            background: var(--input-bg);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            flex-wrap: wrap;
+        }
+
+        .mode-selector label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        
+        .label-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        label { font-weight: 600; color: var(--text-secondary); }
+        
+        .paste-btn-small {
+            background-color: var(--btn-paste-bg);
+            color: var(--btn-paste-text);
+            border: 1px solid var(--input-border);
+            padding: 3px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .paste-btn-small:hover {
+            background-color: var(--btn-paste-hover);
+            color: #ffffff;
+            border-color: var(--btn-paste-hover);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            color: var(--text-accent);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 12px;
+            box-sizing: border-box;
+            letter-spacing: -0.2px;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus { 
+            outline: none; 
+            border-color: var(--text-accent); 
+        }
+
+        button#copyBtn {
+            width: 100%;
+            background-color: var(--btn-copy-bg);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        button#copyBtn:hover { background-color: var(--btn-copy-hover); }
+        
+        textarea {
+            width: 100%;
+            height: 380px;
+            padding: 14px;
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            font-family: Consolas, Monaco, monospace;
+            font-size: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .note {
+            background-color: var(--note-bg);
+            border-left: 4px solid var(--text-accent);
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            border-radius: 0 6px 6px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🐳 Docker N100 压制控制台</h2>
+    
+    <div class="note">
+        💡 <b>核心优势：</b> 开启 Intel N100 低功耗 QuickSync 爆发模式（HEVC/VAAPI -low_power 1），支持 8.5x+ 高速压制与无损清洗。
+    </div>
+
+    <!-- 模式选择 -->
+    <div class="section-title">📂 处理模式选择：</div>
+    <div class="mode-selector">
+        <label>
+            <input type="radio" name="transcodeMode" value="folder" checked onchange="switchMode()">
+            📁 批量文件夹模式
+        </label>
+        <label>
+            <input type="radio" name="transcodeMode" value="file" onchange="switchMode()">
+            🎬 单视频文件模式
+        </label>
+    </div>
+
+    <!-- 编码格式选择 -->
+    <div class="section-title">⚡ 编码格式与预设选择：</div>
+    <div class="mode-selector">
+        <label>
+            <input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()">
+            🚀 H.265 / HEVC（N100 QuickSync 低功耗爆发模式）
+        </label>
+        <label>
+            <input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()">
+            ⚙️ AV1（CPU libsvtav1 纯软件压制）
+        </label>
+    </div>
+
+    <!-- 输入路径控件 -->
+    <div class="form-group">
+        <div class="label-header">
+            <label id="inputPathLabel">1. 原视频文件夹路径：</label>
+            <button class="paste-btn-small" onclick="pasteToInput('inputPath')">📋 粘贴</button>
+        </div>
+        <input type="text" id="inputPath" value="/vol2/1000/douyinlive/抖音直播/喝杯梨汁" oninput="syncAndUpdateDir()">
+    </div>
+
+    <!-- 输出路径控件 -->
+    <div class="form-group">
+        <label id="outputPathLabel">2. 转换后输出文件夹路径 (已实时同步)：</label>
+        <input type="text" id="outputPath" value="/vol2/1000/douyinlive/抖音直播/喝杯梨汁" oninput="generateDockerCmd()">
+    </div>
+
+    <button id="copyBtn" onclick="copyCode()">📋 点击复制 Docker 执行命令</button>
+
+    <textarea id="codeOutput" readonly></textarea>
+</div>
+
+<script>
+    // 切换模式（批量 vs 单文件）
+    function switchMode() {
+        const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
+        const inputLabel = document.getElementById('inputPathLabel');
+        const outputLabel = document.getElementById('outputPathLabel');
+        const inputPath = document.getElementById('inputPath');
+
+        if (mode === 'folder') {
+            inputLabel.innerText = "1. 原视频文件夹路径：";
+            outputLabel.innerText = "2. 转换后输出文件夹路径 (已实时同步)：";
+            if(inputPath.value.endsWith('.mp4') || inputPath.value.endsWith('.ts') || inputPath.value.endsWith('.flv')) {
+                inputPath.value = inputPath.value.substring(0, inputPath.value.lastIndexOf('/'));
+            }
+        } else {
+            inputLabel.innerText = "1. 目标单视频文件路径 (.mp4 / .ts / .flv)：";
+            outputLabel.innerText = "2. 输出文件夹路径 (自动解析输入目录)：";
+            if(!inputPath.value.endsWith('.mp4') && !inputPath.value.endsWith('.ts') && !inputPath.value.endsWith('.flv')) {
+                inputPath.value = inputPath.value.replace(/\/$/, '') + "/example.mp4";
+            }
+        }
+        syncAndUpdateDir();
+    }
+
+    // 粘贴功能并触发同步更新
+    async function pasteToInput(inputId) {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                document.getElementById(inputId).value = text.trim();
+                syncAndUpdateDir();
+            }
+        } catch (err) {
+            alert('读取剪贴板失败，请确保已授权浏览器使用剪贴板，或直接使用 Ctrl+V 粘贴。');
+        }
+    }
+
+    // 路径实时同步逻辑
+    function syncAndUpdateDir() {
+        const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
+        const inPathVal = document.getElementById('inputPath').value.trim();
+        
+        if (mode === 'folder') {
+            document.getElementById('outputPath').value = inPathVal;
+        } else {
+            const lastSlashIndex = inPathVal.lastIndexOf('/');
+            if (lastSlashIndex !== -1) {
+                document.getElementById('outputPath').value = inPathVal.substring(0, lastSlashIndex);
+            } else {
+                document.getElementById('outputPath').value = inPathVal;
+            }
+        }
+        generateDockerCmd();
+    }
+
+    // 生成 Docker 执行命令
+    function generateDockerCmd() {
+        const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
+        const codec = document.querySelector('input[name="codecMode"]:checked').value;
+        const inPath = document.getElementById('inputPath').value.trim();
+        const outDir = document.getElementById('outputPath').value.trim();
+
+        let scriptBody = "";
+        const tag = codec === 'h265' ? '_h265' : '_AV1';
+        const tagAlt = codec === 'h265' ? '_H265' : '-AV1';
+
+        if (mode === 'folder') {
+            // 批量文件夹脚本
+            scriptBody = `IN_DIR="${inPath}"
+OUT_DIR="${outDir}"
+
+mkdir -p "$OUT_DIR"
+
+for video in "$IN_DIR"/*; do
+    [ -e "$video" ] || continue
+    filename=$(basename -- "$video")
+    ext="\${filename##*.}"
+    ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
+    name="\${filename%.*}"
+    
+    if [[ "$name" == *${tag} ]] || [[ "$name" == *${tagAlt} ]]; then
+        continue
+    fi
+
+    if [ "$ext_lower" != "ts" ] && [ "$ext_lower" != "mp4" ] && [ "$ext_lower" != "flv" ]; then
+        continue
+    fi
+
+    ${codec === 'h265' ? `
+    if [ "$ext_lower" = "ts" ]; then
+        out_file="$OUT_DIR/\${name}${tag}.mkv"
+    else
+        out_file="$OUT_DIR/\${name}${tag}.mp4"
+    fi
+    ffmpeg_cmd="ffmpeg -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i \\"\$video\\" -c:v hevc_vaapi -low_power 1 -qp 25 -vsync passthrough -c:a copy -y \\"\$out_file\\""
+    ` : `
+    out_file="$OUT_DIR/\${name}${tag}.mkv"
+    ffmpeg_cmd="ffmpeg -i \\"\$video\\" -c:v libsvtav1 -crf 30 -preset 6 -c:a copy -y \\"\$out_file\\""
+    `}
+
+    echo "========================================================="
+    echo "▶ Docker 正在压制 [${codec.toUpperCase()}]: \$filename"
+    echo "========================================================="
+
+    eval \$ffmpeg_cmd
+
+    if [ -s "\$out_file" ] && [ $(stat -c%s "\$out_file") -gt 52428800 ]; then
+        echo "⚠️ 压制成功！自动清理原文件: \$filename"
+        rm -f "\$video"
+    else
+        echo "❌ 压制失败，保留原文件: \$filename"
+    fi
+done
+echo "🎉 所有视频文件处理完成！"`;
+        } else {
+            // 单视频文件脚本
+            scriptBody = `TARGET_FILE="${inPath}"
+OUT_DIR="${outDir}"
+
+if [ ! -f "$TARGET_FILE" ]; then
+    echo "❌ 错误: 目标文件不存在 -> $TARGET_FILE"
+    exit 1
+fi
+
+mkdir -p "$OUT_DIR"
+
+filename=$(basename -- "$TARGET_FILE")
+ext="\${filename##*.}"
+ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
+name="\${filename%.*}"
+
+if [[ "$name" == *${tag} ]] || [[ "$name" == *${tagAlt} ]]; then
+    echo "⚠️ 该文件已经是 ${tag} 后缀，跳过压制！"
+    exit 0
+fi
+
+${codec === 'h265' ? `
+if [ "$ext_lower" = "ts" ]; then
+    out_file="$OUT_DIR/\${name}${tag}.mkv"
+else
+    out_file="$OUT_DIR/\${name}${tag}.mp4"
+fi
+ffmpeg_cmd="ffmpeg -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i \\"$TARGET_FILE\\" -c:v hevc_vaapi -low_power 1 -qp 25 -vsync passthrough -c:a copy -y \\"$out_file\\""
+` : `
+out_file="$OUT_DIR/\${name}${tag}.mkv"
+ffmpeg_cmd="ffmpeg -i \\"$TARGET_FILE\\" -c:v libsvtav1 -crf 30 -preset 6 -c:a copy -y \\"$out_file\\""
+`}
+
+echo "========================================================="
+echo "▶ Docker 正在压制单文件 [${codec.toUpperCase()}]: $filename"
+echo "========================================================="
+
+eval $ffmpeg_cmd
+
+if [ -s "$out_file" ] && [ $(stat -c%s "$out_file") -gt 52428800 ]; then
+    echo "⚠️ 压制成功！自动清理原文件: $filename"
+    rm -f "$TARGET_FILE"
+else
+    echo "❌ 压制失败，保留原文件: $filename"
+fi
+echo "🎉 单文件处理完成！"`;
+        }
+
+        const fullScript = `docker exec -i video-transcoder bash -c 'cat << "EOF" > /tmp/run.sh
+#!/bin/bash
+${scriptBody}
+EOF
+bash /tmp/run.sh
+rm -f /tmp/run.sh
+'`;
+
+        document.getElementById('codeOutput').value = fullScript;
+    }
+
+    function copyCode() {
+        const codeArea = document.getElementById('codeOutput');
+        const btn = document.getElementById('copyBtn');
+        
+        navigator.clipboard.writeText(codeArea.value).then(() => {
+            btn.innerText = "✅ 复制成功！可以直接粘贴到终端运行";
+            btn.style.backgroundColor = "#16a34a";
+            setTimeout(() => {
+                btn.innerText = "📋 点击复制 Docker 执行命令";
+                btn.style.backgroundColor = "var(--btn-copy-bg)";
+            }, 2500);
+        });
+    }
+
+    // 初始化运行
+    window.onload = syncAndUpdateDir;
+</script>
+
+</body>
+</html>
