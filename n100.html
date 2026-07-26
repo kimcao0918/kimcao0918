@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Docker N100 压制控制台</title>
     <style>
         /* CSS 变量：默认深色主题 */
@@ -47,100 +47,124 @@
             }
         }
 
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 12px;
+            min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
+            width: 100%;
             max-width: 900px;
             margin: 0 auto;
             background: var(--bg-card);
-            padding: 24px;
+            padding: 16px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             border: 1px solid var(--border-color);
             transition: background-color 0.3s, border-color 0.3s;
         }
 
         h2 { 
             margin-top: 0; 
+            font-size: 1.3rem;
             color: var(--text-accent); 
             border-bottom: 2px solid var(--border-color); 
-            padding-bottom: 12px; 
+            padding-bottom: 10px; 
+            word-break: break-word;
         }
 
         .mode-selector {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 15px;
             background: var(--input-bg);
-            padding: 10px 15px;
+            padding: 12px;
             border-radius: 8px;
             border: 1px solid var(--input-border);
-            flex-wrap: wrap;
         }
 
         .mode-selector label {
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             color: var(--text-primary);
             font-size: 14px;
+            padding: 4px 0;
+            width: 100%;
+        }
+
+        /* 增大触摸屏 Radio 点击区域 */
+        .mode-selector input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
         }
 
         .section-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 6px;
         }
 
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 16px; }
         
         .label-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
+            gap: 8px;
         }
 
-        label { font-weight: 600; color: var(--text-secondary); }
+        label { 
+            font-weight: 600; 
+            color: var(--text-secondary); 
+            font-size: 13px;
+            line-height: 1.3;
+        }
         
         .paste-btn-small {
             background-color: var(--btn-paste-bg);
             color: var(--btn-paste-text);
             border: 1px solid var(--input-border);
-            padding: 3px 10px;
+            padding: 6px 12px;
             font-size: 12px;
             font-weight: 600;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            flex-shrink: 0;
             transition: all 0.2s;
         }
 
-        .paste-btn-small:hover {
+        .paste-btn-small:active {
+            transform: scale(0.96);
             background-color: var(--btn-paste-hover);
             color: #ffffff;
-            border-color: var(--btn-paste-hover);
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 8px 10px;
+            padding: 10px 12px;
             border: 1px solid var(--input-border);
             border-radius: 8px;
             background-color: var(--input-bg);
             color: var(--text-accent);
-            font-family: Consolas, Monaco, "Courier New", monospace;
-            font-size: 12px;
-            box-sizing: border-box;
-            letter-spacing: -0.2px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+            -webkit-appearance: none;
             transition: border-color 0.2s;
         }
         
@@ -155,39 +179,57 @@
             color: white;
             border: none;
             padding: 14px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
             margin-top: 10px;
+            display: block;
         }
 
-        button#copyBtn:hover { background-color: var(--btn-copy-hover); }
+        button#copyBtn:active {
+            transform: scale(0.98);
+            background-color: var(--btn-copy-hover);
+        }
         
         textarea {
             width: 100%;
-            height: 380px;
-            padding: 14px;
+            height: 280px;
+            padding: 12px;
             background-color: var(--code-bg);
             color: var(--code-text);
             font-family: Consolas, Monaco, monospace;
             font-size: 12px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            box-sizing: border-box;
             margin-top: 12px;
-            line-height: 1.5;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-all;
+            resize: vertical;
+            -webkit-appearance: none;
         }
 
         .note {
             background-color: var(--note-bg);
             border-left: 4px solid var(--text-accent);
-            padding: 10px 14px;
-            font-size: 13px;
+            padding: 10px 12px;
+            font-size: 12px;
+            line-height: 1.5;
             color: var(--text-primary);
             margin-bottom: 15px;
             border-radius: 0 6px 6px 0;
+        }
+
+        /* 桌面/平板等较大屏幕响应 */
+        @media (min-width: 640px) {
+            body { padding: 20px; }
+            .container { padding: 24px; }
+            h2 { font-size: 1.5rem; }
+            .mode-selector { flex-direction: row; flex-wrap: wrap; }
+            .mode-selector label { width: auto; }
+            textarea { height: 360px; }
         }
     </style>
 </head>
@@ -218,11 +260,11 @@
     <div class="mode-selector">
         <label>
             <input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()">
-            🚀 H.265 / HEVC（N100 QuickSync 低功耗爆发模式）
+            🚀 H.265 / HEVC（N100 QuickSync）
         </label>
         <label>
             <input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()">
-            ⚙️ AV1（CPU libsvtav1 纯软件压制）
+            ⚙️ AV1（CPU libsvtav1 纯软压）
         </label>
     </div>
 
@@ -237,7 +279,7 @@
 
     <!-- 输出路径控件 -->
     <div class="form-group">
-        <label id="outputPathLabel">2. 转换后输出文件夹路径 (已实时同步)：</label>
+        <label id="outputPathLabel">2. 转换后输出文件夹路径 (实时同步)：</label>
         <input type="text" id="outputPath" value="/vol2/1000/douyinlive/抖音直播/喝杯梨汁" oninput="generateDockerCmd()">
     </div>
 
@@ -256,13 +298,13 @@
 
         if (mode === 'folder') {
             inputLabel.innerText = "1. 原视频文件夹路径：";
-            outputLabel.innerText = "2. 转换后输出文件夹路径 (已实时同步)：";
+            outputLabel.innerText = "2. 转换后输出文件夹路径 (实时同步)：";
             if(inputPath.value.endsWith('.mp4') || inputPath.value.endsWith('.ts') || inputPath.value.endsWith('.flv')) {
                 inputPath.value = inputPath.value.substring(0, inputPath.value.lastIndexOf('/'));
             }
         } else {
-            inputLabel.innerText = "1. 目标单视频文件路径 (.mp4 / .ts / .flv)：";
-            outputLabel.innerText = "2. 输出文件夹路径 (自动解析输入目录)：";
+            inputLabel.innerText = "1. 目标单视频文件路径 (.mp4/.ts/.flv)：";
+            outputLabel.innerText = "2. 输出文件夹路径 (自动解析)：";
             if(!inputPath.value.endsWith('.mp4') && !inputPath.value.endsWith('.ts') && !inputPath.value.endsWith('.flv')) {
                 inputPath.value = inputPath.value.replace(/\/$/, '') + "/example.mp4";
             }
@@ -279,7 +321,7 @@
                 syncAndUpdateDir();
             }
         } catch (err) {
-            alert('读取剪贴板失败，请确保已授权浏览器使用剪贴板，或直接使用 Ctrl+V 粘贴。');
+            alert('读取剪贴板失败，请确保已授权浏览器使用剪贴板，或直接手动粘贴。');
         }
     }
 
@@ -425,7 +467,7 @@ rm -f /tmp/run.sh
         const btn = document.getElementById('copyBtn');
         
         navigator.clipboard.writeText(codeArea.value).then(() => {
-            btn.innerText = "✅ 复制成功！可以直接粘贴到终端运行";
+            btn.innerText = "✅ 复制成功！可打开终端粘贴";
             btn.style.backgroundColor = "#16a34a";
             setTimeout(() => {
                 btn.innerText = "📋 点击复制 Docker 执行命令";
