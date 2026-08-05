@@ -2,16 +2,18 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- 适配 iPhone 视口与刘海屏（safe-area） -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>N100 压制</title>
 
-    <!-- iOS 全屏 Web App 模式配置 -->
+    <!-- iOS 专属全屏与状态栏配置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="N100压制">
 
-    <!-- iOS 桌面快捷图标 (精细控制台风格 SVG) -->
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRvY2tlciBOMTAwIHBvc3QtcHJvY2VzcyIsCiAgInNob3J0X25hbWUiOiAiTjEwM壓制IiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZjE3MmEiLAogICJ0aGVtZV9jb2xvciI6ICIjMGYxNzJhIgp9">
+
+    <!-- iOS 桌面图标 -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'><rect width='512' height='512' rx='120' fill='%230f172a'/><path d='M380 200 C380 140 330 110 270 120 C240 80 170 90 150 140 C90 140 80 210 130 250 C110 290 150 340 210 330 C250 370 330 350 350 300 C390 280 400 220 380 200 Z' fill='%230284c7'/><circle cx='200' cy='210' r='12' fill='%23ffffff'/><path d='M350 280 Q380 260 410 285 Q390 310 350 280 Z' fill='%230284c7'/><path d='M160 380 L352 380' stroke='%2338bdf8' stroke-width='24' stroke-linecap='round'/><path d='M210 340 L160 380 L210 420' fill='none' stroke='%2338bdf8' stroke-width='24' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
     <style>
@@ -56,12 +58,11 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
             background-color: var(--bg-body);
             color: var(--text-primary);
             margin: 0;
-            /* 适配 iPhone 灵动岛、刘海以及底部黑条 safe-area */
-            padding-top: max(15px, env(safe-area-inset-top));
+            padding-top: max(20px, env(safe-area-inset-top));
             padding-bottom: max(20px, env(safe-area-inset-bottom));
             padding-left: max(15px, env(safe-area-inset-left));
             padding-right: max(15px, env(safe-area-inset-right));
@@ -124,9 +125,7 @@
             flex-direction: column;
         }
 
-        .time-item {
-            flex: 1;
-        }
+        .time-item { flex: 1; }
 
         .label-header {
             display: flex;
@@ -163,7 +162,7 @@
             background-color: var(--input-bg);
             color: var(--text-accent);
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 14px; /* 防止 iOS 自动缩放视角 */
+            font-size: 14px;
             box-sizing: border-box;
             transition: border-color 0.2s;
         }
@@ -246,8 +245,8 @@
         <div class="section-title">⚡ 编码格式与质量预设：</div>
         <div class="mode-selector">
             <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 4px;">
-                <label><input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()"> 🚀 H.265 / HEVC (VAAPI)</label>
-                <label><input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()"> ⚙️ AV1 (libsvtav1)</label>
+                <label><input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()"> 🚀 H.265 / HEVC (VAAPI全显存直通)</label>
+                <label><input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()"> ⚙️ AV1 (libsvtav1软解)</label>
             </div>
             <div style="width: 100%;">
                 <select id="qualityPreset" onchange="generateDockerCmd()">
@@ -503,12 +502,13 @@ fi`;
         const tag = codec === 'h265' ? '_H265' : '_AV1';
         const tagAlt = codec === 'h265' ? '-H265' : '-AV1';
 
+        // 核心突破：优化 -hwaccel vaapi -hwaccel_output_format vaapi，开启全 GPU 显存直通转码
         const ffmpegDockerRun = codec === 'h265'
-          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -i "$video" -vf "format=nv12,hwupload" -c:v hevc_vaapi -qp ${qpVal} -c:a copy -y "$out_file"`
+          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "$video" -c:v hevc_vaapi -low_power 1 -qp ${qpVal} -c:a copy -y "$out_file"`
           : `docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -i "$video" -c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} -c:a copy -y "$out_file"`;
 
         const ffmpegSingleRun = codec === 'h265'
-          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -i "$TARGET" -vf "format=nv12,hwupload" -c:v hevc_vaapi -qp ${qpVal} -c:a copy -y "$out_file"`
+          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "$TARGET" -c:v hevc_vaapi -low_power 1 -qp ${qpVal} -c:a copy -y "$out_file"`
           : `docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -i "$TARGET" -c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} -c:a copy -y "$out_file"`;
 
         const scriptBody = `TARGET="${inPath}"
@@ -528,8 +528,8 @@ if [ -f "$TARGET" ]; then
     ${ffmpegSingleRun}
 
     if [ -s "$out_file" ]; then
-        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TARGET" 2>/dev/null)
-        duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/dev/null)
+        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TARGET" 2>/devnull)
+        duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/devnull)
         
         if [ ! -z "$duration_orig" ] && [ ! -z "$duration_out" ] && [ \$(awk "BEGIN {print ($duration_out >= $duration_orig * 0.8)}") -eq 1 ]; then
             echo "⚠️ 压制成功（时长校验通过 ≥80%）！自动清理原文件: $filename"
@@ -570,8 +570,8 @@ elif [ -d "$TARGET" ]; then
         ${ffmpegDockerRun}
 
         if [ -s "$out_file" ]; then
-            duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$video" 2>/dev/null)
-            duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/dev/null)
+            duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$video" 2>/devnull)
+            duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/devnull)
             
             if [ ! -z "$duration_orig" ] && [ ! -z "$duration_out" ] && [ \$(awk "BEGIN {print ($duration_out >= $duration_orig * 0.8)}") -eq 1 ]; then
                 echo "⚠️ 压制成功（时长校验通过 ≥80%）！自动清理原文件: $filename"
