@@ -232,7 +232,7 @@
         </label>
         <label>
             <input type="radio" name="transcodeMode" value="cut" onchange="switchMode()">
-            ✂️ 视频截断模式 (按时间区间裁剪)
+            ✂️ 视频截断模式 (保留或删除指定区间)
         </label>
         <label>
             <input type="radio" name="transcodeMode" value="merge" onchange="switchMode()">
@@ -258,6 +258,27 @@
         </div>
     </div>
 
+    <!-- 截割时间设置与动作选项 -->
+    <div class="time-group" id="timeCutGroup" style="display: none;">
+        <div class="section-title">✂️ 裁剪选项：</div>
+        <div class="mode-selector">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <label><input type="radio" name="cutAction" value="keep" checked onchange="generateDockerCmd()"> 📌 保留该时间段 (仅导出这段内容)</label>
+                <label><input type="radio" name="cutAction" value="remove" onchange="generateDockerCmd()"> 🚫 删除该时间段 (裁掉此段，前后无损拼接)</label>
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <div class="time-item">
+                <label>⏱️ 起始时间 (如 00:05:00):</label>
+                <input type="text" id="startTime" value="00:00:00" placeholder="例如: 00:00:00" oninput="generateDockerCmd()">
+            </div>
+            <div class="time-item">
+                <label>⏱️ 结束时间 (如 00:10:00):</label>
+                <input type="text" id="endTime" value="00:15:35" placeholder="例如: 00:15:35" oninput="generateDockerCmd()">
+            </div>
+        </div>
+    </div>
+
     <!-- 输入路径控件 -->
     <div class="form-group">
         <div class="label-header">
@@ -265,18 +286,6 @@
             <button class="paste-btn-small" onclick="pasteToInput('inputPath')">📋 粘贴</button>
         </div>
         <input type="text" id="inputPath" value="/vol1/1000/live/抖音/星辰" oninput="syncAndUpdateDir()">
-    </div>
-
-    <!-- 截割时间设置 -->
-    <div class="time-group" id="timeCutGroup" style="display: none;">
-        <div class="time-item">
-            <label>✂️ 起始时间 (如 00:00:00，留空为开头):</label>
-            <input type="text" id="startTime" value="00:00:00" placeholder="例如: 00:00:00" oninput="generateDockerCmd()">
-        </div>
-        <div class="time-item">
-            <label>✂️ 结束时间 (如 00:15:35，留空为结尾):</label>
-            <input type="text" id="endTime" value="00:15:35" placeholder="例如: 00:15:35" oninput="generateDockerCmd()">
-        </div>
     </div>
 
     <!-- 输出路径控件 -->
@@ -310,10 +319,10 @@
         } else if (mode === 'cut') {
             codecSection.style.display = 'none';
             outputGroup.style.display = 'block';
-            timeCutGroup.style.display = 'flex';
+            timeCutGroup.style.display = 'block';
             inputLabel.innerText = "1. 目标视频文件或文件夹路径：";
             outputLabel.innerText = "2. 截断输出文件夹路径 (已实时同步)：";
-            modeNote.innerHTML = "💡 <b>视频截断：</b> 根据设置的时间点进行无损切割，不破坏源文件。";
+            modeNote.innerHTML = "💡 <b>视频截断：</b> 可选择保留某片段，或直接剔除某时间段并将前后自动拼接。";
         } else if (mode === 'merge') {
             codecSection.style.display = 'none';
             outputGroup.style.display = 'none';
@@ -362,6 +371,7 @@
         const outDir = document.getElementById('outputPath').value.trim();
         const startTime = document.getElementById('startTime').value.trim();
         const endTime = document.getElementById('endTime').value.trim();
+        const cutAction = document.querySelector('input[name="cutAction"]:checked') ? document.querySelector('input[name="cutAction"]:checked').value : 'keep';
 
         if (mode === 'merge') {
             const fullScript = `IN_DIR="${inPath}"
@@ -429,11 +439,13 @@ rm -f "$LIST"`;
         }
 
         if (mode === 'cut') {
-            let cutParams = "";
-            if (startTime) cutParams += `-ss ${startTime} `;
-            if (endTime) cutParams += `-to ${endTime} `;
+            let fullScript = "";
+            if (cutAction === 'keep') {
+                let cutParams = "";
+                if (startTime) cutParams += `-ss ${startTime} `;
+                if (endTime) cutParams += `-to ${endTime} `;
 
-            const fullScript = `TARGET="${inPath}"
+                fullScript = `TARGET="${inPath}"
 OUT_DIR="${outDir}"
 
 mkdir -p "$OUT_DIR"
@@ -444,20 +456,20 @@ if [ -f "$TARGET" ]; then
     out_file="$OUT_DIR/\${name}_cut.mp4"
 
     echo "========================================================="
-    echo "✂️ 正在直接截断单视频: $filename"
-    echo "⏱️ 区间: ${startTime || '开头'} -> ${endTime || '结尾'}"
+    echo "✂️ 正在截取指定片段: $filename"
+    echo "⏱️ 保留区间: ${startTime || '开头'} -> ${endTime || '结尾'}"
     echo "========================================================="
 
     docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ${cutParams}-i "$TARGET" -c copy -y "$out_file"
 
     if [ -s "$out_file" ]; then
-        echo "🎉 截断完成！输出文件: $out_file"
+        echo "🎉 截取完成！输出文件: $out_file"
     else
-        echo "❌ 截断失败！"
+        echo "❌ 截取失败！"
     fi
 elif [ -d "$TARGET" ]; then
     echo "========================================================="
-    echo "✂️ 识别为文件夹，批量进行视频截断..."
+    echo "✂️ 识别为文件夹，批量进行片段截取..."
     echo "========================================================="
 
     for video in "$TARGET"/*; do
@@ -476,10 +488,75 @@ elif [ -d "$TARGET" ]; then
         echo "▶ 处理文件: $filename"
         docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ${cutParams}-i "$video" -c copy -y "$out_file"
     done
-    echo "🎉 批量截断完成！"
+    echo "🎉 批量截取完成！"
 else
     echo "❌ 路径不存在: $TARGET"
 fi`;
+            } else {
+                // 删除指定时间段，拼接前后两段
+                fullScript = `TARGET="${inPath}"
+OUT_DIR="${outDir}"
+START_TIME="${startTime || '00:00:00'}"
+END_TIME="${endTime}"
+
+if [ -z "$END_TIME" ]; then
+    echo "❌ 删除片段模式下，必须填入【结束时间】！"
+    exit 1
+fi
+
+mkdir -p "$OUT_DIR"
+
+cut_and_merge() {
+    local src="$1"
+    local fname=$(basename -- "$src")
+    local bname="\${fname%.*}"
+    local final_out="$OUT_DIR/\${bname}_removed.mp4"
+    local part1="/tmp/p1_\$\$.mp4"
+    local part2="/tmp/p2_\$\$.mp4"
+    local list_file="/tmp/list_\$\$.txt"
+
+    echo "========================================================="
+    echo "✂️ 正在剔除片段: $fname"
+    echo "🚫 删除区间: $START_TIME -> $END_TIME"
+    echo "========================================================="
+
+    # 1. 裁剪前半段
+    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -to "$START_TIME" -i "$src" -c copy -y "$part1"
+    # 2. 裁剪后半段
+    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -ss "$END_TIME" -i "$src" -c copy -y "$part2"
+
+    echo "file '$part1'" > "$list_file"
+    echo "file '$part2'" >> "$list_file"
+
+    # 3. 拼接前后两段
+    docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -f concat -safe 0 -i "$list_file" -c copy -y "$final_out"
+
+    rm -f "$part1" "$part2" "$list_file"
+
+    if [ -s "$final_out" ]; then
+        echo "🎉 片段剔除并无损拼接完成！输出文件: $final_out"
+    else
+        echo "❌ 处理失败！"
+    fi
+}
+
+if [ -f "$TARGET" ]; then
+    cut_and_merge "$TARGET"
+elif [ -d "$TARGET" ]; then
+    for video in "$TARGET"/*; do
+        [ -e "$video" ] || continue
+        filename=$(basename -- "$video")
+        ext="\${filename##*.}"
+        ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
+        if [[ "$filename" == *"_removed"* ]] || [[ "$ext_lower" != "mp4" && "$ext_lower" != "ts" && "$ext_lower" != "flv" && "$ext_lower" != "mkv" ]]; then
+            continue
+        fi
+        cut_and_merge "$video"
+    done
+else
+    echo "❌ 路径不存在: $TARGET"
+fi`;
+            }
 
             document.getElementById('codeOutput').value = fullScript;
             return;
@@ -502,7 +579,6 @@ fi`;
         const tag = codec === 'h265' ? '_H265' : '_AV1';
         const tagAlt = codec === 'h265' ? '-H265' : '-AV1';
 
-        // 核心突破：优化 -hwaccel vaapi -hwaccel_output_format vaapi，开启全 GPU 显存直通转码
         const ffmpegDockerRun = codec === 'h265'
           ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "$video" -c:v hevc_vaapi -low_power 1 -qp ${qpVal} -c:a copy -y "$out_file"`
           : `docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -i "$video" -c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} -c:a copy -y "$out_file"`;
