@@ -413,7 +413,7 @@ docker run --rm \\
   linuxserver/ffmpeg:latest \\
   -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi \\
   -f concat -safe 0 -i "$LIST" \\
-  -c:v hevc_vaapi -low_power 1 -qp 25 -vsync passthrough -c:a aac -y "$OUT"
+  -c:v hevc_vaapi -low_power 1 -qp 23 -vsync passthrough -c:a aac -y "$OUT"
 
 if [ -s "$OUT" ]; then
     echo "========================================================="
@@ -493,7 +493,7 @@ else
     echo "❌ 路径不存在: $TARGET"
 fi`;
             } else {
-                // 删除指定时间段，拼接前后两段
+                // 删除指定时间段，拼接前后两段 (已修复 -v /tmp:/tmp 挂载问题)
                 fullScript = `TARGET="${inPath}"
 OUT_DIR="${outDir}"
 START_TIME="${startTime || '00:00:00'}"
@@ -521,9 +521,9 @@ cut_and_merge() {
     echo "========================================================="
 
     # 1. 裁剪前半段
-    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -to "$START_TIME" -i "$src" -c copy -y "$part1"
+    docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -to "$START_TIME" -i "$src" -c copy -y "$part1"
     # 2. 裁剪后半段
-    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -ss "$END_TIME" -i "$src" -c copy -y "$part2"
+    docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -ss "$END_TIME" -i "$src" -c copy -y "$part2"
 
     echo "file '$part1'" > "$list_file"
     echo "file '$part2'" >> "$list_file"
