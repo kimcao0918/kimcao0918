@@ -2,10 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Docker N100 压制控制台</title>
     <style>
-        /* CSS 变量：默认深色主题 */
         :root {
             --bg-body: #0f172a;
             --bg-card: #1e293b;
@@ -25,7 +24,6 @@
             --note-bg: rgba(56, 189, 248, 0.1);
         }
 
-        /* 浅色主题 */
         @media (prefers-color-scheme: light) {
             :root {
                 --bg-body: #f1f5f9;
@@ -47,128 +45,115 @@
             }
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-primary);
             margin: 0;
-            padding: 12px;
-            min-height: 100vh;
+            padding: 15px;
             transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
-            width: 100%;
             max-width: 900px;
             margin: 0 auto;
             background: var(--bg-card);
-            padding: 16px;
+            padding: 18px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             border: 1px solid var(--border-color);
             transition: background-color 0.3s, border-color 0.3s;
         }
 
         h2 { 
             margin-top: 0; 
-            font-size: 1.3rem;
             color: var(--text-accent); 
             border-bottom: 2px solid var(--border-color); 
-            padding-bottom: 10px; 
-            word-break: break-word;
+            padding-bottom: 12px; 
+            font-size: 20px;
         }
 
         .mode-selector {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 15px;
             background: var(--input-bg);
             padding: 12px;
             border-radius: 8px;
             border: 1px solid var(--input-border);
+            flex-direction: column;
         }
 
         .mode-selector label {
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: var(--text-primary);
             font-size: 14px;
-            padding: 4px 0;
-            width: 100%;
-        }
-
-        /* 增大触摸屏 Radio 点击区域 */
-        .mode-selector input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
         }
 
         .section-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 6px;
         }
 
-        .form-group { margin-bottom: 16px; }
+        .form-group { margin-bottom: 18px; }
         
+        .time-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-direction: column;
+        }
+
+        .time-item {
+            flex: 1;
+        }
+
         .label-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
-            gap: 8px;
         }
 
-        label { 
-            font-weight: 600; 
-            color: var(--text-secondary); 
-            font-size: 13px;
-            line-height: 1.3;
-        }
+        label { font-weight: 600; color: var(--text-secondary); font-size: 13px; }
         
         .paste-btn-small {
             background-color: var(--btn-paste-bg);
             color: var(--btn-paste-text);
             border: 1px solid var(--input-border);
-            padding: 6px 12px;
+            padding: 4px 10px;
             font-size: 12px;
             font-weight: 600;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            flex-shrink: 0;
             transition: all 0.2s;
         }
 
-        .paste-btn-small:active {
-            transform: scale(0.96);
+        .paste-btn-small:hover {
             background-color: var(--btn-paste-hover);
             color: #ffffff;
+            border-color: var(--btn-paste-hover);
         }
 
-        input[type="text"] {
+        input[type="text"], select {
             width: 100%;
-            padding: 10px 12px;
+            padding: 10px;
             border: 1px solid var(--input-border);
             border-radius: 8px;
             background-color: var(--input-bg);
             color: var(--text-accent);
-            font-family: Consolas, Monaco, monospace;
+            font-family: Consolas, Monaco, "Courier New", monospace;
             font-size: 13px;
-            -webkit-appearance: none;
+            box-sizing: border-box;
             transition: border-color 0.2s;
         }
         
-        input[type="text"]:focus { 
+        input[type="text"]:focus, select:focus { 
             outline: none; 
             border-color: var(--text-accent); 
         }
@@ -183,19 +168,15 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: background 0.2s;
             margin-top: 10px;
-            display: block;
         }
 
-        button#copyBtn:active {
-            transform: scale(0.98);
-            background-color: var(--btn-copy-hover);
-        }
+        button#copyBtn:hover { background-color: var(--btn-copy-hover); }
         
         textarea {
             width: 100%;
-            height: 280px;
+            height: 380px;
             padding: 12px;
             background-color: var(--code-bg);
             color: var(--code-text);
@@ -203,33 +184,19 @@
             font-size: 12px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
+            box-sizing: border-box;
             margin-top: 12px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-break: break-all;
-            resize: vertical;
-            -webkit-appearance: none;
+            line-height: 1.5;
         }
 
         .note {
             background-color: var(--note-bg);
             border-left: 4px solid var(--text-accent);
-            padding: 10px 12px;
-            font-size: 12px;
-            line-height: 1.5;
+            padding: 10px 14px;
+            font-size: 13px;
             color: var(--text-primary);
             margin-bottom: 15px;
             border-radius: 0 6px 6px 0;
-        }
-
-        /* 桌面/平板等较大屏幕响应 */
-        @media (min-width: 640px) {
-            body { padding: 20px; }
-            .container { padding: 24px; }
-            h2 { font-size: 1.5rem; }
-            .mode-selector { flex-direction: row; flex-wrap: wrap; }
-            .mode-selector label { width: auto; }
-            textarea { height: 360px; }
         }
     </style>
 </head>
@@ -238,49 +205,70 @@
 <div class="container">
     <h2>🐳 Docker N100 压制控制台</h2>
     
-    <div class="note">
-        💡 <b>核心优势：</b> 开启 Intel N100 低功耗 QuickSync 爆发模式（HEVC/VAAPI -low_power 1），支持 8.5x+ 高速压制与无损清洗。
+    <div class="note" id="modeNote">
+        💡 <b>智能转码：</b> 压制后会自动对比视频时长，只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件。
     </div>
 
     <!-- 模式选择 -->
     <div class="section-title">📂 处理模式选择：</div>
     <div class="mode-selector">
         <label>
-            <input type="radio" name="transcodeMode" value="folder" checked onchange="switchMode()">
-            📁 批量文件夹模式
+            <input type="radio" name="transcodeMode" value="transcode" checked onchange="switchMode()">
+            🎬 智能转码模式 (时长对比 ≥ 80% 删源)
         </label>
         <label>
-            <input type="radio" name="transcodeMode" value="file" onchange="switchMode()">
-            🎬 单视频文件模式
+            <input type="radio" name="transcodeMode" value="cut" onchange="switchMode()">
+            ✂️ 视频截断模式 (按时间区间裁剪)
+        </label>
+        <label>
+            <input type="radio" name="transcodeMode" value="merge" onchange="switchMode()">
+            🧩 视频无损拼接模式 (拼接成功后删源)
         </label>
     </div>
 
-    <!-- 编码格式选择 -->
-    <div class="section-title">⚡ 编码格式与预设选择：</div>
-    <div class="mode-selector">
-        <label>
-            <input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()">
-            🚀 H.265 / HEVC（N100 QuickSync）
-        </label>
-        <label>
-            <input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()">
-            ⚙️ AV1（CPU libsvtav1 纯软压）
-        </label>
+    <!-- 编码格式与质量选择 -->
+    <div id="codecSection">
+        <div class="section-title">⚡ 编码格式与质量预设：</div>
+        <div class="mode-selector">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 4px;">
+                <label><input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()"> 🚀 H.265 / HEVC (VAAPI)</label>
+                <label><input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()"> ⚙️ AV1 (libsvtav1)</label>
+            </div>
+            <div style="width: 100%;">
+                <select id="qualityPreset" onchange="generateDockerCmd()">
+                    <option value="medium" selected>⚖️ 转换预设：中等画质 (默认平衡)</option>
+                    <option value="quality">🎨 转换预设：高画质 (文件较大)</option>
+                    <option value="size">📦 转换预设：小体积 (极限压缩)</option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <!-- 输入路径控件 -->
     <div class="form-group">
         <div class="label-header">
-            <label id="inputPathLabel">1. 原视频文件夹路径：</label>
+            <label id="inputPathLabel">1. 原视频文件或文件夹路径：</label>
             <button class="paste-btn-small" onclick="pasteToInput('inputPath')">📋 粘贴</button>
         </div>
-        <input type="text" id="inputPath" value="/vol2/1000/douyinlive/抖音直播/喝杯梨汁" oninput="syncAndUpdateDir()">
+        <input type="text" id="inputPath" value="/vol1/1000/live/抖音/星辰" oninput="syncAndUpdateDir()">
+    </div>
+
+    <!-- 截割时间设置 -->
+    <div class="time-group" id="timeCutGroup" style="display: none;">
+        <div class="time-item">
+            <label>✂️ 起始时间 (如 00:00:00，留空为开头):</label>
+            <input type="text" id="startTime" value="00:00:00" placeholder="例如: 00:00:00" oninput="generateDockerCmd()">
+        </div>
+        <div class="time-item">
+            <label>✂️ 结束时间 (如 00:15:35，留空为结尾):</label>
+            <input type="text" id="endTime" value="00:15:35" placeholder="例如: 00:15:35" oninput="generateDockerCmd()">
+        </div>
     </div>
 
     <!-- 输出路径控件 -->
-    <div class="form-group">
-        <label id="outputPathLabel">2. 转换后输出文件夹路径 (实时同步)：</label>
-        <input type="text" id="outputPath" value="/vol2/1000/douyinlive/抖音直播/喝杯梨汁" oninput="generateDockerCmd()">
+    <div class="form-group" id="outputGroup">
+        <label id="outputPathLabel">2. 转换后输出文件夹路径 (已实时同步)：</label>
+        <input type="text" id="outputPath" value="/vol1/1000/live/抖音/星辰" oninput="generateDockerCmd()">
     </div>
 
     <button id="copyBtn" onclick="copyCode()">📋 点击复制 Docker 执行命令</button>
@@ -289,30 +277,39 @@
 </div>
 
 <script>
-    // 切换模式（批量 vs 单文件）
     function switchMode() {
         const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
         const inputLabel = document.getElementById('inputPathLabel');
         const outputLabel = document.getElementById('outputPathLabel');
-        const inputPath = document.getElementById('inputPath');
+        const codecSection = document.getElementById('codecSection');
+        const outputGroup = document.getElementById('outputGroup');
+        const timeCutGroup = document.getElementById('timeCutGroup');
+        const modeNote = document.getElementById('modeNote');
 
-        if (mode === 'folder') {
-            inputLabel.innerText = "1. 原视频文件夹路径：";
-            outputLabel.innerText = "2. 转换后输出文件夹路径 (实时同步)：";
-            if(inputPath.value.endsWith('.mp4') || inputPath.value.endsWith('.ts') || inputPath.value.endsWith('.flv')) {
-                inputPath.value = inputPath.value.substring(0, inputPath.value.lastIndexOf('/'));
-            }
-        } else {
-            inputLabel.innerText = "1. 目标单视频文件路径 (.mp4/.ts/.flv)：";
-            outputLabel.innerText = "2. 输出文件夹路径 (自动解析)：";
-            if(!inputPath.value.endsWith('.mp4') && !inputPath.value.endsWith('.ts') && !inputPath.value.endsWith('.flv')) {
-                inputPath.value = inputPath.value.replace(/\/$/, '') + "/example.mp4";
-            }
+        if (mode === 'transcode') {
+            codecSection.style.display = 'block';
+            outputGroup.style.display = 'block';
+            timeCutGroup.style.display = 'none';
+            inputLabel.innerText = "1. 原视频文件或文件夹路径：";
+            outputLabel.innerText = "2. 转换后输出文件夹路径 (已实时同步)：";
+            modeNote.innerHTML = "💡 <b>智能转码：</b> 压制后通过 ffprobe 对比视频时长，只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件。";
+        } else if (mode === 'cut') {
+            codecSection.style.display = 'none';
+            outputGroup.style.display = 'block';
+            timeCutGroup.style.display = 'flex';
+            inputLabel.innerText = "1. 目标视频文件或文件夹路径：";
+            outputLabel.innerText = "2. 截断输出文件夹路径 (已实时同步)：";
+            modeNote.innerHTML = "💡 <b>视频截断：</b> 根据设置的时间点进行无损切割，不破坏源文件。";
+        } else if (mode === 'merge') {
+            codecSection.style.display = 'none';
+            outputGroup.style.display = 'none';
+            timeCutGroup.style.display = 'none';
+            inputLabel.innerText = "1. 需要拼接视频的文件夹路径：";
+            modeNote.innerHTML = "💡 <b>无损拼接：</b> 拼接成功后，将自动清理所有参与拼接的原始视频片段。";
         }
         syncAndUpdateDir();
     }
 
-    // 粘贴功能并触发同步更新
     async function pasteToInput(inputId) {
         try {
             const text = await navigator.clipboard.readText();
@@ -321,16 +318,16 @@
                 syncAndUpdateDir();
             }
         } catch (err) {
-            alert('读取剪贴板失败，请确保已授权浏览器使用剪贴板，或直接手动粘贴。');
+            alert('读取剪贴板失败，请手动粘贴。');
         }
     }
 
-    // 路径实时同步逻辑
     function syncAndUpdateDir() {
         const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
         const inPathVal = document.getElementById('inputPath').value.trim();
-        
-        if (mode === 'folder') {
+        const isFile = /\.(mp4|ts|flv|mkv)$/i.test(inPathVal);
+
+        if (mode === 'merge' || !isFile) {
             document.getElementById('outputPath').value = inPathVal;
         } else {
             const lastSlashIndex = inPathVal.lastIndexOf('/');
@@ -343,123 +340,241 @@
         generateDockerCmd();
     }
 
-    // 生成 Docker 执行命令
     function generateDockerCmd() {
         const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
         const codec = document.querySelector('input[name="codecMode"]:checked').value;
+        const quality = document.getElementById('qualityPreset').value;
         const inPath = document.getElementById('inputPath').value.trim();
         const outDir = document.getElementById('outputPath').value.trim();
+        const startTime = document.getElementById('startTime').value.trim();
+        const endTime = document.getElementById('endTime').value.trim();
 
-        let scriptBody = "";
-        const tag = codec === 'h265' ? '_h265' : '_AV1';
-        const tagAlt = codec === 'h265' ? '_H265' : '-AV1';
+        if (mode === 'merge') {
+            const fullScript = `IN_DIR="${inPath}"
+LIST="/tmp/concat_list.txt"
+> "$LIST"
 
-        if (mode === 'folder') {
-            // 批量文件夹脚本
-            scriptBody = `IN_DIR="${inPath}"
-OUT_DIR="${outDir}"
+echo "========================================================="
+echo "▶ 1. 扫描并生成待拼接文件列表..."
+echo "========================================================="
 
-mkdir -p "$OUT_DIR"
-
-for video in "$IN_DIR"/*; do
-    [ -e "$video" ] || continue
-    filename=$(basename -- "$video")
-    ext="\${filename##*.}"
-    ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
-    name="\${filename%.*}"
-    
-    if [[ "$name" == *${tag} ]] || [[ "$name" == *${tagAlt} ]]; then
-        continue
-    fi
-
-    if [ "$ext_lower" != "ts" ] && [ "$ext_lower" != "mp4" ] && [ "$ext_lower" != "flv" ]; then
-        continue
-    fi
-
-    ${codec === 'h265' ? `
-    if [ "$ext_lower" = "ts" ]; then
-        out_file="$OUT_DIR/\${name}${tag}.mkv"
-    else
-        out_file="$OUT_DIR/\${name}${tag}.mp4"
-    fi
-    ffmpeg_cmd="ffmpeg -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i \\"\$video\\" -c:v hevc_vaapi -low_power 1 -qp 25 -vsync passthrough -c:a copy -y \\"\$out_file\\""
-    ` : `
-    out_file="$OUT_DIR/\${name}${tag}.mkv"
-    ffmpeg_cmd="ffmpeg -i \\"\$video\\" -c:v libsvtav1 -crf 30 -preset 6 -c:a copy -y \\"\$out_file\\""
-    `}
-
-    echo "========================================================="
-    echo "▶ Docker 正在压制 [${codec.toUpperCase()}]: \$filename"
-    echo "========================================================="
-
-    eval \$ffmpeg_cmd
-
-    if [ -s "\$out_file" ] && [ $(stat -c%s "\$out_file") -gt 52428800 ]; then
-        echo "⚠️ 压制成功！自动清理原文件: \$filename"
-        rm -f "\$video"
-    else
-        echo "❌ 压制失败，保留原文件: \$filename"
-    fi
+find "$IN_DIR" -maxdepth 1 -type f | grep -E "\\.(mp4|ts|MP4|TS)$" | grep -v "_拼接\\.mp4$" | sort | while read -r f; do
+    echo "file '$f'" >> "$LIST"
+    echo " ➕ 已添加: $(basename "$f")"
 done
-echo "🎉 所有视频文件处理完成！"`;
-        } else {
-            // 单视频文件脚本
-            scriptBody = `TARGET_FILE="${inPath}"
-OUT_DIR="${outDir}"
 
-if [ ! -f "$TARGET_FILE" ]; then
-    echo "❌ 错误: 目标文件不存在 -> $TARGET_FILE"
+if [ ! -s "$LIST" ]; then
+    echo "❌ 目录下没有找到可拼接的原始视频文件！"
     exit 1
 fi
 
-mkdir -p "$OUT_DIR"
-
-filename=$(basename -- "$TARGET_FILE")
-ext="\${filename##*.}"
-ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
-name="\${filename%.*}"
-
-if [[ "$name" == *${tag} ]] || [[ "$name" == *${tagAlt} ]]; then
-    echo "⚠️ 该文件已经是 ${tag} 后缀，跳过压制！"
-    exit 0
-fi
-
-${codec === 'h265' ? `
-if [ "$ext_lower" = "ts" ]; then
-    out_file="$OUT_DIR/\${name}${tag}.mkv"
-else
-    out_file="$OUT_DIR/\${name}${tag}.mp4"
-fi
-ffmpeg_cmd="ffmpeg -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i \\"$TARGET_FILE\\" -c:v hevc_vaapi -low_power 1 -qp 25 -vsync passthrough -c:a copy -y \\"$out_file\\""
-` : `
-out_file="$OUT_DIR/\${name}${tag}.mkv"
-ffmpeg_cmd="ffmpeg -i \\"$TARGET_FILE\\" -c:v libsvtav1 -crf 30 -preset 6 -c:a copy -y \\"$out_file\\""
-`}
+FIRST=$(head -n 1 "$LIST" | sed "s/file '//;s/'$//")
+BASE_NAME=$(basename "\${FIRST%.*}")
+OUT="$IN_DIR/\${BASE_NAME}_拼接.mp4"
 
 echo "========================================================="
-echo "▶ Docker 正在压制单文件 [${codec.toUpperCase()}]: $filename"
+echo "▶ 2. 开始拼接，合成目标: \${BASE_NAME}_拼接.mp4"
 echo "========================================================="
 
-eval $ffmpeg_cmd
+docker run --rm \\
+  --device /dev/dri:/dev/dri \\
+  -v /vol1:/vol1 \\
+  -v /tmp:/tmp \\
+  linuxserver/ffmpeg:latest \\
+  -f concat -safe 0 -i "$LIST" -c copy -y "$OUT" || \\
+docker run --rm \\
+  --device /dev/dri:/dev/dri \\
+  -v /vol1:/vol1 \\
+  -v /tmp:/tmp \\
+  linuxserver/ffmpeg:latest \\
+  -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi \\
+  -f concat -safe 0 -i "$LIST" \\
+  -c:v hevc_vaapi -low_power 1 -qp 25 -vsync passthrough -c:a aac -y "$OUT"
 
-if [ -s "$out_file" ] && [ $(stat -c%s "$out_file") -gt 52428800 ]; then
-    echo "⚠️ 压制成功！自动清理原文件: $filename"
-    rm -f "$TARGET_FILE"
+if [ -s "$OUT" ]; then
+    echo "========================================================="
+    echo "🎉 拼接成功！合成视频已生成: $OUT"
+    echo "🗑️  正在清理参与拼接的原始文件..."
+    echo "========================================================="
+    
+    sed "s/file '//;s/'$//" "$LIST" | while read -r src_file; do
+        if [ -f "$src_file" ]; then
+            rm -f "$src_file"
+            echo " 🗑️  已删除原文件: $(basename "$src_file")"
+        fi
+    done
+    echo "✨ 原始文件清理完毕！"
 else
-    echo "❌ 压制失败，保留原文件: $filename"
+    echo "❌ 拼接失败！取消删除原文件！"
 fi
-echo "🎉 单文件处理完成！"`;
+
+rm -f "$LIST"`;
+
+            document.getElementById('codeOutput').value = fullScript;
+            return;
         }
 
-        const fullScript = `docker exec -i video-transcoder bash -c 'cat << "EOF" > /tmp/run.sh
-#!/bin/bash
-${scriptBody}
-EOF
-bash /tmp/run.sh
-rm -f /tmp/run.sh
-'`;
+        if (mode === 'cut') {
+            let cutParams = "";
+            if (startTime) cutParams += `-ss ${startTime} `;
+            if (endTime) cutParams += `-to ${endTime} `;
 
-        document.getElementById('codeOutput').value = fullScript;
+            const fullScript = `TARGET="${inPath}"
+OUT_DIR="${outDir}"
+
+mkdir -p "$OUT_DIR"
+
+if [ -f "$TARGET" ]; then
+    filename=$(basename -- "$TARGET")
+    name="\${filename%.*}"
+    out_file="$OUT_DIR/\${name}_cut.mp4"
+
+    echo "========================================================="
+    echo "✂️ 正在直接截断单视频: $filename"
+    echo "⏱️ 区间: ${startTime || '开头'} -> ${endTime || '结尾'}"
+    echo "========================================================="
+
+    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ${cutParams}-i "$TARGET" -c copy -y "$out_file"
+
+    if [ -s "$out_file" ]; then
+        echo "🎉 截断完成！输出文件: $out_file"
+    else
+        echo "❌ 截断失败！"
+    fi
+elif [ -d "$TARGET" ]; then
+    echo "========================================================="
+    echo "✂️ 识别为文件夹，批量进行视频截断..."
+    echo "========================================================="
+
+    for video in "$TARGET"/*; do
+        [ -e "$video" ] || continue
+        filename=$(basename -- "$video")
+        name="\${filename%.*}"
+        ext="\${filename##*.}"
+        ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
+
+        if [[ "$name" == *"_cut"* ]] || [[ "$ext_lower" != "mp4" && "$ext_lower" != "ts" && "$ext_lower" != "flv" && "$ext_lower" != "mkv" ]]; then
+            continue
+        fi
+
+        out_file="$OUT_DIR/\${name}_cut.mp4"
+
+        echo "▶ 处理文件: $filename"
+        docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ${cutParams}-i "$video" -c copy -y "$out_file"
+    done
+    echo "🎉 批量截断完成！"
+else
+    echo "❌ 路径不存在: $TARGET"
+fi`;
+
+            document.getElementById('codeOutput').value = fullScript;
+            return;
+        }
+
+        // 参数预设映射
+        let qpVal = 25; 
+        let crfVal = 30;
+        let presetVal = 6;
+
+        if (quality === 'quality') {
+            qpVal = 21;    
+            crfVal = 24;
+            presetVal = 4;
+        } else if (quality === 'size') {
+            qpVal = 28;    
+            crfVal = 34;
+            presetVal = 8;
+        }
+
+        const tag = codec === 'h265' ? '_H265' : '_AV1';
+        const tagAlt = codec === 'h265' ? '-H265' : '-AV1';
+
+        const ffmpegDockerRun = codec === 'h265'
+          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -i "$video" -vf "format=nv12,hwupload" -c:v hevc_vaapi -qp ${qpVal} -c:a copy -y "$out_file"`
+          : `docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -i "$video" -c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} -c:a copy -y "$out_file"`;
+
+        const ffmpegSingleRun = codec === 'h265'
+          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -i "$TARGET" -vf "format=nv12,hwupload" -c:v hevc_vaapi -qp ${qpVal} -c:a copy -y "$out_file"`
+          : `docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -i "$TARGET" -c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} -c:a copy -y "$out_file"`;
+
+        const scriptBody = `TARGET="${inPath}"
+OUT_DIR="${outDir}"
+
+mkdir -p "$OUT_DIR"
+
+if [ -f "$TARGET" ]; then
+    filename=$(basename -- "$TARGET")
+    name="\${filename%.*}"
+    out_file="$OUT_DIR/\${name}${tag}.mkv"
+
+    echo "========================================================="
+    echo "▶ 正在压制单视频文件 [${codec.toUpperCase()} - 预设: ${quality}]: $filename"
+    echo "========================================================="
+
+    ${ffmpegSingleRun}
+
+    if [ -s "$out_file" ]; then
+        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TARGET" 2>/dev/null)
+        duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/dev/null)
+        
+        if [ ! -z "$duration_orig" ] && [ ! -z "$duration_out" ] && [ \$(awk "BEGIN {print ($duration_out >= $duration_orig * 0.8)}") -eq 1 ]; then
+            echo "⚠️ 压制成功（时长校验通过 ≥80%）！自动清理原文件: $filename"
+            rm -f "$TARGET"
+        else
+            echo "❌ 压制时长未达到原文件的 80%，保留原文件: $filename"
+        fi
+    else
+        echo "❌ 压制失败，保留原文件: $filename"
+    fi
+
+elif [ -d "$TARGET" ]; then
+    echo "========================================================="
+    echo "▶ 识别为文件夹，开始批量扫描转码..."
+    echo "========================================================="
+
+    for video in "$TARGET"/*; do
+        [ -e "$video" ] || continue
+        filename=$(basename -- "$video")
+        ext="\${filename##*.}"
+        ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
+        name="\${filename%.*}"
+        
+        if [[ "$name" == *${tag} ]] || [[ "$name" == *${tagAlt} ]]; then
+            continue
+        fi
+
+        if [ "$ext_lower" != "ts" ] && [ "$ext_lower" != "mp4" ] && [ "$ext_lower" != "flv" ] && [ "$ext_lower" != "mkv" ]; then
+            continue
+        fi
+
+        out_file="$OUT_DIR/\${name}${tag}.mkv"
+
+        echo "---------------------------------------------------------"
+        echo "▶ 正在压制 [${codec.toUpperCase()} - 预设: ${quality}]: $filename"
+        echo "---------------------------------------------------------"
+
+        ${ffmpegDockerRun}
+
+        if [ -s "$out_file" ]; then
+            duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$video" 2>/dev/null)
+            duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/dev/null)
+            
+            if [ ! -z "$duration_orig" ] && [ ! -z "$duration_out" ] && [ \$(awk "BEGIN {print ($duration_out >= $duration_orig * 0.8)}") -eq 1 ]; then
+                echo "⚠️ 压制成功（时长校验通过 ≥80%）！自动清理原文件: $filename"
+                rm -f "$video"
+            else
+                echo "❌ 压制时长未达到原文件的 80%，保留原文件: $filename"
+            fi
+        else
+            echo "❌ 压制失败，保留原文件: $filename"
+        fi
+    done
+    echo "🎉 批量处理完成！"
+else
+    echo "❌ 找不到指定路径 -> $TARGET"
+fi`;
+
+        document.getElementById('codeOutput').value = scriptBody;
     }
 
     function copyCode() {
@@ -467,7 +582,7 @@ rm -f /tmp/run.sh
         const btn = document.getElementById('copyBtn');
         
         navigator.clipboard.writeText(codeArea.value).then(() => {
-            btn.innerText = "✅ 复制成功！可打开终端粘贴";
+            btn.innerText = "✅ 复制成功！可以直接粘贴到终端运行";
             btn.style.backgroundColor = "#16a34a";
             setTimeout(() => {
                 btn.innerText = "📋 点击复制 Docker 执行命令";
@@ -476,8 +591,7 @@ rm -f /tmp/run.sh
         });
     }
 
-    // 初始化运行
-    window.onload = syncAndUpdateDir;
+    window.onload = switchMode;
 </script>
 
 </body>
