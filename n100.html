@@ -245,14 +245,20 @@
         <div class="section-title">⚡ 编码格式与质量预设：</div>
         <div class="mode-selector">
             <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 4px;">
-                <label><input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()"> 🚀 H.265 / HEVC (VAAPI全显存直通)</label>
-                <label><input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()"> ⚙️ AV1 (libsvtav1软解)</label>
+                <label><input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()"> 🚀 H.265 / HEVC (Intel QSV 硬件加速)</label>
+                <label><input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()"> ⚙️ AV1 (libsvtav1 软解)</label>
+            </div>
+            <!-- 2倍帧率开关 -->
+            <div style="margin-bottom: 8px;">
+                <label style="color: var(--text-accent); font-weight: bold;">
+                    <input type="checkbox" id="fps2x" onchange="generateDockerCmd()"> ⏩ 开启 2倍帧率 (通过 QSV VPP 动态精准翻倍)
+                </label>
             </div>
             <div style="width: 100%;">
                 <select id="qualityPreset" onchange="generateDockerCmd()">
-                    <option value="medium" selected>⚖️ 转换预设：中等画质 (默认平衡)</option>
-                    <option value="quality">🎨 转换预设：高画质 (文件较大)</option>
-                    <option value="size">📦 转换预设：小体积 (极限压缩)</option>
+                    <option value="medium" selected>⚖️ 转换预设：中等画质 (默认平衡 - Q23)</option>
+                    <option value="quality">🎨 转换预设：高画质 (文件较大 - Q21)</option>
+                    <option value="size">📦 转换预设：小体积 (极限压缩 - Q28)</option>
                 </select>
             </div>
         </div>
@@ -366,6 +372,7 @@
     function generateDockerCmd() {
         const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
         const codec = document.querySelector('input[name="codecMode"]:checked').value;
+        const isFps2x = document.getElementById('fps2x').checked;
         const quality = document.getElementById('qualityPreset').value;
         const inPath = document.getElementById('inputPath').value.trim();
         const outDir = document.getElementById('outputPath').value.trim();
@@ -411,9 +418,9 @@ docker run --rm \\
   -v /vol1:/vol1 \\
   -v /tmp:/tmp \\
   linuxserver/ffmpeg:latest \\
-  -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi \\
+  -init_hw_device qsv=hw -filter_hw_device hw \\
   -f concat -safe 0 -i "$LIST" \\
-  -c:v hevc_vaapi -low_power 1 -qp 23 -vsync passthrough -c:a aac -y "$OUT"
+  -c:v hevc_qsv -preset faster -global_quality 23 -c:a aac -y "$OUT"
 
 if [ -s "$OUT" ]; then
     echo "========================================================="
@@ -493,7 +500,6 @@ else
     echo "❌ 路径不存在: $TARGET"
 fi`;
             } else {
-                // 删除指定时间段，拼接前后两段 (已修复 -v /tmp:/tmp 挂载问题)
                 fullScript = `TARGET="${inPath}"
 OUT_DIR="${outDir}"
 START_TIME="${startTime || '00:00:00'}"
@@ -520,15 +526,12 @@ cut_and_merge() {
     echo "🚫 删除区间: $START_TIME -> $END_TIME"
     echo "========================================================="
 
-    # 1. 裁剪前半段
     docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -to "$START_TIME" -i "$src" -c copy -y "$part1"
-    # 2. 裁剪后半段
     docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -ss "$END_TIME" -i "$src" -c copy -y "$part2"
 
     echo "file '$part1'" > "$list_file"
     echo "file '$part2'" >> "$list_file"
 
-    # 3. 拼接前后两段
     docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -f concat -safe 0 -i "$list_file" -c copy -y "$final_out"
 
     rm -f "$part1" "$part2" "$list_file"
@@ -562,74 +565,112 @@ fi`;
             return;
         }
 
-        let qpVal = 25; 
+        // 转码质量与速度预设
+        let qpVal = 23; 
         let crfVal = 30;
         let presetVal = 6;
+        let qsvPreset = "faster"; // 全速高功耗压制预设
 
         if (quality === 'quality') {
             qpVal = 21;    
             crfVal = 24;
             presetVal = 4;
+            qsvPreset = "fast";
         } else if (quality === 'size') {
             qpVal = 28;    
             crfVal = 34;
             presetVal = 8;
+            qsvPreset = "veryfast";
         }
 
-        const tag = codec === 'h265' ? '_H265' : '_AV1';
-        const tagAlt = codec === 'h265' ? '-H265' : '-AV1';
-
-        const ffmpegDockerRun = codec === 'h265'
-          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "$video" -c:v hevc_vaapi -low_power 1 -qp ${qpVal} -c:a copy -y "$out_file"`
-          : `docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -i "$video" -c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} -c:a copy -y "$out_file"`;
-
-        const ffmpegSingleRun = codec === 'h265'
-          ? `docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -i "$TARGET" -c:v hevc_vaapi -low_power 1 -qp ${qpVal} -c:a copy -y "$out_file"`
-          : `docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest -i "$TARGET" -c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} -c:a copy -y "$out_file"`;
+        const tag = (codec === 'h265' ? '_H265' : '_AV1');
+        const tagAlt = (codec === 'h265' ? '-H265' : '-AV1');
 
         const scriptBody = `TARGET="${inPath}"
 OUT_DIR="${outDir}"
 
 mkdir -p "$OUT_DIR"
 
-if [ -f "$TARGET" ]; then
-    filename=$(basename -- "$TARGET")
-    name="\${filename%.*}"
-    out_file="$OUT_DIR/\${name}${tag}.mkv"
+process_video() {
+    local src="$1"
+    local filename=$(basename -- "$src")
+    local name="\${filename%.*}"
+    local out_file="$OUT_DIR/\${name}${tag}.mkv"
 
     echo "========================================================="
-    echo "▶ 正在压制单视频文件 [${codec.toUpperCase()} - 预设: ${quality}]: $filename"
+    echo "🚀 正在高功率全速压制: $filename"
     echo "========================================================="
 
-    ${ffmpegSingleRun}
+    ${codec === 'h265' ? `
+    # 提取原始帧率（锁定视频流 v:0）
+    fps_raw=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 "$src" 2>/dev/null | head -n 1)
+
+    ${isFps2x ? `
+    # 计算 2 倍目标帧率
+    fps_target=\$(awk -F'/' 'BEGIN {FS="/"} {
+      if (\$2>0) val=(\$1/\$2)*2; 
+      else if (\$1>0) val=\$1*2; 
+      else val=60; 
+      res=int(val+0.5); 
+      if (res<=0) res=60; 
+      print res
+    }' <<< "\$fps_raw")
+    echo "▶ 原始帧率字符串: \$fps_raw | 2倍目标帧率: \$fps_target"
+
+    docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
+      -init_hw_device qsv=hw -filter_hw_device hw \\
+      -hwaccel qsv -hwaccel_output_format qsv \\
+      -i "$src" \\
+      -vf "vpp_qsv=framerate=\$fps_target" \\
+      -r "\$fps_target" \\
+      -c:v hevc_qsv -preset ${qsvPreset} -global_quality ${qpVal} \\
+      -c:a copy -y "$out_file"
+    ` : `
+    docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
+      -init_hw_device qsv=hw -filter_hw_device hw \\
+      -hwaccel qsv -hwaccel_output_format qsv \\
+      -i "$src" \\
+      -c:v hevc_qsv -preset ${qsvPreset} -global_quality ${qpVal} \\
+      -c:a copy -y "$out_file"
+    `}
+    ` : `
+    # AV1 软解转码逻辑
+    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
+      -i "$src" \\
+      ${isFps2x ? '-vf "fps=60" ' : ''}-c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} \\
+      -c:a copy -y "$out_file"
+    `}
 
     if [ -s "$out_file" ]; then
-        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$TARGET" 2>/devnull)
+        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$src" 2>/devnull)
         duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/devnull)
         
         if [ ! -z "$duration_orig" ] && [ ! -z "$duration_out" ] && [ \$(awk "BEGIN {print ($duration_out >= $duration_orig * 0.8)}") -eq 1 ]; then
             echo "⚠️ 压制成功（时长校验通过 ≥80%）！自动清理原文件: $filename"
-            rm -f "$TARGET"
+            rm -f "$src"
         else
             echo "❌ 压制时长未达到原文件的 80%，保留原文件: $filename"
         fi
     else
         echo "❌ 压制失败，保留原文件: $filename"
     fi
+}
 
+if [ -f "$TARGET" ]; then
+    process_video "$TARGET"
 elif [ -d "$TARGET" ]; then
     echo "========================================================="
-    echo "▶ 识别为文件夹，开始批量扫描转码..."
+    echo "▶ 识别为文件夹，开始全速批量压制..."
     echo "========================================================="
 
     for video in "$TARGET"/*; do
         [ -e "$video" ] || continue
         filename=$(basename -- "$video")
         ext="\${filename##*.}"
-        ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
+        ext_lower=\$(echo "$ext" | tr "[:upper:]" "[:lower:]")
         name="\${filename%.*}"
         
-        if [[ "$name" == *${tag} ]] || [[ "$name" == *${tagAlt} ]]; then
+        if [[ "$name" == *${tag}* ]] || [[ "$name" == *${tagAlt}* ]]; then
             continue
         fi
 
@@ -637,27 +678,7 @@ elif [ -d "$TARGET" ]; then
             continue
         fi
 
-        out_file="$OUT_DIR/\${name}${tag}.mkv"
-
-        echo "---------------------------------------------------------"
-        echo "▶ 正在压制 [${codec.toUpperCase()} - 预设: ${quality}]: $filename"
-        echo "---------------------------------------------------------"
-
-        ${ffmpegDockerRun}
-
-        if [ -s "$out_file" ]; then
-            duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$video" 2>/devnull)
-            duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/devnull)
-            
-            if [ ! -z "$duration_orig" ] && [ ! -z "$duration_out" ] && [ \$(awk "BEGIN {print ($duration_out >= $duration_orig * 0.8)}") -eq 1 ]; then
-                echo "⚠️ 压制成功（时长校验通过 ≥80%）！自动清理原文件: $filename"
-                rm -f "$video"
-            else
-                echo "❌ 压制时长未达到原文件的 80%，保留原文件: $filename"
-            fi
-        else
-            echo "❌ 压制失败，保留原文件: $filename"
-        fi
+        process_video "$video"
     done
     echo "🎉 批量处理完成！"
 else
