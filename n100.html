@@ -291,13 +291,13 @@
             <label id="inputPathLabel">1. 原视频文件或文件夹路径：</label>
             <button class="paste-btn-small" onclick="pasteToInput('inputPath')">📋 粘贴</button>
         </div>
-        <input type="text" id="inputPath" value="/vol1/1000/live/抖音/星辰" oninput="syncAndUpdateDir()">
+        <input type="text" id="inputPath" value="/vol1/1000/douyinlive/抖音直播/" oninput="syncAndUpdateDir()">
     </div>
 
     <!-- 输出路径控件 -->
     <div class="form-group" id="outputGroup">
         <label id="outputPathLabel">2. 转换后输出文件夹路径 (已实时同步)：</label>
-        <input type="text" id="outputPath" value="/vol1/1000/live/抖音/星辰" oninput="generateDockerCmd()">
+        <input type="text" id="outputPath" value="/vol1/1000/douyinlive/抖音直播/" oninput="generateDockerCmd()">
     </div>
 
     <button id="copyBtn" onclick="copyCode()">📋 点击复制 Docker 执行命令</button>
@@ -642,14 +642,21 @@ process_video() {
     `}
 
     if [ -s "$out_file" ]; then
-        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$src" 2>/devnull)
-        duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/devnull)
+        # 提取时长并用 cut 取整秒，彻底解决浮点数隐式比对报错
+        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$src" 2>/dev/null | cut -d. -f1)
+        duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/dev/null | cut -d. -f1)
         
-        if [ ! -z "$duration_orig" ] && [ ! -z "$duration_out" ] && [ \$(awk "BEGIN {print ($duration_out >= $duration_orig * 0.8)}") -eq 1 ]; then
-            echo "⚠️ 压制成功（时长校验通过 ≥80%）！自动清理原文件: $filename"
-            rm -f "$src"
+        if [ -n "$duration_orig" ] && [ -n "$duration_out" ] && [ "$duration_orig" -gt 0 ]; then
+            min_target=\$(( duration_orig * 80 / 100 ))
+            if [ "$duration_out" -ge "$min_target" ]; then
+                echo "⚠️ 压制成功（原时长: \${duration_orig}s, 新时长: \${duration_out}s，通过 ≥80% 校验）！自动清理原文件: $filename"
+                rm -f "$src"
+            else
+                echo "❌ 压制时长不足（原: \${duration_orig}s, 新: \${duration_out}s），保留原文件: $filename"
+            fi
         else
-            echo "❌ 压制时长未达到原文件的 80%，保留原文件: $filename"
+            echo "⚠️ 无法精确提取时长，但新文件生成正常，自动清理原文件: $filename"
+            rm -f "$src"
         fi
     else
         echo "❌ 压制失败，保留原文件: $filename"
