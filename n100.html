@@ -220,7 +220,7 @@
     <h2>🐳 Docker N100 压制控制台</h2>
     
     <div class="note" id="modeNote">
-        💡 <b>智能转码：</b> 压制后会自动对比视频时长，只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件。
+        💡 <b>智能转码：</b> 已开启 `-t` 与 `-stats` 实时进度打印。只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件。
     </div>
 
     <!-- 模式选择 -->
@@ -228,15 +228,15 @@
     <div class="mode-selector">
         <label>
             <input type="radio" name="transcodeMode" value="transcode" checked onchange="switchMode()">
-            🎬 智能转码模式 (时长对比 ≥ 80% 删源)
+            🎬 智能转码模式 (时长对比 ≥ 80% 删源，封装 MKV)
         </label>
         <label>
             <input type="radio" name="transcodeMode" value="cut" onchange="switchMode()">
-            ✂️ 视频截断模式 (保留或删除指定区间)
+            ✂️ 视频截断模式 (保留或删除指定区间，封装 MKV)
         </label>
         <label>
             <input type="radio" name="transcodeMode" value="merge" onchange="switchMode()">
-            🧩 视频无损拼接模式 (拼接成功后删源)
+            🧩 视频无损拼接模式 (导出 MKV 封装，成功后删源)
         </label>
     </div>
 
@@ -291,13 +291,13 @@
             <label id="inputPathLabel">1. 原视频文件或文件夹路径：</label>
             <button class="paste-btn-small" onclick="pasteToInput('inputPath')">📋 粘贴</button>
         </div>
-        <input type="text" id="inputPath" value="/vol1/1000/douyinlive/抖音直播/" oninput="syncAndUpdateDir()">
+        <input type="text" id="inputPath" value="/vol1/1000/live/抖音/星辰" oninput="syncAndUpdateDir()">
     </div>
 
     <!-- 输出路径控件 -->
     <div class="form-group" id="outputGroup">
         <label id="outputPathLabel">2. 转换后输出文件夹路径 (已实时同步)：</label>
-        <input type="text" id="outputPath" value="/vol1/1000/douyinlive/抖音直播/" oninput="generateDockerCmd()">
+        <input type="text" id="outputPath" value="/vol1/1000/live/抖音/星辰" oninput="generateDockerCmd()">
     </div>
 
     <button id="copyBtn" onclick="copyCode()">📋 点击复制 Docker 执行命令</button>
@@ -321,20 +321,20 @@
             timeCutGroup.style.display = 'none';
             inputLabel.innerText = "1. 原视频文件或文件夹路径：";
             outputLabel.innerText = "2. 转换后输出文件夹路径 (已实时同步)：";
-            modeNote.innerHTML = "💡 <b>智能转码：</b> 压制后通过 ffprobe 对比视频时长，只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件。";
+            modeNote.innerHTML = "💡 <b>智能转码：</b> 已开启 `-t` 与 `-stats` 实时进度打印。只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件（统一封装为 MKV）。";
         } else if (mode === 'cut') {
             codecSection.style.display = 'none';
             outputGroup.style.display = 'block';
             timeCutGroup.style.display = 'block';
             inputLabel.innerText = "1. 目标视频文件或文件夹路径：";
             outputLabel.innerText = "2. 截断输出文件夹路径 (已实时同步)：";
-            modeNote.innerHTML = "💡 <b>视频截断：</b> 可选择保留某片段，或直接剔除某时间段并将前后自动拼接。";
+            modeNote.innerHTML = "💡 <b>视频截断：</b> 可选择保留某片段，或直接剔除某时间段并将前后自动拼接（统一封装为 MKV）。";
         } else if (mode === 'merge') {
             codecSection.style.display = 'none';
             outputGroup.style.display = 'none';
             timeCutGroup.style.display = 'none';
             inputLabel.innerText = "1. 需要拼接视频的文件夹路径：";
-            modeNote.innerHTML = "💡 <b>无损拼接：</b> 拼接成功后，将自动清理所有参与拼接的原始视频片段。";
+            modeNote.innerHTML = "💡 <b>无损拼接：</b> 全面兼容 MP4/MKV/TS/FLV，拼接目标统一导出为 MKV 封装，成功后自动清理原始片段。";
         }
         syncAndUpdateDir();
     }
@@ -386,10 +386,10 @@ LIST="/tmp/concat_list.txt"
 > "$LIST"
 
 echo "========================================================="
-echo "▶ 1. 扫描并生成待拼接文件列表..."
+echo "▶ 1. 扫描并生成待拼接文件列表 (支持 MP4/MKV/TS/FLV)..."
 echo "========================================================="
 
-find "$IN_DIR" -maxdepth 1 -type f | grep -E "\\.(mp4|ts|MP4|TS)$" | grep -v "_拼接\\.mp4$" | sort | while read -r f; do
+find "$IN_DIR" -maxdepth 1 -type f | grep -E "\\.(mp4|ts|mkv|flv|MP4|TS|MKV|FLV)$" | grep -v "_拼接\\." | sort | while read -r f; do
     echo "file '$f'" >> "$LIST"
     echo " ➕ 已添加: $(basename "$f")"
 done
@@ -401,24 +401,31 @@ fi
 
 FIRST=$(head -n 1 "$LIST" | sed "s/file '//;s/'$//")
 BASE_NAME=$(basename "\${FIRST%.*}")
-OUT="$IN_DIR/\${BASE_NAME}_拼接.mp4"
+OUT="$IN_DIR/\${BASE_NAME}_拼接.mkv"
 
 echo "========================================================="
-echo "▶ 2. 开始拼接，合成目标: \${BASE_NAME}_拼接.mp4"
+echo "▶ 2. 开始拼接，合成目标: \${BASE_NAME}_拼接.mkv"
 echo "========================================================="
 
-docker run --rm \\
+# 优先尝试无损解复用拼接为 MKV 封装
+docker run --rm -t \\
   --device /dev/dri:/dev/dri \\
   -v /vol1:/vol1 \\
   -v /tmp:/tmp \\
   linuxserver/ffmpeg:latest \\
-  -f concat -safe 0 -i "$LIST" -c copy -y "$OUT" || \\
-docker run --rm \\
+  -stats -f concat -safe 0 -i "$LIST" -c copy -bsf:v hevc_mp4toannexb -y "$OUT" || \\
+docker run --rm -t \\
   --device /dev/dri:/dev/dri \\
   -v /vol1:/vol1 \\
   -v /tmp:/tmp \\
   linuxserver/ffmpeg:latest \\
-  -init_hw_device qsv=hw -filter_hw_device hw \\
+  -stats -f concat -safe 0 -i "$LIST" -c copy -y "$OUT" || \\
+docker run --rm -t \\
+  --device /dev/dri:/dev/dri \\
+  -v /vol1:/vol1 \\
+  -v /tmp:/tmp \\
+  linuxserver/ffmpeg:latest \\
+  -stats -init_hw_device qsv=hw -filter_hw_device hw \\
   -f concat -safe 0 -i "$LIST" \\
   -c:v hevc_qsv -preset faster -global_quality 23 -c:a aac -y "$OUT"
 
@@ -460,14 +467,14 @@ mkdir -p "$OUT_DIR"
 if [ -f "$TARGET" ]; then
     filename=$(basename -- "$TARGET")
     name="\${filename%.*}"
-    out_file="$OUT_DIR/\${name}_cut.mp4"
+    out_file="$OUT_DIR/\${name}_cut.mkv"
 
     echo "========================================================="
     echo "✂️ 正在截取指定片段: $filename"
     echo "⏱️ 保留区间: ${startTime || '开头'} -> ${endTime || '结尾'}"
     echo "========================================================="
 
-    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ${cutParams}-i "$TARGET" -c copy -y "$out_file"
+    docker run --rm -t -v /vol1:/vol1 linuxserver/ffmpeg:latest -stats ${cutParams}-i "$TARGET" -c copy -y "$out_file"
 
     if [ -s "$out_file" ]; then
         echo "🎉 截取完成！输出文件: $out_file"
@@ -490,10 +497,10 @@ elif [ -d "$TARGET" ]; then
             continue
         fi
 
-        out_file="$OUT_DIR/\${name}_cut.mp4"
+        out_file="$OUT_DIR/\${name}_cut.mkv"
 
         echo "▶ 处理文件: $filename"
-        docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ${cutParams}-i "$video" -c copy -y "$out_file"
+        docker run --rm -t -v /vol1:/vol1 linuxserver/ffmpeg:latest -stats ${cutParams}-i "$video" -c copy -y "$out_file"
     done
     echo "🎉 批量截取完成！"
 else
@@ -516,9 +523,9 @@ cut_and_merge() {
     local src="$1"
     local fname=$(basename -- "$src")
     local bname="\${fname%.*}"
-    local final_out="$OUT_DIR/\${bname}_removed.mp4"
-    local part1="/tmp/p1_\$\$.mp4"
-    local part2="/tmp/p2_\$\$.mp4"
+    local final_out="$OUT_DIR/\${bname}_removed.mkv"
+    local part1="/tmp/p1_\$\$.mkv"
+    local part2="/tmp/p2_\$\$.mkv"
     local list_file="/tmp/list_\$\$.txt"
 
     echo "========================================================="
@@ -526,13 +533,13 @@ cut_and_merge() {
     echo "🚫 删除区间: $START_TIME -> $END_TIME"
     echo "========================================================="
 
-    docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -to "$START_TIME" -i "$src" -c copy -y "$part1"
-    docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -ss "$END_TIME" -i "$src" -c copy -y "$part2"
+    docker run --rm -t -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -stats -to "$START_TIME" -i "$src" -c copy -y "$part1"
+    docker run --rm -t -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -stats -ss "$END_TIME" -i "$src" -c copy -y "$part2"
 
     echo "file '$part1'" > "$list_file"
     echo "file '$part2'" >> "$list_file"
 
-    docker run --rm -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -f concat -safe 0 -i "$list_file" -c copy -y "$final_out"
+    docker run --rm -t -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -stats -f concat -safe 0 -i "$list_file" -c copy -y "$final_out"
 
     rm -f "$part1" "$part2" "$list_file"
 
@@ -569,7 +576,7 @@ fi`;
         let qpVal = 23; 
         let crfVal = 30;
         let presetVal = 6;
-        let qsvPreset = "faster"; // 全速高功耗压制预设
+        let qsvPreset = "faster"; 
 
         if (quality === 'quality') {
             qpVal = 21;    
@@ -617,26 +624,29 @@ process_video() {
     }' <<< "\$fps_raw")
     echo "▶ 原始帧率字符串: \$fps_raw | 2倍目标帧率: \$fps_target"
 
-    docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
+    docker run --rm -t --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
       -init_hw_device qsv=hw -filter_hw_device hw \\
       -hwaccel qsv -hwaccel_output_format qsv \\
       -i "$src" \\
+      -stats \\
       -vf "vpp_qsv=framerate=\$fps_target" \\
       -r "\$fps_target" \\
       -c:v hevc_qsv -preset ${qsvPreset} -global_quality ${qpVal} \\
       -c:a copy -y "$out_file"
     ` : `
-    docker run --rm --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
+    docker run --rm -t --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
       -init_hw_device qsv=hw -filter_hw_device hw \\
       -hwaccel qsv -hwaccel_output_format qsv \\
       -i "$src" \\
+      -stats \\
       -c:v hevc_qsv -preset ${qsvPreset} -global_quality ${qpVal} \\
       -c:a copy -y "$out_file"
     `}
     ` : `
     # AV1 软解转码逻辑
-    docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
+    docker run --rm -t -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
       -i "$src" \\
+      -stats \\
       ${isFps2x ? '-vf "fps=60" ' : ''}-c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} \\
       -c:a copy -y "$out_file"
     `}
