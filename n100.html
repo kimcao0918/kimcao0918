@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>N100 压制</title>
 
-    <!-- iOS 专属全屏与状态栏配置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="N100压制">
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRvY2tlciBOMTAwIHBvc3QtcHJvY2VzcyIsCiAgInNob3J0X25hbWUiOiAiTjEwM壓制IiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZjE3MmEiLAogICJ0aGVtZV9jb2xvciI6ICIjMGYxNzJhIgp9">
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRvY2tlciBOMTAwIHBvc3QtcHJvY2VzcyIsCiAgInNob3J0X25hbWUiOiAiTjEwMOWMieaYryIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIKfQ==">
 
-    <!-- iOS 桌面图标 -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'><rect width='512' height='512' rx='120' fill='%230f172a'/><path d='M380 200 C380 140 330 110 270 120 C240 80 170 90 150 140 C90 140 80 210 130 250 C110 290 150 340 210 330 C250 370 330 350 350 300 C390 280 400 220 380 200 Z' fill='%230284c7'/><circle cx='200' cy='210' r='12' fill='%23ffffff'/><path d='M350 280 Q380 260 410 285 Q390 310 350 280 Z' fill='%230284c7'/><path d='M160 380 L352 380' stroke='%2338bdf8' stroke-width='24' stroke-linecap='round'/><path d='M210 340 L160 380 L210 420' fill='none' stroke='%2338bdf8' stroke-width='24' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
     <style>
@@ -34,6 +31,9 @@
             --btn-copy-bg: #0284c7;
             --btn-copy-hover: #0369a1;
             --note-bg: rgba(56, 189, 248, 0.1);
+            --danger-bg: #dc2626;
+            --success-bg: #16a34a;
+            --warning-bg: #d97706;
         }
 
         @media (prefers-color-scheme: light) {
@@ -81,11 +81,11 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        h2 { 
-            margin-top: 0; 
-            color: var(--text-accent); 
-            border-bottom: 2px solid var(--border-color); 
-            padding-bottom: 12px; 
+        h2 {
+            margin-top: 0;
+            color: var(--text-accent);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
             font-size: 20px;
         }
 
@@ -116,8 +116,10 @@
             margin-bottom: 6px;
         }
 
-        .form-group { margin-bottom: 18px; }
-        
+        .form-group {
+            margin-bottom: 18px;
+        }
+
         .time-group {
             display: flex;
             gap: 12px;
@@ -125,7 +127,9 @@
             flex-direction: column;
         }
 
-        .time-item { flex: 1; }
+        .time-item {
+            flex: 1;
+        }
 
         .label-header {
             display: flex;
@@ -134,8 +138,12 @@
             margin-bottom: 6px;
         }
 
-        label { font-weight: 600; color: var(--text-secondary); font-size: 13px; }
-        
+        label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
         .paste-btn-small {
             background-color: var(--btn-paste-bg);
             color: var(--btn-paste-text);
@@ -154,7 +162,8 @@
             border-color: var(--btn-paste-hover);
         }
 
-        input[type="text"], select {
+        input[type="text"],
+        select {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--input-border);
@@ -166,13 +175,14 @@
             box-sizing: border-box;
             transition: border-color 0.2s;
         }
-        
-        input[type="text"]:focus, select:focus { 
-            outline: none; 
-            border-color: var(--text-accent); 
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--text-accent);
         }
 
-        button#copyBtn {
+        #copyBtn {
             width: 100%;
             background-color: var(--btn-copy-bg);
             color: white;
@@ -186,8 +196,28 @@
             margin-top: 10px;
         }
 
-        button#copyBtn:hover { background-color: var(--btn-copy-hover); }
-        
+        #copyBtn:hover {
+            background-color: var(--btn-copy-hover);
+        }
+
+        #stopBtn {
+            width: 100%;
+            background-color: var(--danger-bg);
+            color: white;
+            border: none;
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 8px;
+            display: none;
+        }
+
+        #stopBtn:hover {
+            opacity: 0.9;
+        }
+
         textarea {
             width: 100%;
             height: 380px;
@@ -201,6 +231,7 @@
             box-sizing: border-box;
             margin-top: 12px;
             line-height: 1.5;
+            resize: vertical;
         }
 
         .note {
@@ -212,514 +243,1701 @@
             margin-bottom: 15px;
             border-radius: 0 8px 8px 0;
         }
+
+        .status-box {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+        }
+
+        .status-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        #statusText {
+            color: var(--text-accent);
+        }
+
+        #jobIdText {
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-family: monospace;
+        }
+
+        .progress-wrap {
+            width: 100%;
+            height: 7px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: var(--text-accent);
+            transition: width 0.3s;
+        }
+
+        .api-status {
+            font-size: 11px;
+            margin-top: 8px;
+            color: var(--text-secondary);
+        }
+
+        .api-online {
+            color: #22c55e;
+        }
+
+        .api-offline {
+            color: #ef4444;
+        }
+
+        .mobile-help {
+            margin-top: 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
+
     <h2>🐳 Docker N100 压制控制台</h2>
-    
+
     <div class="note" id="modeNote">
-        💡 <b>智能转码：</b> 已开启 `-t` 与 `-stats` 实时进度打印。只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件。
+        💡 <b>智能转码：</b>
+        点击「开始转码」后，网页直接调用 N100 Docker API，
+        使用 Intel QSV 进行 H.265 硬件压制。
+        只要新视频时长 ≥ 原视频80%，即安全清理原文件。
     </div>
 
     <!-- 模式选择 -->
     <div class="section-title">📂 处理模式选择：</div>
+
     <div class="mode-selector">
+
         <label>
-            <input type="radio" name="transcodeMode" value="transcode" checked onchange="switchMode()">
-            🎬 智能转码模式 (时长对比 ≥ 80% 删源，封装 MKV)
+            <input type="radio"
+                   name="transcodeMode"
+                   value="transcode"
+                   checked
+                   onchange="switchMode()">
+            🎬 智能转码模式
+            （H.265 QSV / AV1）
         </label>
+
         <label>
-            <input type="radio" name="transcodeMode" value="cut" onchange="switchMode()">
-            ✂️ 视频截断模式 (保留或删除指定区间，封装 MKV)
+            <input type="radio"
+                   name="transcodeMode"
+                   value="cut"
+                   onchange="switchMode()">
+            ✂️ 视频截断模式
+            （保留或删除指定区间）
         </label>
+
         <label>
-            <input type="radio" name="transcodeMode" value="merge" onchange="switchMode()">
-            🧩 视频无损拼接模式 (导出 MKV 封装，成功后删源)
+            <input type="radio"
+                   name="transcodeMode"
+                   value="merge"
+                   onchange="switchMode()">
+            🧩 视频无损拼接模式
         </label>
+
     </div>
 
-    <!-- 编码格式与质量选择 -->
+
+    <!-- 编码格式与质量 -->
     <div id="codecSection">
-        <div class="section-title">⚡ 编码格式与质量预设：</div>
+
+        <div class="section-title">
+            ⚡ 编码格式与质量预设：
+        </div>
+
         <div class="mode-selector">
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 4px;">
-                <label><input type="radio" name="codecMode" value="h265" checked onchange="generateDockerCmd()"> 🚀 H.265 / HEVC (Intel QSV 硬件加速)</label>
-                <label><input type="radio" name="codecMode" value="av1" onchange="generateDockerCmd()"> ⚙️ AV1 (libsvtav1 软解)</label>
-            </div>
-            <!-- 2倍帧率开关 -->
-            <div style="margin-bottom: 8px;">
-                <label style="color: var(--text-accent); font-weight: bold;">
-                    <input type="checkbox" id="fps2x" onchange="generateDockerCmd()"> ⏩ 开启 2倍帧率 (通过 QSV VPP 动态精准翻倍)
+
+            <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:4px;">
+
+                <label>
+                    <input type="radio"
+                           name="codecMode"
+                           value="h265"
+                           checked
+                           onchange="generateDockerCmd()">
+                    🚀 H.265 / HEVC
+                    （Intel QSV 硬件加速）
                 </label>
+
+                <label>
+                    <input type="radio"
+                           name="codecMode"
+                           value="av1"
+                           onchange="generateDockerCmd()">
+                    ⚙️ AV1
+                    （软件编码）
+                </label>
+
             </div>
-            <div style="width: 100%;">
-                <select id="qualityPreset" onchange="generateDockerCmd()">
-                    <option value="medium" selected>⚖️ 转换预设：中等画质 (默认平衡 - Q23)</option>
-                    <option value="quality">🎨 转换预设：高画质 (文件较大 - Q21)</option>
-                    <option value="size">📦 转换预设：小体积 (极限压缩 - Q28)</option>
+
+            <!-- 2倍帧率 -->
+            <div style="margin-bottom:8px;">
+
+                <label style="color:var(--text-accent);font-weight:bold;">
+
+                    <input type="checkbox"
+                           id="fps2x"
+                           onchange="generateDockerCmd()">
+
+                    ⏩ 开启 2倍帧率
+                    （QSV VPP）
+
+                </label>
+
+            </div>
+
+            <div style="width:100%;">
+
+                <select id="qualityPreset"
+                        onchange="generateDockerCmd()">
+
+                    <option value="medium" selected>
+                        ⚖️ 转换预设：中等画质（Q23）
+                    </option>
+
+                    <option value="quality">
+                        🎨 转换预设：高画质（Q21）
+                    </option>
+
+                    <option value="size">
+                        📦 转换预设：小体积（Q28）
+                    </option>
+
                 </select>
+
             </div>
+
         </div>
+
     </div>
 
-    <!-- 截割时间设置与动作选项 -->
-    <div class="time-group" id="timeCutGroup" style="display: none;">
-        <div class="section-title">✂️ 裁剪选项：</div>
+
+    <!-- 截断 -->
+    <div class="time-group"
+         id="timeCutGroup"
+         style="display:none;">
+
+        <div class="section-title">
+            ✂️ 裁剪选项：
+        </div>
+
         <div class="mode-selector">
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <label><input type="radio" name="cutAction" value="keep" checked onchange="generateDockerCmd()"> 📌 保留该时间段 (仅导出这段内容)</label>
-                <label><input type="radio" name="cutAction" value="remove" onchange="generateDockerCmd()"> 🚫 删除该时间段 (裁掉此段，前后无损拼接)</label>
+
+            <div style="display:flex;gap:15px;flex-wrap:wrap;">
+
+                <label>
+                    <input type="radio"
+                           name="cutAction"
+                           value="keep"
+                           checked
+                           onchange="generateDockerCmd()">
+
+                    📌 保留该时间段
+                </label>
+
+                <label>
+                    <input type="radio"
+                           name="cutAction"
+                           value="remove"
+                           onchange="generateDockerCmd()">
+
+                    🚫 删除该时间段
+                </label>
+
             </div>
+
         </div>
-        <div style="display: flex; gap: 12px;">
+
+        <div style="display:flex;gap:12px;">
+
             <div class="time-item">
-                <label>⏱️ 起始时间 (如 00:05:00):</label>
-                <input type="text" id="startTime" value="00:00:00" placeholder="例如: 00:00:00" oninput="generateDockerCmd()">
+
+                <label>
+                    ⏱️ 起始时间：
+                </label>
+
+                <input type="text"
+                       id="startTime"
+                       value="00:00:00"
+                       placeholder="例如 00:05:00"
+                       oninput="generateDockerCmd()">
+
             </div>
+
             <div class="time-item">
-                <label>⏱️ 结束时间 (如 00:10:00):</label>
-                <input type="text" id="endTime" value="00:15:35" placeholder="例如: 00:15:35" oninput="generateDockerCmd()">
+
+                <label>
+                    ⏱️ 结束时间：
+                </label>
+
+                <input type="text"
+                       id="endTime"
+                       value="00:15:35"
+                       placeholder="例如 00:15:35"
+                       oninput="generateDockerCmd()">
+
             </div>
+
         </div>
+
     </div>
 
-    <!-- 输入路径控件 -->
+
+    <!-- 输入路径 -->
     <div class="form-group">
+
         <div class="label-header">
-            <label id="inputPathLabel">1. 原视频文件或文件夹路径：</label>
-            <button class="paste-btn-small" onclick="pasteToInput('inputPath')">📋 粘贴</button>
+
+            <label id="inputPathLabel">
+                1. 原视频文件或文件夹路径：
+            </label>
+
+            <button class="paste-btn-small"
+                    onclick="pasteToInput('inputPath')">
+                📋 粘贴
+            </button>
+
         </div>
-        <input type="text" id="inputPath" value="/vol1/1000/live/抖音/星辰" oninput="syncAndUpdateDir()">
+
+        <input type="text"
+               id="inputPath"
+               value="/vol1/1000/live/抖音/星辰"
+               oninput="syncAndUpdateDir()">
+
     </div>
 
-    <!-- 输出路径控件 -->
-    <div class="form-group" id="outputGroup">
-        <label id="outputPathLabel">2. 转换后输出文件夹路径 (已实时同步)：</label>
-        <input type="text" id="outputPath" value="/vol1/1000/live/抖音/星辰" oninput="generateDockerCmd()">
+
+    <!-- 输出路径 -->
+    <div class="form-group"
+         id="outputGroup">
+
+        <label id="outputPathLabel">
+            2. 转换后输出文件夹路径：
+        </label>
+
+        <input type="text"
+               id="outputPath"
+               value="/vol1/1000/live/抖音/星辰"
+               oninput="generateDockerCmd()">
+
     </div>
 
-    <button id="copyBtn" onclick="copyCode()">📋 点击复制 Docker 执行命令</button>
 
-    <textarea id="codeOutput" readonly></textarea>
+    <!-- API状态 -->
+    <div class="api-status"
+         id="apiStatus">
+        🔄 正在检测 N100 Docker API……
+    </div>
+
+
+    <!-- 开始 -->
+    <button id="copyBtn"
+            onclick="handleMainButton()">
+        ▶️ 开始转码
+    </button>
+
+
+    <!-- 停止 -->
+    <button id="stopBtn"
+            onclick="stopCurrentJob()">
+        ⛔ 停止当前任务
+    </button>
+
+
+    <!-- 状态 -->
+    <div class="status-box"
+         id="statusBox">
+
+        <div class="status-title">
+
+            <span id="statusText">
+                等待任务……
+            </span>
+
+            <span id="jobIdText">
+            </span>
+
+        </div>
+
+        <div class="progress-wrap">
+
+            <div id="progressBar"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- 日志 -->
+    <textarea id="codeOutput"
+              readonly
+              placeholder="这里会显示 N100 实时压制日志……"></textarea>
+
+
+    <div class="mobile-help">
+        💡 当前网页直接连接：
+        <b>192.168.2.216:3015</b>
+        <br>
+        🚀 H.265 使用 N100 Intel QSV 硬件编码。
+        <br>
+        🗑️ 压制完成且时长 ≥ 原视频80%后自动删除源文件。
+    </div>
+
 </div>
 
+
 <script>
-    function switchMode() {
-        const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
-        const inputLabel = document.getElementById('inputPathLabel');
-        const outputLabel = document.getElementById('outputPathLabel');
-        const codecSection = document.getElementById('codecSection');
-        const outputGroup = document.getElementById('outputGroup');
-        const timeCutGroup = document.getElementById('timeCutGroup');
-        const modeNote = document.getElementById('modeNote');
 
-        if (mode === 'transcode') {
-            codecSection.style.display = 'block';
-            outputGroup.style.display = 'block';
-            timeCutGroup.style.display = 'none';
-            inputLabel.innerText = "1. 原视频文件或文件夹路径：";
-            outputLabel.innerText = "2. 转换后输出文件夹路径 (已实时同步)：";
-            modeNote.innerHTML = "💡 <b>智能转码：</b> 已开启 `-t` 与 `-stats` 实时进度打印。只要<b>新视频时长 ≥ 原视频80%</b>，即安全清理原文件（统一封装为 MKV）。";
-        } else if (mode === 'cut') {
-            codecSection.style.display = 'none';
-            outputGroup.style.display = 'block';
-            timeCutGroup.style.display = 'block';
-            inputLabel.innerText = "1. 目标视频文件或文件夹路径：";
-            outputLabel.innerText = "2. 截断输出文件夹路径 (已实时同步)：";
-            modeNote.innerHTML = "💡 <b>视频截断：</b> 可选择保留某片段，或直接剔除某时间段并将前后自动拼接（统一封装为 MKV）。";
-        } else if (mode === 'merge') {
-            codecSection.style.display = 'none';
-            outputGroup.style.display = 'none';
-            timeCutGroup.style.display = 'none';
-            inputLabel.innerText = "1. 需要拼接视频的文件夹路径：";
-            modeNote.innerHTML = "💡 <b>无损拼接：</b> 全面兼容 MP4/MKV/TS/FLV，拼接目标统一导出为 MKV 封装，成功后自动清理原始片段。";
-        }
-        syncAndUpdateDir();
+/* ============================================================
+   N100 Docker API
+   ============================================================ */
+
+const API_BASE = "http://192.168.2.216:3015";
+
+let currentJobId = null;
+let pollTimer = null;
+let isRunning = false;
+
+
+/* ============================================================
+   模式切换
+   ============================================================ */
+
+function switchMode() {
+
+    const mode =
+        document.querySelector(
+            'input[name="transcodeMode"]:checked'
+        ).value;
+
+    const inputLabel =
+        document.getElementById("inputPathLabel");
+
+    const outputLabel =
+        document.getElementById("outputPathLabel");
+
+    const codecSection =
+        document.getElementById("codecSection");
+
+    const outputGroup =
+        document.getElementById("outputGroup");
+
+    const timeCutGroup =
+        document.getElementById("timeCutGroup");
+
+    const modeNote =
+        document.getElementById("modeNote");
+
+    const btn =
+        document.getElementById("copyBtn");
+
+
+    if (mode === "transcode") {
+
+        codecSection.style.display = "block";
+        outputGroup.style.display = "block";
+        timeCutGroup.style.display = "none";
+
+        inputLabel.innerText =
+            "1. 原视频文件或文件夹路径：";
+
+        outputLabel.innerText =
+            "2. 转换后输出文件夹路径：";
+
+        modeNote.innerHTML =
+            "💡 <b>智能转码：</b> " +
+            "点击「开始转码」后直接调用 N100 Docker API，" +
+            "使用 Intel QSV 进行 H.265 硬件压制。";
+
+        btn.innerText =
+            "▶️ 开始转码";
+
     }
 
-    async function pasteToInput(inputId) {
-        try {
-            const text = await navigator.clipboard.readText();
-            if (text) {
-                document.getElementById(inputId).value = text.trim();
-                syncAndUpdateDir();
-            }
-        } catch (err) {
-            alert('读取剪贴板失败，请手动粘贴。');
-        }
+
+    else if (mode === "cut") {
+
+        codecSection.style.display = "none";
+        outputGroup.style.display = "block";
+        timeCutGroup.style.display = "block";
+
+        inputLabel.innerText =
+            "1. 目标视频文件或文件夹路径：";
+
+        outputLabel.innerText =
+            "2. 截断输出文件夹路径：";
+
+        modeNote.innerHTML =
+            "💡 <b>视频截断：</b> " +
+            "保留或删除指定时间段。";
+
+        btn.innerText =
+            "📋 复制截断命令";
+
     }
 
-    function syncAndUpdateDir() {
-        const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
-        const inPathVal = document.getElementById('inputPath').value.trim();
-        const isFile = /\.(mp4|ts|flv|mkv)$/i.test(inPathVal);
 
-        if (mode === 'merge' || !isFile) {
-            document.getElementById('outputPath').value = inPathVal;
-        } else {
-            const lastSlashIndex = inPathVal.lastIndexOf('/');
-            if (lastSlashIndex !== -1) {
-                document.getElementById('outputPath').value = inPathVal.substring(0, lastSlashIndex);
-            } else {
-                document.getElementById('outputPath').value = inPathVal;
-            }
-        }
-        generateDockerCmd();
+    else if (mode === "merge") {
+
+        codecSection.style.display = "none";
+        outputGroup.style.display = "none";
+        timeCutGroup.style.display = "none";
+
+        inputLabel.innerText =
+            "1. 需要拼接视频的文件夹路径：";
+
+        modeNote.innerHTML =
+            "💡 <b>无损拼接：</b> " +
+            "支持 MP4 / MKV / TS / FLV。";
+
+        btn.innerText =
+            "📋 复制拼接命令";
+
     }
 
-    function generateDockerCmd() {
-        const mode = document.querySelector('input[name="transcodeMode"]:checked').value;
-        const codec = document.querySelector('input[name="codecMode"]:checked').value;
-        const isFps2x = document.getElementById('fps2x').checked;
-        const quality = document.getElementById('qualityPreset').value;
-        const inPath = document.getElementById('inputPath').value.trim();
-        const outDir = document.getElementById('outputPath').value.trim();
-        const startTime = document.getElementById('startTime').value.trim();
-        const endTime = document.getElementById('endTime').value.trim();
-        const cutAction = document.querySelector('input[name="cutAction"]:checked') ? document.querySelector('input[name="cutAction"]:checked').value : 'keep';
 
-        if (mode === 'merge') {
-            const fullScript = `IN_DIR="${inPath}"
+    syncAndUpdateDir();
+
+}
+
+
+/* ============================================================
+   粘贴
+   ============================================================ */
+
+async function pasteToInput(inputId) {
+
+    try {
+
+        const text =
+            await navigator.clipboard.readText();
+
+        if (text) {
+
+            document.getElementById(inputId).value =
+                text.trim();
+
+            syncAndUpdateDir();
+
+        }
+
+    }
+
+    catch (err) {
+
+        alert("读取剪贴板失败，请手动粘贴。");
+
+    }
+
+}
+
+
+/* ============================================================
+   自动同步输出目录
+   ============================================================ */
+
+function syncAndUpdateDir() {
+
+    const mode =
+        document.querySelector(
+            'input[name="transcodeMode"]:checked'
+        ).value;
+
+    const inPathVal =
+        document.getElementById("inputPath")
+        .value
+        .trim();
+
+    const isFile =
+        /\.(mp4|ts|flv|mkv)$/i.test(inPathVal);
+
+
+    if (mode === "merge" || !isFile) {
+
+        document.getElementById("outputPath").value =
+            inPathVal;
+
+    }
+
+    else {
+
+        const lastSlashIndex =
+            inPathVal.lastIndexOf("/");
+
+        if (lastSlashIndex !== -1) {
+
+            document.getElementById("outputPath").value =
+                inPathVal.substring(0, lastSlashIndex);
+
+        }
+
+        else {
+
+            document.getElementById("outputPath").value =
+                inPathVal;
+
+        }
+
+    }
+
+    generateDockerCmd();
+
+}
+
+
+/* ============================================================
+   生成旧版 SSH 命令
+   ============================================================ */
+
+function generateDockerCmd() {
+
+    const mode =
+        document.querySelector(
+            'input[name="transcodeMode"]:checked'
+        ).value;
+
+    const codec =
+        document.querySelector(
+            'input[name="codecMode"]:checked'
+        ).value;
+
+    const isFps2x =
+        document.getElementById("fps2x").checked;
+
+    const quality =
+        document.getElementById("qualityPreset").value;
+
+    const inPath =
+        document.getElementById("inputPath")
+        .value
+        .trim();
+
+    const outDir =
+        document.getElementById("outputPath")
+        .value
+        .trim();
+
+    const startTime =
+        document.getElementById("startTime").value.trim();
+
+    const endTime =
+        document.getElementById("endTime").value.trim();
+
+    const cutActionElement =
+        document.querySelector(
+            'input[name="cutAction"]:checked'
+        );
+
+    const cutAction =
+        cutActionElement
+            ? cutActionElement.value
+            : "keep";
+
+
+    /*
+     * ==========================================================
+     * MERGE
+     * ==========================================================
+     */
+
+    if (mode === "merge") {
+
+        const fullScript = `IN_DIR="${inPath}"
 LIST="/tmp/concat_list.txt"
+
 > "$LIST"
 
 echo "========================================================="
-echo "▶ 1. 扫描并生成待拼接文件列表 (支持 MP4/MKV/TS/FLV)..."
+echo "▶ 扫描待拼接文件"
 echo "========================================================="
 
-find "$IN_DIR" -maxdepth 1 -type f | grep -E "\\.(mp4|ts|mkv|flv|MP4|TS|MKV|FLV)$" | grep -v "_拼接\\." | sort | while read -r f; do
+find "$IN_DIR" -maxdepth 1 -type f |
+grep -E "\\.(mp4|ts|mkv|flv|MP4|TS|MKV|FLV)$" |
+grep -v "_拼接\\." |
+sort |
+while read -r f; do
+
     echo "file '$f'" >> "$LIST"
-    echo " ➕ 已添加: $(basename "$f")"
+    echo "➕ 已添加: $(basename "$f")"
+
 done
 
 if [ ! -s "$LIST" ]; then
-    echo "❌ 目录下没有找到可拼接的原始视频文件！"
+
+    echo "❌ 没有找到视频文件"
     exit 1
+
 fi
 
 FIRST=$(head -n 1 "$LIST" | sed "s/file '//;s/'$//")
+
 BASE_NAME=$(basename "\${FIRST%.*}")
+
 OUT="$IN_DIR/\${BASE_NAME}_拼接.mkv"
 
-echo "========================================================="
-echo "▶ 2. 开始拼接，合成目标: \${BASE_NAME}_拼接.mkv"
-echo "========================================================="
+echo "▶ 输出: $OUT"
 
-# 优先尝试无损解复用拼接为 MKV 封装
 docker run --rm -t \\
-  --device /dev/dri:/dev/dri \\
   -v /vol1:/vol1 \\
   -v /tmp:/tmp \\
   linuxserver/ffmpeg:latest \\
-  -stats -f concat -safe 0 -i "$LIST" -c copy -bsf:v hevc_mp4toannexb -y "$OUT" || \\
-docker run --rm -t \\
-  --device /dev/dri:/dev/dri \\
-  -v /vol1:/vol1 \\
-  -v /tmp:/tmp \\
-  linuxserver/ffmpeg:latest \\
-  -stats -f concat -safe 0 -i "$LIST" -c copy -y "$OUT" || \\
-docker run --rm -t \\
-  --device /dev/dri:/dev/dri \\
-  -v /vol1:/vol1 \\
-  -v /tmp:/tmp \\
-  linuxserver/ffmpeg:latest \\
-  -stats -init_hw_device qsv=hw -filter_hw_device hw \\
-  -f concat -safe 0 -i "$LIST" \\
-  -c:v hevc_qsv -preset faster -global_quality 23 -c:a aac -y "$OUT"
+  -stats \\
+  -f concat \\
+  -safe 0 \\
+  -i "$LIST" \\
+  -c copy \\
+  -y "$OUT"
 
 if [ -s "$OUT" ]; then
-    echo "========================================================="
-    echo "🎉 拼接成功！合成视频已生成: $OUT"
-    echo "🗑️  正在清理参与拼接的原始文件..."
-    echo "========================================================="
-    
-    sed "s/file '//;s/'$//" "$LIST" | while read -r src_file; do
+
+    echo "🎉 拼接成功"
+
+    sed "s/file '//;s/'$//" "$LIST" |
+    while read -r src_file; do
+
         if [ -f "$src_file" ]; then
             rm -f "$src_file"
-            echo " 🗑️  已删除原文件: $(basename "$src_file")"
+            echo "🗑️ 已删除: $(basename "$src_file")"
         fi
+
     done
-    echo "✨ 原始文件清理完毕！"
+
 else
-    echo "❌ 拼接失败！取消删除原文件！"
+
+    echo "❌ 拼接失败"
+    echo "⚠️ 原文件未删除"
+
 fi
 
 rm -f "$LIST"`;
 
-            document.getElementById('codeOutput').value = fullScript;
-            return;
-        }
 
-        if (mode === 'cut') {
-            let fullScript = "";
-            if (cutAction === 'keep') {
-                let cutParams = "";
-                if (startTime) cutParams += `-ss ${startTime} `;
-                if (endTime) cutParams += `-to ${endTime} `;
+        document.getElementById("codeOutput").value =
+            fullScript;
 
-                fullScript = `TARGET="${inPath}"
+        return;
+
+    }
+
+
+    /*
+     * ==========================================================
+     * CUT
+     * ==========================================================
+     */
+
+    if (mode === "cut") {
+
+        let fullScript = "";
+
+
+        if (cutAction === "keep") {
+
+            let cutParams = "";
+
+            if (startTime)
+                cutParams += `-ss ${startTime} `;
+
+            if (endTime)
+                cutParams += `-to ${endTime} `;
+
+
+            fullScript = `TARGET="${inPath}"
 OUT_DIR="${outDir}"
 
 mkdir -p "$OUT_DIR"
 
 if [ -f "$TARGET" ]; then
+
     filename=$(basename -- "$TARGET")
     name="\${filename%.*}"
+
     out_file="$OUT_DIR/\${name}_cut.mkv"
 
-    echo "========================================================="
-    echo "✂️ 正在截取指定片段: $filename"
-    echo "⏱️ 保留区间: ${startTime || '开头'} -> ${endTime || '结尾'}"
-    echo "========================================================="
+    echo "✂️ 正在截取: $filename"
 
-    docker run --rm -t -v /vol1:/vol1 linuxserver/ffmpeg:latest -stats ${cutParams}-i "$TARGET" -c copy -y "$out_file"
+    docker run --rm -t \\
+      -v /vol1:/vol1 \\
+      linuxserver/ffmpeg:latest \\
+      -stats ${cutParams}-i "$TARGET" \\
+      -c copy \\
+      -y "$out_file"
 
     if [ -s "$out_file" ]; then
-        echo "🎉 截取完成！输出文件: $out_file"
+        echo "🎉 截取完成: $out_file"
     else
-        echo "❌ 截取失败！"
+        echo "❌ 截取失败"
     fi
-elif [ -d "$TARGET" ]; then
-    echo "========================================================="
-    echo "✂️ 识别为文件夹，批量进行片段截取..."
-    echo "========================================================="
 
-    for video in "$TARGET"/*; do
-        [ -e "$video" ] || continue
-        filename=$(basename -- "$video")
-        name="\${filename%.*}"
-        ext="\${filename##*.}"
-        ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
-
-        if [[ "$name" == *"_cut"* ]] || [[ "$ext_lower" != "mp4" && "$ext_lower" != "ts" && "$ext_lower" != "flv" && "$ext_lower" != "mkv" ]]; then
-            continue
-        fi
-
-        out_file="$OUT_DIR/\${name}_cut.mkv"
-
-        echo "▶ 处理文件: $filename"
-        docker run --rm -t -v /vol1:/vol1 linuxserver/ffmpeg:latest -stats ${cutParams}-i "$video" -c copy -y "$out_file"
-    done
-    echo "🎉 批量截取完成！"
 else
-    echo "❌ 路径不存在: $TARGET"
+
+    echo "❌ 文件不存在: $TARGET"
+
 fi`;
-            } else {
-                fullScript = `TARGET="${inPath}"
+
+
+        }
+
+
+        else {
+
+            fullScript = `TARGET="${inPath}"
 OUT_DIR="${outDir}"
-START_TIME="${startTime || '00:00:00'}"
+
+START_TIME="${startTime || "00:00:00"}"
 END_TIME="${endTime}"
 
+mkdir -p "$OUT_DIR"
+
 if [ -z "$END_TIME" ]; then
-    echo "❌ 删除片段模式下，必须填入【结束时间】！"
+    echo "❌ 必须填写结束时间"
     exit 1
 fi
 
-mkdir -p "$OUT_DIR"
+filename=$(basename -- "$TARGET")
+name="\${filename%.*}"
 
-cut_and_merge() {
-    local src="$1"
-    local fname=$(basename -- "$src")
-    local bname="\${fname%.*}"
-    local final_out="$OUT_DIR/\${bname}_removed.mkv"
-    local part1="/tmp/p1_\$\$.mkv"
-    local part2="/tmp/p2_\$\$.mkv"
-    local list_file="/tmp/list_\$\$.txt"
+part1="/tmp/\${name}_part1.mkv"
+part2="/tmp/\${name}_part2.mkv"
+list="/tmp/\${name}_list.txt"
 
-    echo "========================================================="
-    echo "✂️ 正在剔除片段: $fname"
-    echo "🚫 删除区间: $START_TIME -> $END_TIME"
-    echo "========================================================="
+docker run --rm -t \\
+  -v /vol1:/vol1 \\
+  -v /tmp:/tmp \\
+  linuxserver/ffmpeg:latest \\
+  -stats \\
+  -to "$START_TIME" \\
+  -i "$TARGET" \\
+  -c copy \\
+  -y "$part1"
 
-    docker run --rm -t -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -stats -to "$START_TIME" -i "$src" -c copy -y "$part1"
-    docker run --rm -t -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -stats -ss "$END_TIME" -i "$src" -c copy -y "$part2"
+docker run --rm -t \\
+  -v /vol1:/vol1 \\
+  -v /tmp:/tmp \\
+  linuxserver/ffmpeg:latest \\
+  -stats \\
+  -ss "$END_TIME" \\
+  -i "$TARGET" \\
+  -c copy \\
+  -y "$part2"
 
-    echo "file '$part1'" > "$list_file"
-    echo "file '$part2'" >> "$list_file"
+echo "file '$part1'" > "$list"
+echo "file '$part2'" >> "$list"
 
-    docker run --rm -t -v /vol1:/vol1 -v /tmp:/tmp linuxserver/ffmpeg:latest -stats -f concat -safe 0 -i "$list_file" -c copy -y "$final_out"
+docker run --rm -t \\
+  -v /vol1:/vol1 \\
+  -v /tmp:/tmp \\
+  linuxserver/ffmpeg:latest \\
+  -stats \\
+  -f concat \\
+  -safe 0 \\
+  -i "$list" \\
+  -c copy \\
+  -y "$OUT_DIR/\${name}_removed.mkv"
 
-    rm -f "$part1" "$part2" "$list_file"
+rm -f "$part1" "$part2" "$list"`;
 
-    if [ -s "$final_out" ]; then
-        echo "🎉 片段剔除并无损拼接完成！输出文件: $final_out"
-    else
-        echo "❌ 处理失败！"
-    fi
-}
 
-if [ -f "$TARGET" ]; then
-    cut_and_merge "$TARGET"
-elif [ -d "$TARGET" ]; then
-    for video in "$TARGET"/*; do
-        [ -e "$video" ] || continue
-        filename=$(basename -- "$video")
-        ext="\${filename##*.}"
-        ext_lower=$(echo "$ext" | tr "[:upper:]" "[:lower:]")
-        if [[ "$filename" == *"_removed"* ]] || [[ "$ext_lower" != "mp4" && "$ext_lower" != "ts" && "$ext_lower" != "flv" && "$ext_lower" != "mkv" ]]; then
-            continue
-        fi
-        cut_and_merge "$video"
-    done
-else
-    echo "❌ 路径不存在: $TARGET"
-fi`;
-            }
-
-            document.getElementById('codeOutput').value = fullScript;
-            return;
         }
 
-        // 转码质量与速度预设
-        let qpVal = 23; 
-        let crfVal = 30;
-        let presetVal = 6;
-        let qsvPreset = "faster"; 
 
-        if (quality === 'quality') {
-            qpVal = 21;    
-            crfVal = 24;
-            presetVal = 4;
-            qsvPreset = "fast";
-        } else if (quality === 'size') {
-            qpVal = 28;    
-            crfVal = 34;
-            presetVal = 8;
-            qsvPreset = "veryfast";
-        }
+        document.getElementById("codeOutput").value =
+            fullScript;
 
-        const tag = (codec === 'h265' ? '_H265' : '_AV1');
-        const tagAlt = (codec === 'h265' ? '-H265' : '-AV1');
+        return;
 
-        const scriptBody = `TARGET="${inPath}"
+    }
+
+
+    /*
+     * ==========================================================
+     * TRANSCODE
+     * ==========================================================
+     */
+
+    let qpVal = 23;
+    let crfVal = 30;
+    let presetVal = 6;
+
+    if (quality === "quality") {
+
+        qpVal = 21;
+        crfVal = 24;
+        presetVal = 4;
+
+    }
+
+    else if (quality === "size") {
+
+        qpVal = 28;
+        crfVal = 34;
+        presetVal = 8;
+
+    }
+
+
+    const tag =
+        codec === "h265"
+            ? "_H265"
+            : "_AV1";
+
+
+    const scriptBody = `TARGET="${inPath}"
 OUT_DIR="${outDir}"
 
 mkdir -p "$OUT_DIR"
 
-process_video() {
-    local src="$1"
-    local filename=$(basename -- "$src")
-    local name="\${filename%.*}"
-    local out_file="$OUT_DIR/\${name}${tag}.mkv"
+docker run --rm -t \\
+  --device /dev/dri:/dev/dri \\
+  -v /vol1:/vol1 \\
+  linuxserver/ffmpeg:latest \\
+  -init_hw_device qsv=hw \\
+  -filter_hw_device hw \\
+  -hwaccel qsv \\
+  -hwaccel_output_format qsv \\
+  -i "$TARGET" \\
+  -stats \\
+  -c:v hevc_qsv \\
+  -preset faster \\
+  -global_quality ${qpVal} \\
+  -c:a copy \\
+  -y "$OUT_DIR/output${tag}.mkv"`;
 
-    echo "========================================================="
-    echo "🚀 正在高功率全速压制: $filename"
-    echo "========================================================="
 
-    ${codec === 'h265' ? `
-    # 提取原始帧率（锁定视频流 v:0）
-    fps_raw=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 "$src" 2>/dev/null | head -n 1)
+    document.getElementById("codeOutput").value =
+        scriptBody;
 
-    ${isFps2x ? `
-    # 计算 2 倍目标帧率
-    fps_target=\$(awk -F'/' 'BEGIN {FS="/"} {
-      if (\$2>0) val=(\$1/\$2)*2; 
-      else if (\$1>0) val=\$1*2; 
-      else val=60; 
-      res=int(val+0.5); 
-      if (res<=0) res=60; 
-      print res
-    }' <<< "\$fps_raw")
-    echo "▶ 原始帧率字符串: \$fps_raw | 2倍目标帧率: \$fps_target"
-
-    docker run --rm -t --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
-      -init_hw_device qsv=hw -filter_hw_device hw \\
-      -hwaccel qsv -hwaccel_output_format qsv \\
-      -i "$src" \\
-      -stats \\
-      -vf "vpp_qsv=framerate=\$fps_target" \\
-      -r "\$fps_target" \\
-      -c:v hevc_qsv -preset ${qsvPreset} -global_quality ${qpVal} \\
-      -c:a copy -y "$out_file"
-    ` : `
-    docker run --rm -t --device /dev/dri:/dev/dri -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
-      -init_hw_device qsv=hw -filter_hw_device hw \\
-      -hwaccel qsv -hwaccel_output_format qsv \\
-      -i "$src" \\
-      -stats \\
-      -c:v hevc_qsv -preset ${qsvPreset} -global_quality ${qpVal} \\
-      -c:a copy -y "$out_file"
-    `}
-    ` : `
-    # AV1 软解转码逻辑
-    docker run --rm -t -v /vol1:/vol1 linuxserver/ffmpeg:latest \\
-      -i "$src" \\
-      -stats \\
-      ${isFps2x ? '-vf "fps=60" ' : ''}-c:v libsvtav1 -crf ${crfVal} -preset ${presetVal} \\
-      -c:a copy -y "$out_file"
-    `}
-
-    if [ -s "$out_file" ]; then
-        # 提取时长并用 cut 取整秒，彻底解决浮点数隐式比对报错
-        duration_orig=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$src" 2>/dev/null | cut -d. -f1)
-        duration_out=\$(docker run --rm -v /vol1:/vol1 linuxserver/ffmpeg:latest ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$out_file" 2>/dev/null | cut -d. -f1)
-        
-        if [ -n "$duration_orig" ] && [ -n "$duration_out" ] && [ "$duration_orig" -gt 0 ]; then
-            min_target=\$(( duration_orig * 80 / 100 ))
-            if [ "$duration_out" -ge "$min_target" ]; then
-                echo "⚠️ 压制成功（原时长: \${duration_orig}s, 新时长: \${duration_out}s，通过 ≥80% 校验）！自动清理原文件: $filename"
-                rm -f "$src"
-            else
-                echo "❌ 压制时长不足（原: \${duration_orig}s, 新: \${duration_out}s），保留原文件: $filename"
-            fi
-        else
-            echo "⚠️ 无法精确提取时长，但新文件生成正常，自动清理原文件: $filename"
-            rm -f "$src"
-        fi
-    else
-        echo "❌ 压制失败，保留原文件: $filename"
-    fi
 }
 
-if [ -f "$TARGET" ]; then
-    process_video "$TARGET"
-elif [ -d "$TARGET" ]; then
-    echo "========================================================="
-    echo "▶ 识别为文件夹，开始全速批量压制..."
-    echo "========================================================="
 
-    for video in "$TARGET"/*; do
-        [ -e "$video" ] || continue
-        filename=$(basename -- "$video")
-        ext="\${filename##*.}"
-        ext_lower=\$(echo "$ext" | tr "[:upper:]" "[:lower:]")
-        name="\${filename%.*}"
-        
-        if [[ "$name" == *${tag}* ]] || [[ "$name" == *${tagAlt}* ]]; then
-            continue
-        fi
+/* ============================================================
+   API 健康检查
+   ============================================================ */
 
-        if [ "$ext_lower" != "ts" ] && [ "$ext_lower" != "mp4" ] && [ "$ext_lower" != "flv" ] && [ "$ext_lower" != "mkv" ]; then
-            continue
-        fi
+async function checkApi() {
 
-        process_video "$video"
-    done
-    echo "🎉 批量处理完成！"
-else
-    echo "❌ 找不到指定路径 -> $TARGET"
-fi`;
+    const status =
+        document.getElementById("apiStatus");
 
-        document.getElementById('codeOutput').value = scriptBody;
+    try {
+
+        const response =
+            await fetch(
+                API_BASE + "/api/health",
+                {
+                    cache: "no-store"
+                }
+            );
+
+        if (!response.ok)
+            throw new Error("API error");
+
+        const data =
+            await response.json();
+
+        status.innerHTML =
+            "🟢 N100 Docker API 在线";
+
+        status.className =
+            "api-status api-online";
+
+        return true;
+
     }
 
-    function copyCode() {
-        const codeArea = document.getElementById('codeOutput');
-        const btn = document.getElementById('copyBtn');
-        
-        navigator.clipboard.writeText(codeArea.value).then(() => {
-            btn.innerText = "✅ 复制成功！可以直接粘贴到终端运行";
-            btn.style.backgroundColor = "#16a34a";
+    catch (error) {
+
+        status.innerHTML =
+            "🔴 N100 Docker API 无法连接";
+
+        status.className =
+            "api-status api-offline";
+
+        return false;
+
+    }
+
+}
+
+
+/* ============================================================
+   主按钮
+   ============================================================ */
+
+async function handleMainButton() {
+
+    const mode =
+        document.querySelector(
+            'input[name="transcodeMode"]:checked'
+        ).value;
+
+
+    /*
+     * 转码模式：直接调用 API
+     */
+
+    if (mode === "transcode") {
+
+        await startTranscode();
+
+        return;
+
+    }
+
+
+    /*
+     * CUT / MERGE 暂时继续复制命令
+     */
+
+    copyCode();
+
+}
+
+
+/* ============================================================
+   开始转码
+   ============================================================ */
+
+async function startTranscode() {
+
+    if (isRunning) {
+
+        alert("当前已经有一个任务正在运行。");
+
+        return;
+
+    }
+
+
+    const inputPath =
+        document.getElementById("inputPath")
+        .value
+        .trim();
+
+    const outputPath =
+        document.getElementById("outputPath")
+        .value
+        .trim();
+
+    const codec =
+        document.querySelector(
+            'input[name="codecMode"]:checked'
+        ).value;
+
+    const quality =
+        document.getElementById("qualityPreset").value;
+
+    const fps2x =
+        document.getElementById("fps2x").checked;
+
+
+    if (!inputPath) {
+
+        alert("请输入原视频文件或文件夹路径。");
+
+        return;
+
+    }
+
+
+    if (!inputPath.startsWith("/vol1/")) {
+
+        alert(
+            "为了安全，路径必须位于 /vol1/ 下。"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        outputPath &&
+        !outputPath.startsWith("/vol1/")
+    ) {
+
+        alert(
+            "输出路径必须位于 /vol1/ 下。"
+        );
+
+        return;
+
+    }
+
+
+    const apiOK =
+        await checkApi();
+
+    if (!apiOK) {
+
+        alert(
+            "无法连接 N100 Docker API。\n\n" +
+            "请确认：\n" +
+            "1. n100-transcoder-api 正在运行\n" +
+            "2. 3015 端口正常\n" +
+            "3. 当前设备可以访问 192.168.2.216"
+        );
+
+        return;
+
+    }
+
+
+    const btn =
+        document.getElementById("copyBtn");
+
+    const stopBtn =
+        document.getElementById("stopBtn");
+
+    const statusBox =
+        document.getElementById("statusBox");
+
+    const statusText =
+        document.getElementById("statusText");
+
+    const jobIdText =
+        document.getElementById("jobIdText");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    const output =
+        document.getElementById("codeOutput");
+
+
+    isRunning = true;
+
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+    btn.innerText = "⏳ 正在启动 N100...";
+
+    stopBtn.style.display = "block";
+
+    statusBox.style.display = "block";
+
+    statusText.innerText =
+        "⏳ 正在创建 Docker 压制任务...";
+
+    jobIdText.innerText = "";
+
+    progressBar.style.width = "0%";
+
+    output.value =
+        "正在连接 N100 Docker API...\n";
+
+
+    /*
+     * API 请求
+     */
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE + "/api/transcode",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        mode: "transcode",
+
+                        inputPath:
+                            inputPath,
+
+                        outputDir:
+                            outputPath,
+
+                        codec:
+                            codec,
+
+                        quality:
+                            quality,
+
+                        fps2x:
+                            fps2x
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "启动任务失败"
+            );
+
+        }
+
+
+        currentJobId =
+            data.id ||
+            data.jobId ||
+            data.job_id;
+
+
+        if (!currentJobId) {
+
+            throw new Error(
+                "API 没有返回任务 ID"
+            );
+
+        }
+
+
+        jobIdText.innerText =
+            "任务：" + currentJobId;
+
+        statusText.innerText =
+            "🟢 N100 正在压制";
+
+        output.value +=
+            "========================================\n" +
+            "▶ 任务已启动\n" +
+            "📁 输入：" + inputPath + "\n" +
+            "📁 输出：" + outputPath + "\n" +
+            "⚡ 编码：" +
+            (codec === "h265"
+                ? "H.265 / Intel QSV"
+                : "AV1 / 软件编码") +
+            "\n" +
+            "🎚️ 质量：" + quality +
+            "\n" +
+            "⏩ 2倍帧率：" +
+            (fps2x ? "开启" : "关闭") +
+            "\n" +
+            "========================================\n";
+
+
+        startPolling();
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        statusText.innerText =
+            "❌ 启动失败";
+
+        output.value +=
+            "\n❌ " +
+            error.message +
+            "\n";
+
+        isRunning = false;
+
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.innerText = "▶️ 开始转码";
+
+        stopBtn.style.display = "none";
+
+    }
+
+}
+
+
+/* ============================================================
+   查询任务
+   ============================================================ */
+
+function startPolling() {
+
+    if (pollTimer)
+        clearInterval(pollTimer);
+
+
+    pollJob();
+
+    pollTimer =
+        setInterval(
+            pollJob,
+            2000
+        );
+
+}
+
+
+/* ============================================================
+   获取任务状态
+   ============================================================ */
+
+async function pollJob() {
+
+    if (!currentJobId)
+        return;
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/jobs/" +
+                encodeURIComponent(currentJobId),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "读取任务状态失败"
+            );
+
+        }
+
+
+        updateJobUI(data);
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "poll error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   更新任务 UI
+   ============================================================ */
+
+function updateJobUI(data) {
+
+    const statusText =
+        document.getElementById("statusText");
+
+    const output =
+        document.getElementById("codeOutput");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    const btn =
+        document.getElementById("copyBtn");
+
+    const stopBtn =
+        document.getElementById("stopBtn");
+
+
+    /*
+     * 日志
+     */
+
+    let logText = "";
+
+
+    if (Array.isArray(data.logs)) {
+
+        logText =
+            data.logs.join("\n");
+
+    }
+
+    else if (typeof data.logs === "string") {
+
+        logText =
+            data.logs;
+
+    }
+
+    else if (typeof data.log === "string") {
+
+        logText =
+            data.log;
+
+    }
+
+
+    if (logText) {
+
+        output.value =
+            logText;
+
+        output.scrollTop =
+            output.scrollHeight;
+
+    }
+
+
+    /*
+     * 进度
+     */
+
+    let progress =
+        Number(
+            data.progress ||
+            data.percent ||
+            0
+        );
+
+
+    if (
+        !isNaN(progress) &&
+        progress >= 0 &&
+        progress <= 100
+    ) {
+
+        progressBar.style.width =
+            progress + "%";
+
+    }
+
+
+    /*
+     * 状态
+     */
+
+    const status =
+        String(
+            data.status ||
+            data.state ||
+            ""
+        ).toLowerCase();
+
+
+    if (
+        status === "completed" ||
+        status === "success" ||
+        status === "done"
+    ) {
+
+        statusText.innerText =
+            "✅ 压制完成";
+
+        progressBar.style.width =
+            "100%";
+
+        finishJob(
+            "success"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        status === "failed" ||
+        status === "error"
+    ) {
+
+        statusText.innerText =
+            "❌ 压制失败";
+
+        finishJob(
+            "failed"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        status === "stopped" ||
+        status === "cancelled" ||
+        status === "canceled"
+    ) {
+
+        statusText.innerText =
+            "⛔ 任务已停止";
+
+        finishJob(
+            "stopped"
+        );
+
+        return;
+
+    }
+
+
+    statusText.innerText =
+        "🟢 N100 正在压制";
+
+
+    btn.innerText =
+        "⏳ 正在压制...";
+
+}
+
+
+/* ============================================================
+   完成任务
+   ============================================================ */
+
+function finishJob(result) {
+
+    if (pollTimer) {
+
+        clearInterval(
+            pollTimer
+        );
+
+        pollTimer = null;
+
+    }
+
+
+    isRunning = false;
+
+
+    const btn =
+        document.getElementById("copyBtn");
+
+    const stopBtn =
+        document.getElementById("stopBtn");
+
+
+    btn.disabled = false;
+
+    btn.style.opacity = "1";
+
+    btn.innerText =
+        "▶️ 开始转码";
+
+    stopBtn.style.display =
+        "none";
+
+
+    if (result === "success") {
+
+        btn.style.backgroundColor =
+            "#16a34a";
+
+        setTimeout(() => {
+
+            btn.style.backgroundColor =
+                "var(--btn-copy-bg)";
+
+        }, 2500);
+
+    }
+
+}
+
+
+/* ============================================================
+   停止任务
+   ============================================================ */
+
+async function stopCurrentJob() {
+
+    if (!currentJobId)
+        return;
+
+
+    if (
+        !confirm(
+            "确定要停止当前 N100 压制任务吗？"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const output =
+        document.getElementById("codeOutput");
+
+    const statusText =
+        document.getElementById("statusText");
+
+
+    statusText.innerText =
+        "⛔ 正在停止任务...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/jobs/" +
+                encodeURIComponent(currentJobId) +
+                "/stop",
+                {
+                    method: "POST"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "停止失败"
+            );
+
+        }
+
+
+        output.value +=
+            "\n\n⛔ 已发送停止任务请求。\n";
+
+
+        statusText.innerText =
+            "⛔ 正在停止...";
+
+
+    }
+
+    catch (error) {
+
+        output.value +=
+            "\n❌ 停止失败：" +
+            error.message +
+            "\n";
+
+    }
+
+}
+
+
+/* ============================================================
+   复制旧版命令
+   ============================================================ */
+
+function copyCode() {
+
+    const codeArea =
+        document.getElementById(
+            "codeOutput"
+        );
+
+    const btn =
+        document.getElementById(
+            "copyBtn"
+        );
+
+
+    navigator.clipboard
+        .writeText(
+            codeArea.value
+        )
+        .then(() => {
+
+            btn.innerText =
+                "✅ 复制成功！";
+
+            btn.style.backgroundColor =
+                "#16a34a";
+
+
             setTimeout(() => {
-                btn.innerText = "📋 点击复制 Docker 执行命令";
-                btn.style.backgroundColor = "var(--btn-copy-bg)";
-            }, 2500);
-        });
-    }
 
-    window.onload = switchMode;
+                const mode =
+                    document.querySelector(
+                        'input[name="transcodeMode"]:checked'
+                    ).value;
+
+
+                if (mode === "transcode") {
+
+                    btn.innerText =
+                        "▶️ 开始转码";
+
+                }
+
+                else if (mode === "cut") {
+
+                    btn.innerText =
+                        "📋 复制截断命令";
+
+                }
+
+                else {
+
+                    btn.innerText =
+                        "📋 复制拼接命令";
+
+                }
+
+
+                btn.style.backgroundColor =
+                    "var(--btn-copy-bg)";
+
+            }, 2500);
+
+        })
+
+        .catch(() => {
+
+            alert(
+                "复制失败，请手动复制下面的命令。"
+            );
+
+        });
+
+}
+
+
+/* ============================================================
+   初始化
+   ============================================================ */
+
+window.onload = async function () {
+
+    switchMode();
+
+    await checkApi();
+
+};
+
 </script>
 
 </body>
