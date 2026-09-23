@@ -2393,6 +2393,7 @@ calc();
 
 };
 
+
 /* =========================================================
    图示入口
 ========================================================= */
@@ -2419,6 +2420,7 @@ else if(currentMode==='balcony'){
 drawModeBalcony();
 }
 }
+
 
 /* =========================================================
    核心计算
@@ -2469,46 +2471,3 @@ else if(currentMode==='double')calculateModeDouble(ctx);
 else if(currentMode===3)calculateMode3(ctx);
 else calculateMode4(ctx);
 }
-
-/* =========================================================
-   页面初始化
-========================================================= */
-
-window.addEventListener('load',function(){
-
-$('modeDropdown').addEventListener('change',function(){switchMode(this.value)});
-$('minusNum').addEventListener('click',function(){changeNum(-1)});
-$('plusNum').addEventListener('click',function(){changeNum(1)});
-$('diagramToggle').addEventListener('click',toggleDiagram);
-$('glassToggle').addEventListener('click',toggleGlass);
-$('perimeterToggle').addEventListener('change',togglePerimeter);
-$('exportButton').addEventListener('click',exportGlassImage);
-$('addListButton').addEventListener('click',addToList);
-$('listButton').addEventListener('click',toggleList);
-$('historyButton').addEventListener('click',toggleHistory);
-$('listEditButton').addEventListener('click',toggleListEdit);
-$('historyEditButton').addEventListener('click',toggleHistoryEdit);
-$('clearListButton').addEventListener('click',clearList);
-$('clearHistoryButton').addEventListener('click',clearHistory);
-$('modeSwitchButton').addEventListener('click',toggleModeSwitch);
-$('addFixedButton').addEventListener('click',function(){addBalconyPart('固')});
-$('addFanButton').addEventListener('click',function(){addBalconyPart('扇')});
-
-bindInput('winNum');
-bindInput('winH');
-bindInput('winW');
-bindInput('fanW');
-bindInput('fanH');
-bindInput('upperBright');
-bindInput('lowerBright');
-
-loadDataToInputs();
-updateGlassRows();
-updateModeSwitchButton();
-updateBalconyButtons();
-renderList();
-renderHistory();
-$('glassTableWrap').classList.remove('show');
-$('glassToggle').innerText='展开玻璃尺寸';
-calc();
-});
