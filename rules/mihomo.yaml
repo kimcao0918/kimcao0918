@@ -36,10 +36,6 @@ Anchor_OT: &Anchor_OT '^(?!.*(DIRECT|香港|台湾|日本|新加坡|韩国|美�
 # 将 “订阅链接” 与 “机场名” 替换为所用机场信息； 订阅条数不够可新增，注意开头缩进，不同条数前方 “机场名” 不能重复； 末尾的 “机场名” 作用为每个节点添加机场名称前缀，可自定义。
 proxy-providers:
 #  机场名: {<<: *Anchor_PR, url: '订阅链接', override: {additional-prefix: '[机场名] '}}
-  新萌新云: {<<: *Anchor_PR, url: 'https://www.mengxindy.top/adiabi/vip/client/subscribe?token=4d23a7232dc7c62a13831ec83b3a82b5', override: {additional-prefix: '萌新云'}}
-  良心云:   {<<: *Anchor_PR, url: 'https://liangxin.xyz/api/v1/liangxin?OwO=597b9510c949a36b6f7ada45bf258447', override: {additional-prefix: '良心云'}}
-  吹雪:      {<<: *Anchor_PR, url: 'https://xn--9kqs1lo79d.cc/api/v1/chuixue?token=52fc92284790bfcc107d9baac9a98e6b', override: {additional-prefix: '吹雪'}}
-  吹䨮:      {<<: *Anchor_PR, url: 'https://station26-cnbr512.ac2026.live/translations512/dfgg?token=b294e49985060dd399d98fb518d429e9', override: {additional-prefix: '吹䨮'}}
 
 # ※※※※※※※※※※※※※※※ 核心配置 ※※※※※※※※※※※※※※※
 # ══ 基础配置 ══
