@@ -7,11 +7,8 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 
+<!-- 门窗助手 v7.1 · 修改记录见 README.md -->
 <title>门窗玻璃计算器</title>
-
-<!-- =========================
-     iPhone / iPad PWA
-========================= -->
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-touch-fullscreen" content="yes">
@@ -19,38 +16,11 @@ content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scal
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="门窗助手">
 
-<!-- =========================
-     网站图标
-========================= -->
-
-<link rel="icon"
-href="./favicon.ico"
-type="image/x-icon">
-
-<link rel="icon"
-href="./icon-180.png"
-type="image/png"
-sizes="180x180">
-
-<link rel="icon"
-href="./icon-512.png"
-type="image/png"
-sizes="512x512">
-
-<!-- =========================
-     iPhone 主屏幕图标
-========================= -->
-
-<link rel="apple-touch-icon"
-sizes="180x180"
-href="./icon-180.png">
-
-<!-- =========================
-     内嵌 PWA Manifest
-========================= -->
-
 <link rel="manifest"
-href="data:application/manifest+json,%7B%22name%22%3A%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22%2C%22short_name%22%3A%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22%2C%22start_url%22%3A%22https%3A%2F%2Fkimcao0918.github.io%2Fkimcao0918%2FHTML%2FMC.html%22%2C%22scope%22%3A%22https%3A%2F%2Fkimcao0918.github.io%2Fkimcao0918%2FHTML%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f0f2f5%22%2C%22theme_color%22%3A%22%234CAF50%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fkimcao0918.github.io%2Fkimcao0918%2FHTML%2Ficon-180.png%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fkimcao0918.github.io%2Fkimcao0918%2FHTML%2Ficon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+href="data:application/manifest+json,{%22name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22short_name%22:%22%E9%97%A8%E7%AA%97%E5%8A%A9%E6%89%8B%22,%22start_url%22:%22https://kimcao0918.github.io/kimcao0918/MC.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f0f2f5%22}">
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="icon-180.png">
 
 <style>
 
@@ -158,6 +128,106 @@ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000
 background-repeat:no-repeat;
 background-position:right 8px center;
 background-size:16px
+}
+
+/* ---------- 窗型分类按钮（三大类） ---------- */
+
+.kind-row{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:6px
+}
+
+.kind-btn{
+border:1px solid #2196F3;
+border-radius:8px;
+background:var(--card-bg);
+color:#2196F3;
+padding:8px 2px;
+font-size:.85rem;
+font-weight:800;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent;
+transition:background .15s,color .15s
+}
+
+.kind-btn.active{
+background:#2196F3;
+color:#fff
+}
+
+.kind-btn:active{
+transform:scale(.97)
+}
+
+/* ---------- 断桥门类型按钮 ---------- */
+
+.door-type-row{
+display:none;
+grid-template-columns:repeat(3,1fr);
+gap:6px;
+margin:10px 0
+}
+
+.door-type-row.show{
+display:grid
+}
+
+.door-type-btn{
+border:1px solid #ff9800;
+border-radius:8px;
+background:var(--card-bg);
+color:#ff9800;
+padding:8px 2px;
+font-size:.8rem;
+font-weight:800;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent;
+transition:background .15s,color .15s
+}
+
+.door-type-btn.active{
+background:#ff9800;
+color:#fff
+}
+
+.door-type-btn:active{
+transform:scale(.97)
+}
+
+/* ---------- 窗户子模式按钮 ---------- */
+
+.sub-mode-row{
+display:none;
+grid-template-columns:repeat(3,1fr);
+gap:6px;
+margin:10px 0 10px
+}
+
+.sub-mode-row.show{
+display:grid
+}
+
+.sub-mode-btn{
+border:1px solid #4CAF50;
+border-radius:8px;
+background:var(--card-bg);
+color:#4CAF50;
+padding:8px 2px;
+font-size:.8rem;
+font-weight:800;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent;
+transition:background .15s,color .15s
+}
+
+.sub-mode-btn.active{
+background:#4CAF50;
+color:#fff
+}
+
+.sub-mode-btn:active{
+transform:scale(.97)
 }
 
 .num-box{
@@ -472,6 +542,16 @@ vertical-align:middle
 border-color:#2196F3
 }
 
+.list-export-btn{
+border:0;
+background:transparent;
+color:#4CAF50;
+font-size:.8rem;
+font-weight:800;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent
+}
+
 .clear-panel-btn{
 border:0;
 background:transparent;
@@ -496,6 +576,64 @@ display:flex;
 justify-content:flex-end;
 align-items:center;
 margin-bottom:3px
+}
+
+/* 上亮输入框与「收起图示」同一行：上亮靠左、按钮靠右 */
+.diagram-title-row.has-bright{
+gap:8px
+}
+
+/*
+ * 上亮输入框向「收起图示」按钮看齐：
+ * 沿用它的 padding(4px 12px) 与 font-size(.8rem)，
+ * 外观保持主次 —— 按钮是操作，上亮是数据输入，
+ * 所以上亮框不加粗、不放大
+ */
+
+.diagram-title-row .upper-bright-inline{
+margin-right:auto;
+display:inline-flex;
+align-items:center;
+gap:1px;
+padding:4px 8px;
+background:var(--input-bg);
+border:1px solid #ccc;
+border-radius:8px;
+box-sizing:border-box;
+flex-shrink:0;
+font-size:.8rem
+}
+
+/* 标签紧贴输入框，不再留大段空白 */
+.diagram-title-row .upper-bright-inline label{
+display:inline;
+margin:0;
+padding:0;
+font-size:.8rem;
+font-weight:normal;
+font-family:inherit;
+color:#888;
+white-space:nowrap;
+line-height:1
+}
+
+/* 输入框按内容自适应（JS 动态同步宽度），右侧不再留空 */
+.diagram-title-row .upper-bright-inline input{
+width:1.6em;
+min-width:1.6em;
+padding:0;
+margin:0;
+border:0;
+outline:none;
+background:transparent;
+color:var(--text-main);
+font-size:.8rem;
+font-weight:normal;
+font-family:inherit;
+text-align:left;
+line-height:1;
+appearance:none;
+-webkit-appearance:none
 }
 
 .diagram-toggle{
@@ -816,11 +954,86 @@ white-space:nowrap
 display:none!important
 }
 
+/* ---------- 大门：门板尺寸行 ---------- */
+
+.door-panel-head{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px
+}
+
+.door-panel-toggle{
+border:1px solid #ccc;
+border-radius:7px;
+background:var(--input-bg);
+color:var(--text-main);
+padding:3px 8px;
+font-size:.75rem;
+font-weight:700;
+cursor:pointer;
+-webkit-tap-highlight-color:transparent
+}
+
+.door-panel-details{
+width:100%
+}
+
+.door-panel-row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:8px;
+padding:7px 9px;
+border-radius:8px;
+background:var(--input-bg);
+box-sizing:border-box;
+width:100%;
+font-size:.85rem
+}
+
+.door-panel-row+.door-panel-row{
+margin-top:7px
+}
+
+/* ---------- 大门：输入不合理提示 ---------- */
+
+.door-warning{
+margin:0 0 10px;
+padding:8px 10px;
+border-radius:9px;
+background:rgba(229,57,53,.1);
+border:1px solid rgba(229,57,53,.35);
+color:#e53935;
+font-size:.8rem;
+font-weight:700;
+line-height:1.4;
+text-align:center
+}
+
+/* ---------- 纱窗行：与玻璃行做视觉区分 ---------- */
+
+.screen-row td{
+background:rgba(255,152,0,.06);
+border-color:rgba(255,152,0,.35)
+}
+
 .screen-row td:first-child{
-color:#ff9800
+color:#ff9800;
+border-left:4px solid #ff9800
+}
+
+.screen-row .size-val{
+color:#ef6c00
 }
 
 .screen-row .size-val b{
+font-style:italic;
+font-weight:900
+}
+
+.screen-row .count-val{
+color:#ff9800;
 font-style:italic
 }
 
@@ -859,31 +1072,48 @@ transform:scale(.99)
 
 <div class="select-box">
 
-<label for="modeDropdown">
-计算模式
+<label>
+窗型分类
 </label>
 
-<select id="modeDropdown">
+<!-- 三个大类：窗户 / 阳台 / 大门 -->
 
-<option value="4" selected>
-4块 (左右分格+上亮)
-</option>
+<div class="kind-row"
+id="kindRow">
 
-<option value="3">
-3块 (右开扇+通头顶上亮)
-</option>
+<button type="button"
+class="kind-btn active"
+data-kind="window">
+窗户
+</button>
 
-<option value="double">
-双扇 (两边开扇+中间固定)
-</option>
-
-<option value="balcony">
+<button type="button"
+class="kind-btn"
+data-kind="balcony">
 阳台
-</option>
+</button>
 
-</select>
+<button type="button"
+class="kind-btn"
+data-kind="door">
+大门
+</button>
 
 </div>
+
+</div>
+
+<!-- 隐藏的下拉框：仅用于程序兼容（历史记录 / 旧代码调用） -->
+
+<select id="modeDropdown" class="hidden">
+
+<option value="4" selected>4块</option>
+<option value="3">3块</option>
+<option value="double">双扇</option>
+<option value="balcony">阳台</option>
+<option value="door">大门</option>
+
+</select>
 
 <div class="num-box">
 
@@ -909,6 +1139,34 @@ min="1">
 </div>
 
 </div>
+
+</div>
+
+
+<!-- 窗户子模式：4块 / 3块 / 双扇
+     3块 双击可在「右开扇 ↔ 左通」之间切换
+     双扇 双击可在「原双扇 ↔ 三分格」之间切换 -->
+
+<div class="sub-mode-row"
+id="subModeRow">
+
+<button type="button"
+class="sub-mode-btn active"
+data-sub="4">
+4块
+</button>
+
+<button type="button"
+class="sub-mode-btn"
+data-sub="3">
+3块
+</button>
+
+<button type="button"
+class="sub-mode-btn"
+data-sub="double">
+双扇
+</button>
 
 </div>
 
@@ -942,6 +1200,32 @@ id="addFixedButton">
 class="balcony-add-btn fan"
 id="addFanButton">
 ＋ 扇
+</button>
+
+</div>
+
+
+<!-- 断桥门类型：四门 / 双门 / 单门 -->
+
+<div class="door-type-row"
+id="doorTypeRow">
+
+<button type="button"
+class="door-type-btn active"
+data-door="4">
+四门
+</button>
+
+<button type="button"
+class="door-type-btn"
+data-door="2">
+双门
+</button>
+
+<button type="button"
+class="door-type-btn"
+data-door="1">
+单门
 </button>
 
 </div>
@@ -991,6 +1275,12 @@ id="listPanel">
 class="list-edit-btn"
 id="listEditButton">
 编辑
+</button>
+
+<button type="button"
+class="list-export-btn"
+id="exportListButton">
+导出
 </button>
 
 <button type="button"
@@ -1376,6 +1666,65 @@ class="count-val">
 </tr>
 
 
+<tr id="rowDoorPanel"
+class="hidden">
+
+<td>
+
+<div class="door-panel-head">
+
+<span>
+门板尺寸
+</span>
+
+<button type="button"
+class="door-panel-toggle"
+id="doorPanelToggle">
+收起
+</button>
+
+</div>
+
+</td>
+
+<td>
+
+<div id="doorPanelDetails"
+class="door-panel-details">
+
+<div id="doorFixedPanelResult"
+class="door-panel-row">
+
+<span>
+左右固定门板
+</span>
+
+<strong>
+-
+</strong>
+
+</div>
+
+<div id="doorSashPanelResult"
+class="door-panel-row">
+
+<span>
+双扇门板
+</span>
+
+<strong>
+-
+</strong>
+
+</div>
+
+</div>
+
+</td>
+
+</tr>
+
+
 <tr id="rowScreen"
 class="screen-row">
 
@@ -1417,6 +1766,7 @@ class="count-val">
 <script src="js/modes/mode-3.js"></script>
 <script src="js/modes/mode-double.js"></script>
 <script src="js/modes/mode-balcony.js"></script>
+<script src="js/modes/mode-door.js"></script>
 <script src="js/app.js"></script>
 
 </body>
